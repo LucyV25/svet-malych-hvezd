@@ -87,6 +87,20 @@
         .shape-option.is-correct { border-color:#63a67a; background:#edf8ef; }
         .shape-option.is-wrong { border-color:#d7a0a0; background:#fff0f0; }
         .shape-option .shape-svg { width:56px; height:56px; }
+        .build-reference,.build-board { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:14px 0; }
+        .build-cell { display:grid; min-height:112px; place-items:center; border:2px solid var(--line); border-radius:15px; background:#fff; }
+        .build-reference .build-cell { background:linear-gradient(135deg,#eaf4fb,#fff3d8); }
+        .build-cell.is-current { border-color:var(--accent); box-shadow:0 0 0 3px var(--soft); }
+        .build-cell.is-filled { border-color:#8fc49a; background:#f0f9f1; }
+        .build-cell .shape-svg { width:72px; height:72px; }
+        .build-picker-title { margin:14px 0 8px; color:var(--deep); font-weight:750; text-align:center; }
+        .build-shapes,.build-colors { display:flex; flex-wrap:wrap; justify-content:center; gap:9px; }
+        .build-shape-button,.build-color-button { display:grid; min-width:76px; min-height:74px; place-items:center; gap:2px; padding:7px 10px; border:1px solid var(--line); border-radius:13px; background:#fff; color:var(--deep); cursor:pointer; font-weight:700; }
+        .build-shape-button:hover,.build-color-button:hover { border-color:var(--accent); background:var(--soft); }
+        .build-shape-button .shape-svg { width:43px; height:43px; }
+        .build-color-chip { width:28px; height:28px; border:2px solid rgba(0,0,0,.12); border-radius:50%; }
+        .build-color-button[aria-pressed="true"] { outline:3px solid var(--accent); outline-offset:2px; }
+        .build-color-button.is-wrong { border-color:#d7a0a0; background:#fff0f0; color:#8a3c2e; }
         footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
         @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets,.sequence-options { grid-template-columns:repeat(2,minmax(0,1fr)); } .memory-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
     </style>
@@ -121,6 +135,7 @@
             <button class="activity-button" type="button" data-activity-target="category-sort" aria-pressed="false">🧺 Třídění věcí</button>
             <button class="activity-button" type="button" data-activity-target="memory" aria-pressed="false">🃏 Pexeso</button>
             <button class="activity-button" type="button" data-activity-target="shapes" aria-pressed="false">🔷 Barvy a tvary</button>
+            <button class="activity-button" type="button" data-activity-target="shape-build" aria-pressed="false">🧩 Sestav podle předlohy</button>
         </div>
         <section data-activity-panel="topics" aria-labelledby="practice-title">
         <div class="activity-heading"><p class="eyebrow">Otázky a odpovědi</p><h2 id="practice-title">Procvičování témat</h2><p>Vyber téma, poslechni si otázku a klepni na správnou odpověď.</p></div>
@@ -180,6 +195,20 @@
             <p class="season-status" id="shape-status" role="status" aria-live="polite"></p>
             <p class="quiz-progress" id="shape-progress" aria-live="polite"></p>
             <div class="quiz-actions"><button class="action-button primary" id="next-shape" type="button" hidden>Další tvar</button><button class="action-button" id="restart-shapes" type="button">Začít znovu</button></div>
+        </section>
+        <section class="sorting-card" data-activity-panel="shape-build" aria-labelledby="shape-build-title" hidden>
+            <div class="quiz-heading"><div><p class="eyebrow">Pozoruj a skládej</p><h2 id="shape-build-title">Sestav obrázek podle předlohy</h2></div><button class="action-button" id="read-shape-build" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro">Podívej se na barevné tvary nahoře. Dole je zkus sestavit ve stejném pořadí. U každého vyber nejdřív tvar a potom barvu.</p>
+            <p class="build-picker-title">Předloha</p>
+            <div class="build-reference" id="build-reference" role="img" aria-label="Předloha obrázku"></div>
+            <p class="build-picker-title">Tvůj obrázek</p>
+            <div class="build-board" id="build-board" aria-label="Místo pro sestavený obrázek"></div>
+            <p class="build-picker-title" id="build-selection-label">Vyber tvar</p>
+            <div class="build-shapes" id="build-shapes" role="group" aria-label="Vyber tvar"></div>
+            <div class="build-colors" id="build-colors" role="group" aria-label="Vyber barvu" hidden></div>
+            <p class="season-status" id="build-status" role="status" aria-live="polite"></p>
+            <p class="quiz-progress" id="build-progress" aria-live="polite"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="next-build-pattern" type="button" hidden>Další předloha</button><button class="action-button" id="restart-build-patterns" type="button">Začít znovu</button></div>
         </section>
         <section class="category-card" aria-labelledby="printables-title">
             <p class="eyebrow">Pro rodiče</p>
@@ -320,6 +349,17 @@
         const shapeItems = shapeColors.flatMap((color) => shapeKinds.map((shape) => ({
             id:`${color.id}-${shape.id}`, color, shape
         })));
+        const shapePatterns = [
+            { id:"sunrise", items:[["circle","yellow"],["triangle","red"],["square","blue"]] },
+            { id:"garden", items:[["triangle","green"],["circle","yellow"],["star","red"]] },
+            { id:"flags", items:[["square","blue"],["triangle","yellow"],["circle","red"]] },
+            { id:"night-sky", items:[["star","yellow"],["square","blue"],["circle","green"]] },
+            { id:"rainbow", items:[["circle","red"],["triangle","green"],["star","blue"]] },
+            { id:"shapes-train", items:[["square","red"],["square","yellow"],["square","blue"]] }
+        ].map((pattern) => ({
+            ...pattern,
+            figures: pattern.items.map(([shapeId,colorId]) => shapeItems.find((item) => item.shape.id === shapeId && item.color.id === colorId))
+        }));
         const roadSignSvgs = {
             stop: '<svg viewBox="0 0 120 120" aria-hidden="true"><polygon points="38,5 82,5 115,38 115,82 82,115 38,115 5,82 5,38" fill="#d92332" stroke="#fff" stroke-width="5"/><polygon points="38,10 82,10 110,38 110,82 82,110 38,110 10,82 10,38" fill="#d92332" stroke="#d92332" stroke-width="2"/><text x="60" y="68" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="22" font-weight="700">STOP</text></svg>',
             "no-entry": '<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="51" fill="#d92332"/><rect x="22" y="51" width="76" height="18" rx="3" fill="#fff"/></svg>',
@@ -637,6 +677,19 @@
         let shapeRoundIndex = 0;
         let activeShapeItem = null;
         let shapeAnswered = false;
+        const buildReference = document.querySelector("#build-reference");
+        const buildBoard = document.querySelector("#build-board");
+        const buildShapes = document.querySelector("#build-shapes");
+        const buildColors = document.querySelector("#build-colors");
+        const buildStatus = document.querySelector("#build-status");
+        const buildProgress = document.querySelector("#build-progress");
+        const buildSelectionLabel = document.querySelector("#build-selection-label");
+        const nextBuildPatternButton = document.querySelector("#next-build-pattern");
+        let buildDeck = [];
+        let buildRoundIndex = 0;
+        let activeBuildPattern = null;
+        let buildFigureIndex = 0;
+        let selectedBuildShape = null;
 
         function renderMemoryTopics() {
             memoryTopicPicker.replaceChildren(...Object.entries(memoryTopics).map(([id, topic]) => {
@@ -773,6 +826,138 @@
             nextShapeButton.hidden = false;
         }
 
+        function startBuildPatterns() {
+            buildDeck = shuffled(shapePatterns);
+            buildRoundIndex = 0;
+            showBuildPattern();
+        }
+
+        function showBuildPattern() {
+            selectedBuildShape = null;
+            nextBuildPatternButton.hidden = true;
+            buildColors.hidden = true;
+            buildShapes.hidden = false;
+            if (buildRoundIndex >= buildDeck.length) {
+                activeBuildPattern = null;
+                buildReference.replaceChildren(document.createTextNode("🎉"));
+                buildBoard.replaceChildren();
+                buildStatus.textContent = "Skvěle! Sestavila jsi všechny předlohy.";
+                buildProgress.textContent = `Hotovo: ${buildDeck.length} z ${buildDeck.length}`;
+                buildSelectionLabel.textContent = "Hotovo";
+                nextBuildPatternButton.textContent = "Zahrát znovu";
+                nextBuildPatternButton.hidden = false;
+                return;
+            }
+
+            activeBuildPattern = buildDeck[buildRoundIndex];
+            buildFigureIndex = 0;
+            buildReference.replaceChildren(...activeBuildPattern.figures.map((item, index) => {
+                const cell = document.createElement("div");
+                cell.className = "build-cell";
+                if (index === buildFigureIndex) cell.classList.add("is-current");
+                cell.setAttribute("aria-label", `${item.shape.name}, ${item.color.name} barva`);
+                cell.append(createShapeGraphic(item));
+                return cell;
+            }));
+            renderBuildBoard();
+            renderBuildShapeChoices();
+            buildSelectionLabel.textContent = `Tvar ${buildFigureIndex + 1}: vyber tvar`;
+            buildStatus.textContent = "Podívej se na první tvar v předloze a vyber stejný.";
+            buildProgress.textContent = `Předloha ${buildRoundIndex + 1} z ${buildDeck.length} · tvar ${buildFigureIndex + 1} z ${activeBuildPattern.figures.length}`;
+            nextBuildPatternButton.textContent = "Další předloha";
+        }
+
+        function renderBuildBoard() {
+            const placed = activeBuildPattern.figures.slice(0, buildFigureIndex);
+            buildBoard.replaceChildren(...activeBuildPattern.figures.map((_, index) => {
+                const cell = document.createElement("div");
+                cell.className = "build-cell";
+                if (placed[index]) {
+                    cell.classList.add("is-filled");
+                    cell.setAttribute("aria-label", `Hotový tvar ${index + 1}: ${placed[index].shape.name}, ${placed[index].color.name}`);
+                    cell.append(createShapeGraphic(placed[index]));
+                } else {
+                    cell.setAttribute("aria-label", `Prázdné místo ${index + 1}`);
+                    cell.textContent = "?";
+                }
+                return cell;
+            }));
+        }
+
+        function renderBuildShapeChoices() {
+            buildShapes.replaceChildren(...shapeKinds.map((shape) => {
+                const button = document.createElement("button");
+                button.className = "build-shape-button";
+                button.type = "button";
+                button.setAttribute("aria-label", shape.name);
+                button.append(createShapeGraphic({ shape, color:{ value:"#8795a3" } }));
+                button.addEventListener("click", () => {
+                    selectedBuildShape = shape;
+                    renderBuildColorChoices();
+                    buildShapes.hidden = true;
+                    buildColors.hidden = false;
+                    buildSelectionLabel.textContent = `Tvar ${buildFigureIndex + 1}: teď vyber barvu`;
+                    buildStatus.textContent = `Vybrala jsi tvar ${shape.name}. Teď vyber barvu podle předlohy.`;
+                });
+                return button;
+            }));
+        }
+
+        function renderBuildColorChoices() {
+            buildColors.replaceChildren(...shapeColors.map((color) => {
+                const button = document.createElement("button");
+                button.className = "build-color-button";
+                button.type = "button";
+                button.setAttribute("aria-label", color.name);
+                const chip = document.createElement("span");
+                chip.className = "build-color-chip";
+                chip.style.backgroundColor = color.value;
+                chip.setAttribute("aria-hidden", "true");
+                const label = document.createElement("span");
+                label.textContent = color.name;
+                button.append(chip,label);
+                button.addEventListener("click", () => checkBuildChoice(selectedBuildShape, color, button));
+                return button;
+            }));
+        }
+
+        function checkBuildChoice(shape, color, button) {
+            if (!activeBuildPattern || !shape) return;
+            const target = activeBuildPattern.figures[buildFigureIndex];
+            if (shape.id !== target.shape.id || color.id !== target.color.id) {
+                button.classList.add("is-wrong");
+                buildStatus.textContent = "Ještě to nesedí. Podívej se na předlohu a zkus to znovu.";
+                window.setTimeout(() => button.classList.remove("is-wrong"), 650);
+                selectedBuildShape = null;
+                buildColors.hidden = true;
+                buildShapes.hidden = false;
+                buildSelectionLabel.textContent = `Tvar ${buildFigureIndex + 1}: vyber tvar`;
+                return;
+            }
+
+            buildFigureIndex += 1;
+            if (buildFigureIndex >= activeBuildPattern.figures.length) {
+                buildStatus.textContent = "Výborně! Tvůj obrázek je stejný jako předloha.";
+                buildProgress.textContent = `Předloha ${buildRoundIndex + 1} z ${buildDeck.length} · hotovo`;
+                window.rewardPetCoin?.(`prvouka-build-pattern-${activeBuildPattern.id}`);
+                nextBuildPatternButton.hidden = false;
+                buildSelectionLabel.textContent = "Předloha je hotová";
+                buildShapes.hidden = true;
+                buildColors.hidden = true;
+                renderBuildBoard();
+                return;
+            }
+
+            selectedBuildShape = null;
+            renderBuildBoard();
+            buildReference.querySelectorAll(".build-cell").forEach((cell, index) => cell.classList.toggle("is-current", index === buildFigureIndex));
+            buildShapes.hidden = false;
+            buildColors.hidden = true;
+            buildSelectionLabel.textContent = `Tvar ${buildFigureIndex + 1}: vyber tvar`;
+            buildStatus.textContent = "Správně! Teď sestav další tvar.";
+            buildProgress.textContent = `Předloha ${buildRoundIndex + 1} z ${buildDeck.length} · tvar ${buildFigureIndex + 1} z ${activeBuildPattern.figures.length}`;
+        }
+
         function checkAnswer(button) {
             if (answered) return;
             if (button.dataset.correct === "true") {
@@ -797,6 +982,7 @@
         document.querySelector("#read-sequence").addEventListener("click", () => speakCzech("Seřaď roční období tak, jak jdou během roku za sebou. Začni jarem a pokračuj létem, podzimem a zimou.", sequenceStatus));
         document.querySelector("#read-memory").addEventListener("click", () => speakCzech(`Zahraj si obrázkové pexeso na téma ${memoryTopics[activeMemoryTopic].title}. Otoč dvě kartičky a hledej stejné obrázky.`, memoryStatus));
         document.querySelector("#read-shapes").addEventListener("click", () => speakCzech("Prohlédni si předlohu. Potom klepni na stejný geometrický tvar ve stejné barvě.", shapeStatus));
+        document.querySelector("#read-shape-build").addEventListener("click", () => speakCzech("Podívej se na předlohu. Sestav svůj obrázek stejně. U každého políčka vyber nejprve tvar a potom barvu. Začni prvním tvarem.", buildStatus));
         nextSeasonButton.addEventListener("click", showSeasonItem);
         document.querySelector("#restart-season-sort").addEventListener("click", startSeasonSort);
         nextCategoryButton.addEventListener("click", showCategoryItem);
@@ -805,6 +991,11 @@
         document.querySelector("#restart-memory").addEventListener("click", startMemoryGame);
         nextShapeButton.addEventListener("click", showShapeQuestion);
         document.querySelector("#restart-shapes").addEventListener("click", startShapeGame);
+        nextBuildPatternButton.addEventListener("click", () => {
+            if (buildRoundIndex >= buildDeck.length) startBuildPatterns();
+            else { buildRoundIndex += 1; showBuildPattern(); }
+        });
+        document.querySelector("#restart-build-patterns").addEventListener("click", startBuildPatterns);
         document.querySelectorAll("[data-activity-target]").forEach((button) => {
             button.addEventListener("click", () => {
                 stopQuestionSpeech();
@@ -825,6 +1016,7 @@
         renderMemoryTopics();
         startMemoryGame();
         startShapeGame();
+        startBuildPatterns();
         window.addEventListener("beforeunload", stopQuestionSpeech);
     </script>
 </body>
