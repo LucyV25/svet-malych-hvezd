@@ -274,6 +274,7 @@
         .submit-button:hover { background: var(--accent-dark); }
         .secondary-button { border-color: #d7e3e8; background: #fff; color: var(--accent-dark); }
         .secondary-button:hover { background: #f4f9f7; }
+        .download-button { display:inline-flex; align-items:center; justify-content:center; color:var(--accent-dark); text-decoration:none; }
         .toast { min-height: 22px; margin: 12px 0 0; color: var(--accent-dark); font-size: 12px; text-align: center; }
         .shop-stage { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:14px; margin:16px 0; padding:14px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(135deg,#eaf4fb,#fff3d8); }
         .shop-toy { display:grid; width:96px; height:96px; place-items:center; border-radius:14px; background:#fff; font-size:58px; }
@@ -403,6 +404,11 @@
                 <button class="secondary-button" id="new-matches" type="button" hidden>Další úloha</button>
             </div>
             <p class="money-status" id="match-status" role="status" aria-live="polite"></p>
+        </section>
+        <section class="math-card" aria-labelledby="printables-title" style="margin-top: 20px;">
+            <h2 id="printables-title">Pracovní listy ke stažení</h2>
+            <p class="card-intro">Sada obsahuje čtyři listy pro děti a čtyři stránky s řešením pro rodiče. Můžete vytisknout jen první čtyři stránky a klíč si nechat pro sebe.</p>
+            <a class="secondary-button download-button" href="assets/pracovni-listy/sada-pracovnich-listu.pdf" download>📄 Stáhnout pracovní listy v PDF</a>
         </section>
     </main>
 
