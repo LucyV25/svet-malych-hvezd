@@ -47,6 +47,12 @@
         .answer-button { min-height:58px; border:1px solid var(--line); border-radius:13px; background:#fff; color:var(--deep); cursor:pointer; font-size:21px; font-weight:750; }
         .answer-button.is-correct { border-color:#63a67a; background:#edf8ef; }
         .answer-button.is-wrong { border-color:#d7a0a0; background:#fff0f0; }
+        #pair-choices { display:flex; justify-content:center; gap:16px; }
+        #pair-choices .answer-button { width:min(100%,190px); min-height:82px; border-width:2px; border-radius:16px; font-size:20px; }
+        #pair-choices .pair-same { border-color:#67ad78; background:#eaf7ed; color:#245d31; }
+        #pair-choices .pair-different { border-color:#d77676; background:#fff0ef; color:#8c302d; }
+        #pair-choices .pair-same:hover:not(:disabled) { background:#d9f0de; }
+        #pair-choices .pair-different:hover:not(:disabled) { background:#ffe0de; }
         .quiz-status { min-height:26px; margin:12px 0 0; color:var(--deep); font-weight:650; text-align:center; }
         .quiz-progress { margin:8px 0 0; color:var(--muted); font-size:12px; text-align:center; }
         .panel-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:15px; }
@@ -200,8 +206,10 @@
         let activeUtterance = null;
         let activeReadButton = null;
         let firstIndex = 0, firstAnswered = false;
+        let firstDisplayedChoices = [];
         let syllableIndex = 0, syllableAnswered = false;
         let rhymeIndex = 0, rhymeAnswered = false;
+        let rhymeDisplayedChoices = [];
         let pairIndex = 0, pairAnswered = false;
         let selectedSound = "M", articulationIndex = 0;
         let sentenceIndex = 0;
@@ -247,7 +255,8 @@
         }
 
         function renderChoiceButtons(container, choices, handler, correctValue) {
-            container.replaceChildren(...shuffle(choices).map((choice) => {
+            const displayedChoices = shuffle(choices);
+            container.replaceChildren(...displayedChoices.map((choice) => {
                 const button = document.createElement("button");
                 button.className = "choice-button";
                 button.type = "button";
@@ -262,6 +271,7 @@
                 button.addEventListener("click", () => handler(choice, button, correctValue));
                 return button;
             }));
+            return displayedChoices;
         }
 
         function showFirstQuestion() {
@@ -275,7 +285,7 @@
             document.querySelector("#first-letter").textContent = round.sound;
             document.querySelector("#first-progress").textContent = `Otázka ${firstIndex + 1} z ${firstSoundRounds.length}`;
             document.querySelector("#first-status").textContent = "Najdi obrázek, jehož název začíná touto hláskou.";
-            renderChoiceButtons(document.querySelector("#first-choices"), [round.correct,...round.other], (choice, button) => {
+            firstDisplayedChoices = renderChoiceButtons(document.querySelector("#first-choices"), [round.correct,...round.other], (choice, button) => {
                 if (firstAnswered) return;
                 if (choice.word !== round.correct.word) {
                     button.classList.add("is-wrong");
@@ -336,7 +346,7 @@
             document.querySelector("#rhyme-word").textContent = round.word;
             document.querySelector("#rhyme-progress").textContent = `Rým ${rhymeIndex + 1} z ${rhymeRounds.length}`;
             document.querySelector("#rhyme-status").textContent = "Které slovo má podobný konec?";
-            renderChoiceButtons(document.querySelector("#rhyme-choices"), round.options.map((word) => ({ word, symbol:"💬" })), (choice, button) => {
+            rhymeDisplayedChoices = renderChoiceButtons(document.querySelector("#rhyme-choices"), round.options.map((word) => ({ word, symbol:"💬" })), (choice, button) => {
                 if (rhymeAnswered) return;
                 if (choice.word !== round.correct) {
                     button.classList.add("is-wrong");
@@ -364,9 +374,9 @@
             const options = document.querySelector("#pair-choices");
             options.replaceChildren(...shuffle([{ label:"Stejné", value:true },{ label:"Jiné", value:false }]).map((answer) => {
                 const button = document.createElement("button");
-                button.className = "answer-button";
+                button.className = `answer-button ${answer.value ? "pair-same" : "pair-different"}`;
                 button.type = "button";
-                button.textContent = answer.label;
+                button.textContent = `${answer.value ? "✅" : "❌"} ${answer.label}`;
                 button.addEventListener("click", () => {
                     if (pairAnswered) return;
                     if (answer.value !== pair.same) {
@@ -434,7 +444,7 @@
 
         bindReadButton(document.querySelector("#read-first"), () => {
             const round = firstSoundRounds[firstIndex % firstSoundRounds.length];
-            return `Vyber obrázek, jehož název začíná hláskou ${round.sound}. ${[round.correct,...round.other].map((item) => item.word).join(". ")}.`;
+            return `Najdi obrázek, jehož název začíná hláskou ${round.sound}. Možnosti jsou: ${firstDisplayedChoices.map((item) => item.word).join(". ")}.`;
         });
         bindReadButton(document.querySelector("#read-syllables"), () => {
             const item = syllableWords[syllableIndex % syllableWords.length];
@@ -442,13 +452,16 @@
         });
         bindReadButton(document.querySelector("#read-rhyme"), () => {
             const round = rhymeRounds[rhymeIndex % rhymeRounds.length];
-            return `Které slovo se rýmuje se slovem ${round.word}? ${round.options.join(". ")}.`;
+            return `Které slovo se rýmuje se slovem ${round.word}? Možnosti jsou: ${rhymeDisplayedChoices.map((item) => item.word).join(". ")}.`;
         });
         bindReadButton(document.querySelector("#read-pair"), () => {
             const pair = wordPairs[pairIndex % wordPairs.length];
             return `${pair.first}. ${pair.second}. Znějí slova stejně, nebo jinak?`;
         });
-        bindReadButton(document.querySelector("#read-repeat-prompt"), () => `Vybrala sis hlásku ${selectedSound}. Poslechni si slovo ${articulationWords[selectedSound][articulationIndex % articulationWords[selectedSound].length].word} a zkus ho zopakovat.`);
+        bindReadButton(document.querySelector("#read-repeat-prompt"), () => {
+            const word = articulationWords[selectedSound][articulationIndex % articulationWords[selectedSound].length].word;
+            return `Vybrané písmeno je ${selectedSound}. Slovo k procvičení je ${word}. Poslechni si ho a zkus ho zopakovat.`;
+        });
         bindReadButton(document.querySelector("#read-sentence"), () => `Vymysli větu, ve které použiješ slova ${sentenceRounds[sentenceIndex % sentenceRounds.length].pictures.map((item) => item.word).join(", ")}.`);
         document.querySelector("#play-repeat-word").addEventListener("click", (event) => speak(articulationWords[selectedSound][articulationIndex % articulationWords[selectedSound].length].word, event.currentTarget));
         document.querySelector("#first-next").addEventListener("click", () => { firstIndex += 1; showFirstQuestion(); });

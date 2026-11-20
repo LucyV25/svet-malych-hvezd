@@ -496,11 +496,14 @@
         }
 
         @media print {
+            @page { margin: 18mm 16mm; }
             body { background: #fff; }
             .topbar, .intro, .generator-card, .favorites-card, footer, .story-actions, .toast { display: none !important; }
             main { width: 100%; padding: 0; }
             .story-card { display: block !important; border: 0; box-shadow: none; }
+            .story-heading { margin-bottom: 24px; }
             .story-text { max-width: 650px; color: #222; }
+            .story-text p { orphans: 3; widows: 3; }
         }
     </style>
 </head>
@@ -647,7 +650,7 @@
                 </label>
                 <button class="secondary-button" id="save-story" type="button" aria-pressed="false">Uložit do oblíbených</button>
                 <button class="secondary-button" id="copy-story" type="button">Zkopírovat pohádku</button>
-                <button class="secondary-button" id="print-story" type="button">Vytisknout</button>
+                <button class="secondary-button" id="print-story" type="button">Stáhnout pohádku jako PDF</button>
                 <button class="secondary-button" id="new-story" type="button">Vymyslet jinou</button>
             </div>
             <p class="toast" id="story-status" role="status" aria-live="polite"></p>
@@ -1408,7 +1411,13 @@
             if ("speechSynthesis" in window) window.speechSynthesis.cancel();
         });
         document.querySelector("#new-story").addEventListener("click", renderStory);
-        document.querySelector("#print-story").addEventListener("click", () => window.print());
+        document.querySelector("#print-story").addEventListener("click", () => {
+            const originalTitle = document.title;
+            const safeTitle = storyTitle.textContent.trim().replace(/\s+/g, " ").replace(/[|]/g, "");
+            document.title = `${safeTitle || "Pohádka"} - Mise učení`;
+            window.addEventListener("afterprint", () => { document.title = originalTitle; }, { once: true });
+            window.print();
+        });
         document.querySelector("#copy-story").addEventListener("click", async () => {
             try {
                 await navigator.clipboard.writeText(currentStory);
