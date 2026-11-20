@@ -287,6 +287,14 @@
         .money-coin[aria-pressed="true"]::after { position:absolute; width:82px; height:4px; border-radius:4px; background:#c34242; content:""; transform:rotate(-43deg); }
         .money-total { margin:12px 0 0; color:var(--accent-dark); font-weight:750; text-align:center; }
         .money-status { min-height:24px; margin:12px 0 0; color:var(--accent-dark); font-weight:650; text-align:center; }
+        .match-target { display:flex; min-height:100px; flex-direction:column; align-items:center; justify-content:center; gap:4px; margin:0; color:var(--accent-dark); font-size:11px; font-weight:700; text-align:center; }
+        .match-target-number { display:grid; width:72px; height:72px; place-items:center; border:3px solid #d9c9e6; border-radius:50%; background:var(--lavender); color:var(--accent-dark); font-size:38px; font-weight:800; }
+        .match-picture-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+        .match-picture { position:relative; display:flex; min-height:100px; flex-wrap:wrap; align-content:center; align-items:center; justify-content:center; gap:3px; padding:9px 5px; overflow:hidden; border:1px solid var(--line); border-radius:12px; background:#fff; cursor:pointer; font-size:24px; }
+        .match-picture[aria-pressed="true"] { border-color:#d49b91; background:#fff4f1; }
+        .match-picture[aria-pressed="true"]::after { position:absolute; top:50%; left:-8%; width:116%; height:4px; border-radius:4px; background:#c34242; content:""; transform:rotate(-34deg); pointer-events:none; }
+        .match-picture.is-right { border-color:#63a67a; background:#edf8ef; }
+        .match-picture.is-wrong { border-color:#c87878; background:#fff1f1; }
         footer { padding: 0 20px 24px; color: #617482; font-size: 12px; text-align: center; }
         @media (max-width: 700px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
@@ -379,6 +387,23 @@
             </div>
             <p class="money-status" id="money-status" role="status" aria-live="polite"></p>
         </section>
+        <section class="math-card" aria-labelledby="match-title" style="margin-top: 20px;">
+            <h2 id="match-title">Najdi stejné množství</h2>
+            <p class="card-intro">Podívej se na číslo uprostřed a škrtni všechny skupiny, ve kterých je právě tolik obrázků.</p>
+            <div class="exercise-controls" style="margin-top:0;">
+                <button class="secondary-button" id="read-match-instructions" type="button">🔊 Přehrát zadání</button>
+                <button class="secondary-button" id="stop-match-speech" type="button" hidden>⏹ Zastavit</button>
+            </div>
+            <p class="toast" id="match-speech-status" role="status" aria-live="polite"></p>
+            <div class="match-picture-grid" id="match-picture-grid" role="group" aria-label="Skupiny obrázků kolem cílového čísla">
+                <div class="match-target"><span>Najdi počet</span><span class="match-target-number" id="match-target-number"></span></div>
+            </div>
+            <div class="exercise-controls">
+                <button class="submit-button" id="check-matches" type="button">Zkontrolovat</button>
+                <button class="secondary-button" id="new-matches" type="button" hidden>Další úloha</button>
+            </div>
+            <p class="money-status" id="match-status" role="status" aria-live="polite"></p>
+        </section>
     </main>
 
     <footer>Každý malý krok se počítá. Cvičte jen tak dlouho, jak je vám příjemné.</footer>
@@ -404,6 +429,14 @@
         const stopShopSpeechButton = document.querySelector("#stop-shop-speech");
         const buyToyButton = document.querySelector("#buy-toy");
         const nextPurchaseButton = document.querySelector("#next-purchase");
+        const matchTargetNumber = document.querySelector("#match-target-number");
+        const matchPictureGrid = document.querySelector("#match-picture-grid");
+        const matchTarget = matchTargetNumber.closest(".match-target");
+        const matchStatus = document.querySelector("#match-status");
+        const matchSpeechStatus = document.querySelector("#match-speech-status");
+        const stopMatchSpeechButton = document.querySelector("#stop-match-speech");
+        const checkMatchesButton = document.querySelector("#check-matches");
+        const newMatchesButton = document.querySelector("#new-matches");
         let generatedMathQuestions = [];
         let generatedNumberBonds = [];
         let maxNumber = 5;
@@ -412,6 +445,10 @@
         let shopRound = 0;
         let currentShopTask = null;
         let selectedCoinIndexes = new Set();
+        let currentMatchTarget = 0;
+        let matchingRound = 0;
+        let activeMathSpeechStatus = null;
+        let activeMathStopButton = null;
         const shopTasks = [
             { id:"kite", name:"Drak", symbol:"🪁", price:3, coins:[1,1,2] },
             { id:"ball", name:"Míč", symbol:"⚽", price:4, coins:[1,2,2,1] },
@@ -546,6 +583,99 @@
             stopNumberBondSpeechButton.hidden = true;
             shopSpeechStatus.textContent = updateStatus ? "Přehrávání bylo zastaveno." : "";
             numberBondSpeechStatus.textContent = "";
+        }
+
+        function renderMatchingRound() {
+            matchingRound += 1;
+            currentMatchTarget = randomInteger(2, 5);
+            matchTargetNumber.textContent = String(currentMatchTarget);
+            const counts = shuffled([currentMatchTarget, currentMatchTarget, currentMatchTarget, ...[1, 2, 3, 4, 5, 6].filter((count) => count !== currentMatchTarget)]);
+            const symbols = ["🍎", "🚗", "⭐", "🐟", "🌷", "⚽", "🐸", "🧸"];
+            const pictureButtons = counts.map((count, index) => {
+                const button = document.createElement("button");
+                button.className = "match-picture";
+                button.type = "button";
+                button.setAttribute("aria-label", `Skupina ${index + 1}: ${count} obrázků`);
+                button.setAttribute("aria-pressed", "false");
+                button.dataset.count = String(count);
+                const items = Array.from({ length: count }, () => {
+                    const item = document.createElement("span");
+                    item.setAttribute("aria-hidden", "true");
+                    item.textContent = symbols[index];
+                    return item;
+                });
+                button.append(...items);
+                button.addEventListener("click", () => {
+                    if (checkMatchesButton.hidden) return;
+                    const selected = button.getAttribute("aria-pressed") === "true";
+                    button.setAttribute("aria-pressed", String(!selected));
+                    button.classList.remove("is-right", "is-wrong");
+                    matchStatus.textContent = "";
+                });
+                return button;
+            });
+            matchTarget.remove();
+            matchPictureGrid.replaceChildren(...pictureButtons.slice(0, 4), matchTarget, ...pictureButtons.slice(4));
+            matchStatus.textContent = "Označ všechny skupiny, které mají tento počet.";
+            checkMatchesButton.hidden = false;
+            newMatchesButton.hidden = true;
+        }
+
+        function checkMatchingGroups() {
+            const buttons = [...matchPictureGrid.querySelectorAll("button")];
+            const correctGroups = buttons.filter((button) => Number(button.dataset.count) === currentMatchTarget);
+            const selectedGroups = buttons.filter((button) => button.getAttribute("aria-pressed") === "true");
+            const allCorrectSelected = selectedGroups.length === correctGroups.length
+                && selectedGroups.every((button) => Number(button.dataset.count) === currentMatchTarget);
+            buttons.forEach((button) => {
+                const selected = button.getAttribute("aria-pressed") === "true";
+                button.classList.toggle("is-right", selected && Number(button.dataset.count) === currentMatchTarget);
+                button.classList.toggle("is-wrong", selected && Number(button.dataset.count) !== currentMatchTarget);
+            });
+            if (!allCorrectSelected) {
+                matchStatus.textContent = "Něco nesedí nebo ještě chybí. Uprav výběr a zkus to znovu.";
+                return;
+            }
+            matchStatus.textContent = "Výborně! Našla jsi všechny skupiny se stejným počtem.";
+            checkMatchesButton.hidden = true;
+            newMatchesButton.hidden = false;
+            buttons.forEach((button) => { button.disabled = true; });
+            window.rewardPetCoin?.(`math-match-groups-${matchingRound}`);
+        }
+
+        function speakMathText(text, statusElement, stopButton) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                statusElement.textContent = "Tento prohlížeč nepodporuje čtení nahlas.";
+                return;
+            }
+            stopNumberBondSpeech(false);
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voice = window.speechSynthesis.getVoices().find((item) => item.lang?.toLowerCase().startsWith("cs"));
+            if (voice) utterance.voice = voice;
+            utterance.lang = "cs-CZ";
+            utterance.rate = 0.88;
+            activeMathUtterance = utterance;
+            activeMathSpeechStatus = statusElement;
+            activeMathStopButton = stopButton;
+            stopButton.hidden = false;
+            statusElement.textContent = "Přehrávám zadání.";
+            utterance.onend = () => {
+                if (activeMathUtterance !== utterance) return;
+                activeMathUtterance = null;
+                stopButton.hidden = true;
+                statusElement.textContent = "";
+                activeMathSpeechStatus = null;
+                activeMathStopButton = null;
+            };
+            utterance.onerror = (event) => {
+                if (event.error === "canceled" || event.error === "interrupted" || activeMathUtterance !== utterance) return;
+                activeMathUtterance = null;
+                stopButton.hidden = true;
+                statusElement.textContent = "Přehrávání se nepovedlo. Zkontroluj zvuk a hlasové nastavení zařízení.";
+                activeMathSpeechStatus = null;
+                activeMathStopButton = null;
+            };
+            window.speechSynthesis.speak(utterance);
         }
 
         function makeMathQuestion(type) {
@@ -707,43 +837,25 @@
         }
 
         function speakNumberBondText(text) {
-            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
-                numberBondSpeechStatus.textContent = "Tento prohlížeč nepodporuje čtení nahlas.";
-                return;
-            }
-            stopNumberBondSpeech(false);
-            const utterance = new SpeechSynthesisUtterance(text);
-            const voice = window.speechSynthesis.getVoices()
-                .find((item) => item.lang?.toLowerCase().startsWith("cs"));
-            if (voice) utterance.voice = voice;
-            utterance.lang = "cs-CZ";
-            utterance.rate = 0.88;
-            activeMathUtterance = utterance;
-            stopNumberBondSpeechButton.hidden = false;
-            utterance.onend = () => {
-                if (activeMathUtterance !== utterance) return;
-                activeMathUtterance = null;
-                stopNumberBondSpeechButton.hidden = true;
-                numberBondSpeechStatus.textContent = "";
-            };
-            utterance.onerror = (event) => {
-                if (event.error === "canceled" || event.error === "interrupted" || activeMathUtterance !== utterance) return;
-                activeMathUtterance = null;
-                stopNumberBondSpeechButton.hidden = true;
-                numberBondSpeechStatus.textContent = "Přehrávání se nepovedlo. Zkontroluj zvuk a hlasové nastavení zařízení.";
-            };
-            window.speechSynthesis.speak(utterance);
-            numberBondSpeechStatus.textContent = "Přehrávám zadání.";
+            speakMathText(text, numberBondSpeechStatus, stopNumberBondSpeechButton);
         }
 
         function stopNumberBondSpeech(updateStatus = true) {
             if ("speechSynthesis" in window) window.speechSynthesis.cancel();
             activeMathUtterance = null;
             activeShopUtterance = null;
+            const statusElement = activeMathSpeechStatus;
+            const stopButton = activeMathStopButton;
+            if (stopButton) stopButton.hidden = true;
+            activeMathSpeechStatus = null;
+            activeMathStopButton = null;
             stopNumberBondSpeechButton.hidden = true;
             stopShopSpeechButton.hidden = true;
+            stopMatchSpeechButton.hidden = true;
             shopSpeechStatus.textContent = "";
-            numberBondSpeechStatus.textContent = updateStatus ? "Přehrávání bylo zastaveno." : "";
+            if (statusElement) statusElement.textContent = updateStatus ? "Přehrávání bylo zastaveno." : "";
+            numberBondSpeechStatus.textContent = statusElement === numberBondSpeechStatus && updateStatus ? "Přehrávání bylo zastaveno." : "";
+            matchSpeechStatus.textContent = statusElement === matchSpeechStatus && updateStatus ? "Přehrávání bylo zastaveno." : "";
         }
 
         function checkNumberBondAnswers() {
@@ -828,7 +940,14 @@
         stopShopSpeechButton.addEventListener("click", () => stopShopSpeech());
         buyToyButton.addEventListener("click", buyToy);
         nextPurchaseButton.addEventListener("click", startShopRound);
+        document.querySelector("#read-match-instructions").addEventListener("click", () => {
+            speakMathText(`Uprostřed je číslo ${numberInCzech(currentMatchTarget)}. Škrtni všechny skupiny, ve kterých je právě ${numberInCzech(currentMatchTarget)} obrázků. Potom klepni na Zkontrolovat.`, matchSpeechStatus, stopMatchSpeechButton);
+        });
+        stopMatchSpeechButton.addEventListener("click", () => stopNumberBondSpeech());
+        checkMatchesButton.addEventListener("click", checkMatchingGroups);
+        newMatchesButton.addEventListener("click", renderMatchingRound);
         startShopRound();
+        renderMatchingRound();
         window.addEventListener("beforeunload", () => {
             if ("speechSynthesis" in window) window.speechSynthesis.cancel();
         });
