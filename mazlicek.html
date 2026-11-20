@@ -10,7 +10,7 @@
         :root { color-scheme:light; --ink:#352844; --muted:#756a80; --paper:#fffdfd; --accent:#8052b8; --deep:#62398f; --lav:#eee5f7; --line:#e9e0ed; --serif:Georgia,"Times New Roman",serif; }
         * { box-sizing:border-box; }
         body { margin:0; color:var(--ink); background:linear-gradient(135deg,#f8f2fb,#fff5fa 55%,#f0f7fc); font:15px/1.6 "Segoe UI",Arial,sans-serif; }
-        button,input { font:inherit; } button,a,input { -webkit-tap-highlight-color:transparent; }
+        button,input,select { font:inherit; } button,a,input { -webkit-tap-highlight-color:transparent; }
         button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #b99adb; outline-offset:3px; }
         .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; max-width:1050px; margin:auto; padding:19px 24px; }
         .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
@@ -26,6 +26,8 @@
         .pet-scene { position:relative; display:grid; min-height:245px; place-items:center; overflow:hidden; border-radius:16px; background:radial-gradient(ellipse at 50% 70%,#f9dfb1 0 28%,transparent 29%),linear-gradient(#e9f5fb,#fff4e5); }
         .pet { position:relative; font-size:clamp(95px,18vw,145px); line-height:1; filter:drop-shadow(0 9px 5px #78634b26); }
         .accessory { position:absolute; top:-.22em; right:-.12em; font-size:.36em; }
+        .scene-prop { position:absolute; bottom:13px; font-size:30px; }
+        .scene-prop.toy { left:16px; } .scene-prop.home { right:16px; }
         .pet-info h2 { margin-bottom:3px; font:500 27px var(--serif); }
         .name-row { display:flex; gap:7px; margin:12px 0; }
         .name-row input { min-width:0; flex:1; padding:9px 11px; border:1px solid var(--line); border-radius:9px; }
@@ -35,6 +37,9 @@
         .streak-pill { display:inline-flex; align-items:center; gap:6px; margin-left:6px; padding:6px 12px; border-radius:99px; background:#fff0e8; color:#8a452c; font-weight:750; }
         .mood { margin:10px 0 0; color:var(--deep); font-weight:650; }
         .word-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; margin:14px 0; }
+        .word-controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
+        .word-controls label,.shop-filter label { color:#49365b; font-size:13px; font-weight:700; }
+        .word-controls select,.shop-filter select { min-height:40px; padding:7px 10px; border:1px solid #d9c9e6; border-radius:9px; background:#fff; color:var(--ink); }
         .word { min-height:58px; border:1px solid var(--line); border-radius:11px; background:white; color:var(--ink); font:700 20px var(--serif); cursor:pointer; }
         .word.done { border-color:#8ebc96; background:#eff8ef; color:#347047; }
         .word:disabled { cursor:default; }
@@ -45,6 +50,7 @@
         .shop-item strong { font-size:13px; }
         .shop-item small { color:var(--muted); }
         .shop-item .button { width:100%; font-size:12px; }
+        .shop-filter { margin:12px 0; }
         .status { min-height:22px; margin:10px 0 0; color:var(--deep); font-size:13px; }
         footer { padding:0 18px 25px; color:var(--muted); font-size:12px; text-align:center; }
         @media(max-width:650px) { .pet-panel { grid-template-columns:1fr; gap:15px; } .pet-scene { min-height:205px; } .shop { grid-template-columns:repeat(2,minmax(0,1fr)); } .word-list { grid-template-columns:repeat(2,minmax(0,1fr)); } .panel { padding:17px; } }
@@ -56,33 +62,60 @@
     <main>
         <header class="intro"><p class="eyebrow">Čtení, které má tlapky</p><h1>Můj čtecí mazlíček</h1><p class="muted">Přečti pár slov a získej mince. Za mince můžeš svého kamaráda nakrmit nebo mu pořídit něco hezkého.</p></header>
         <section class="panel pet-panel" aria-labelledby="pet-name-heading">
-            <div class="pet-scene" aria-label="Kočička čeká na společné čtení"><div class="pet" aria-hidden="true">🐱<span class="accessory" id="worn-item"></span></div></div>
+            <div class="pet-scene" aria-label="Kočička čeká na společné čtení"><div class="pet" aria-hidden="true">🐱<span class="accessory" id="worn-item"></span></div><span class="scene-prop toy" id="toy-item" aria-hidden="true"></span><span class="scene-prop home" id="home-item" aria-hidden="true"></span></div>
             <div class="pet-info"><p class="eyebrow">Tvůj kamarád</p><h2 id="pet-name-heading">Mína</h2><form class="name-row" id="name-form"><label class="sr-only" for="pet-name">Jméno mazlíčka</label><input id="pet-name" maxlength="18" placeholder="Jméno mazlíčka"><button class="button" type="submit">Pojmenovat</button></form><span class="coin-pill" aria-label="Počet mincí">🪙 <span id="coins">0</span> mincí</span><span class="streak-pill" id="streak" aria-label="Série čtení">🔥 0 dní</span><p class="mood" id="pet-mood" role="status" aria-live="polite">Už se těší na společné čtení.</p><button class="button primary" id="feed" type="button">🥣 Koupit pamlsek · 6 mincí</button></div>
         </section>
-        <section class="panel" aria-labelledby="reading-title"><h2 id="reading-title">Dnešní čtecí chvilka</h2><p class="muted">Přečti slovo nahlas. Až ho přečteš, klepni na kartičku a přidej mince do kasičky. Série se počítá už od jednoho slovíčka za den.</p><div class="word-list" id="word-list"></div><div class="challenge-footer"><span class="coin-pill" id="earned-today">Dnešní odměna: 0 / 12 🪙</span><span class="coin-pill" id="practice-earned">Mince z cvičení dnes: 0 / 12</span><span class="muted">Nová sada slov přijde zítra.</span></div><p class="status" id="reading-status" role="status" aria-live="polite"></p></section>
-        <section class="panel" aria-labelledby="shop-title"><h2 id="shop-title">Obchůdek pro mazlíčka</h2><p class="muted">Vyber doplněk. Zakoupený doplněk můžeš kdykoliv vyměnit.</p><div class="shop" id="shop"></div><p class="status" id="shop-status" role="status" aria-live="polite"></p></section>
+        <section class="panel" aria-labelledby="reading-title"><h2 id="reading-title">Čtecí chvilka</h2><p class="muted">Vyber si sadu a přečti slova nahlas. Za prvních šest slov za den získáš mince, další si můžeš procvičit i potom. Série se počítá už od jednoho přečteného slova denně.</p><div class="word-controls"><label for="word-category">Procvičovat:</label><select id="word-category"><option value="short">Krátká slova</option><option value="school">Škola a kamarádi</option><option value="nature">Zvířata a příroda</option><option value="long">Delší slova</option></select></div><div class="word-list" id="word-list"></div><div class="challenge-footer"><span class="coin-pill" id="earned-today">Dnešní odměna: 0 / 12 🪙</span><span class="coin-pill" id="practice-earned">Mince z cvičení dnes: 0 / 12</span></div><p class="status" id="reading-status" role="status" aria-live="polite"></p></section>
+        <section class="panel" aria-labelledby="shop-title"><h2 id="shop-title">Obchůdek pro mazlíčka</h2><p class="muted">Vyber obleček, hračku nebo něco do pelíšku. Koupené věci můžeš kdykoliv měnit.</p><div class="shop-filter"><label for="shop-category">Prohlížet:</label> <select id="shop-category"><option value="wear">Oblečky a doplňky</option><option value="toy">Hračky</option><option value="home">Pelíšek a pokojíček</option></select></div><div class="shop" id="shop"></div><p class="status" id="shop-status" role="status" aria-live="polite"></p></section>
     </main>
     <footer>Minci získáš za přečtené slovo. Mazlíček na tebe počká, i když dnes nebudeš mít čas číst.</footer>
     <script>
         const STORAGE_KEY = "hvezdicka:reading-pet:v1";
-        const DAILY_WORDS = 6;
         const items = [
-            { id:"fish", name:"Rybí pamlsek", icon:"🐟", cost:6, kind:"food" },
             { id:"scarf", name:"Teplá šála", icon:"🧣", cost:10, kind:"wear" },
             { id:"crown", name:"Zlatá korunka", icon:"👑", cost:16, kind:"wear" },
             { id:"flower", name:"Květinová sponka", icon:"🌼", cost:12, kind:"wear" },
             { id:"glasses", name:"Kulaté brýle", icon:"🤓", cost:20, kind:"wear" },
-            { id:"star", name:"Hvězdná čepička", icon:"🌟", cost:24, kind:"wear" }
+            { id:"star", name:"Hvězdná čepička", icon:"🌟", cost:24, kind:"wear" },
+            { id:"bow", name:"Růžová mašle", icon:"🎀", cost:11, kind:"wear" },
+            { id:"cape", name:"Hrdinský plášť", icon:"🦸", cost:28, kind:"wear" },
+            { id:"ears", name:"Zaječí ouška", icon:"🐰", cost:18, kind:"wear" },
+            { id:"collar", name:"Duhový obojek", icon:"🌈", cost:15, kind:"wear" },
+            { id:"boots", name:"Barevné botičky", icon:"👢", cost:21, kind:"wear" },
+            { id:"yarn", name:"Klubíčko na hraní", icon:"🧶", cost:8, kind:"toy" },
+            { id:"feather", name:"Pírko na hraní", icon:"🪶", cost:10, kind:"toy" },
+            { id:"mouse", name:"Plyšová myška", icon:"🐭", cost:14, kind:"toy" },
+            { id:"bell", name:"Cinkací míček", icon:"🔔", cost:12, kind:"toy" },
+            { id:"ball", name:"Měkký míč", icon:"⚽", cost:16, kind:"toy" },
+            { id:"bed", name:"Měkký pelíšek", icon:"🛏️", cost:22, kind:"home" },
+            { id:"cushion", name:"Hvězdný polštářek", icon:"🌟", cost:16, kind:"home" },
+            { id:"blanket", name:"Teplá deka", icon:"🧺", cost:18, kind:"home" },
+            { id:"tree", name:"Kočičí strom", icon:"🌳", cost:32, kind:"home" },
+            { id:"tent", name:"Útulný stan", icon:"⛺", cost:26, kind:"home" }
         ];
-        const wordSets = [
+        const legacyWordSets = [
             ["máma","míč","les","pes","dům","kočka"],
             ["Ema","misa","sova","ruka","voda","les"],
             ["koza","malý","vlna","jaro","ryba","nůž"],
             ["auto","dárek","kámen","pták","strom","louka"]
         ];
+        const wordDecks = {
+            short:["máma","míč","les","pes","dům","kočka","sova","ruka","voda","nos","malý","Ema"],
+            school:["škola","třída","tužka","kniha","lavice","písmo","kamarád","přestávka","sešit","úkol","batoh","učitel"],
+            nature:["koza","sova","ryba","louka","strom","kámen","motýl","květina","potok","zahrada","ježek","mravenec"],
+            long:["dárek","procházka","písanka","malování","zvířátko","překvapení","kamarádství","dobrodružství","duha","čokoláda","hvězdička","pohádka"]
+        };
         const today = new Date().toLocaleDateString("sv-SE");
-        let state = { name:"Mína", coins:0, owned:[], worn:"", fed:false, day:"", done:[], streak:0, lastRead:"" };
+        let state = { name:"Mína", coins:0, owned:[], worn:"", equipped:{wear:"",toy:"",home:""}, wordCategory:"short", fed:false, day:"", done:[], streak:0, lastRead:"" };
         try { const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)); if(saved && typeof saved==="object") state={...state,...saved}; } catch { /* Hra může pokračovat i bez uložených dat. */ }
+        if (!Array.isArray(state.owned)) state.owned=[];
+        if (!Array.isArray(state.done)) state.done=[];
+        if (!wordDecks[state.wordCategory]) state.wordCategory="short";
+        if (!state.equipped || typeof state.equipped!=="object") state.equipped={wear:state.worn || "",toy:"",home:""};
+        if (state.done.some((entry)=>typeof entry==="number")) {
+            const legacyIndex=Math.floor(Date.parse(`${state.day || today}T00:00:00Z`)/86400000)%legacyWordSets.length;
+            state.done=state.done.map((entry)=>typeof entry==="number" ? legacyWordSets[legacyIndex]?.[entry] : entry).filter((entry)=>typeof entry==="string");
+        }
         const dayGap=(from,to)=>from ? Math.round((Date.parse(`${to}T00:00:00Z`)-Date.parse(`${from}T00:00:00Z`))/86400000) : Infinity;
         if(state.day!==today) { if(dayGap(state.lastRead,today)>1) state.streak=0; state.day=today; state.done=[]; state.fed=false; }
         const $ = (selector) => document.querySelector(selector);
@@ -92,23 +125,30 @@
             $("#pet-name").value=state.name || "Mína";
             $("#coins").textContent=state.coins;
             $("#streak").textContent=`🔥 ${state.streak} ${state.streak===1?"den":state.streak>=2&&state.streak<=4?"dny":"dní"}`;
-            const worn=items.find(item=>item.id===state.worn);
+            const worn=items.find(item=>item.id===state.equipped.wear);
+            const toy=items.find(item=>item.id===state.equipped.toy);
+            const home=items.find(item=>item.id===state.equipped.home);
             $("#worn-item").textContent=worn?.icon || "";
+            $("#toy-item").textContent=toy?.icon || "";
+            $("#home-item").textContent=home?.icon || "";
             $("#pet-mood").textContent=state.fed ? `${state.name} si pochutnala a spokojeně odpočívá.` : `Už se těší na společné čtení${state.name.endsWith("a")?" a pamlsek":""}.`;
-            const earned=state.done.length*2;
+            const earned=Math.min(state.done.length,6)*2;
             $("#earned-today").textContent=`Dnešní odměna: ${earned} / 12 🪙`;
             const practiceRewards=state.practiceRewards?.date===today && Array.isArray(state.practiceRewards.ids) ? state.practiceRewards.ids.length : 0;
             $("#practice-earned").textContent=`Mince z cvičení dnes: ${practiceRewards} / 12`;
             const wordList=$("#word-list"); wordList.replaceChildren();
-            const words=wordSets[Math.floor(Date.parse(`${today}T00:00:00Z`)/86400000)%wordSets.length];
-            words.forEach((word,index)=>{ const button=document.createElement("button"); button.type="button"; button.className=`word${state.done.includes(index)?" done":""}`; button.textContent=state.done.includes(index)?`✓ ${word}`:word; button.disabled=state.done.includes(index); button.setAttribute("aria-label",state.done.includes(index)?`${word} přečteno`:`Přečíst slovo ${word} a získat 2 mince`); button.addEventListener("click",()=>{ if(state.lastRead!==today){state.streak=dayGap(state.lastRead,today)===1?state.streak+1:1;state.lastRead=today;} state.done.push(index); state.coins+=2; save(); render(); $("#reading-status").textContent=`Skvěle! Za slovo „${word}“ máš 2 mince.`; }); wordList.append(button); });
+            const words=wordDecks[state.wordCategory];
+            words.forEach((word)=>{ const button=document.createElement("button"); const alreadyDone=state.done.includes(word); const canEarn=!alreadyDone && state.done.length<6; button.type="button"; button.className=`word${alreadyDone?" done":""}`; button.textContent=alreadyDone?`✓ ${word}`:word; button.disabled=alreadyDone; button.setAttribute("aria-label",alreadyDone?`${word} přečteno`:`Přečíst slovo ${word}${canEarn?" a získat 2 mince":""}`); button.addEventListener("click",()=>{ if(state.lastRead!==today){state.streak=dayGap(state.lastRead,today)===1?state.streak+1:1;state.lastRead=today;} state.done.push(word); if(canEarn)state.coins+=2; save(); render(); $("#reading-status").textContent=canEarn?`Skvěle! Za slovo „${word}“ máš 2 mince.`:`Výborně! Slovo „${word}“ sis procvičila. Dnešní mince už máš získané.`; }); wordList.append(button); });
             const shop=$("#shop"); shop.replaceChildren();
-            items.filter(item=>item.kind==="wear").forEach(item=>{ const card=document.createElement("article"); card.className="shop-item"; const icon=document.createElement("span"); icon.className="shop-icon"; icon.textContent=item.icon; icon.setAttribute("aria-hidden","true"); const title=document.createElement("strong"); title.textContent=item.name; const price=document.createElement("small"); price.textContent=state.owned.includes(item.id)?"Už patří tobě":`${item.cost} mincí`; const button=document.createElement("button"); button.type="button"; button.className="button"; const isWorn=state.worn===item.id; button.textContent=isWorn?"Nasazeno":state.owned.includes(item.id)?"Nasadit":"Koupit"; button.disabled=isWorn || (!state.owned.includes(item.id) && state.coins<item.cost); button.addEventListener("click",()=>{ if(state.owned.includes(item.id)) state.worn=item.id; else {state.coins-=item.cost;state.owned.push(item.id);state.worn=item.id;} save();render();$("#shop-status").textContent=`${item.name} je připravený pro ${state.name}.`; }); card.append(icon,title,price,button); shop.append(card); });
+            items.filter(item=>item.kind===$("#shop-category").value).forEach(item=>{ const card=document.createElement("article"); card.className="shop-item"; const icon=document.createElement("span"); icon.className="shop-icon"; icon.textContent=item.icon; icon.setAttribute("aria-hidden","true"); const title=document.createElement("strong"); title.textContent=item.name; const price=document.createElement("small"); price.textContent=state.owned.includes(item.id)?"Už patří tobě":`${item.cost} mincí`; const button=document.createElement("button"); button.type="button"; button.className="button"; const isEquipped=state.equipped[item.kind]===item.id; button.textContent=isEquipped?(item.kind==="wear"?"Nasazeno":"Umístěno"):state.owned.includes(item.id)?(item.kind==="wear"?"Nasadit":"Umístit"):"Koupit"; button.disabled=isEquipped || (!state.owned.includes(item.id) && state.coins<item.cost); button.addEventListener("click",()=>{ if(state.owned.includes(item.id)) state.equipped[item.kind]=item.id; else {state.coins-=item.cost;state.owned.push(item.id);state.equipped[item.kind]=item.id;} save();render();$("#shop-status").textContent=`${item.name} je připravený pro ${state.name}.`; }); card.append(icon,title,price,button); shop.append(card); });
             $("#feed").disabled=state.fed || state.coins<6;
             $("#feed").textContent=state.fed?"✅ Dnešní pamlsek sněden":"🥣 Koupit pamlsek · 6 mincí";
         }
         $("#name-form").addEventListener("submit",event=>{event.preventDefault();const name=$("#pet-name").value.trim();if(!name)return;state.name=name;save();render();$("#shop-status").textContent=`Těší mě, ${name}!`;});
         $("#feed").addEventListener("click",()=>{if(state.fed||state.coins<6)return;state.coins-=6;state.fed=true;save();render();});
+        $("#word-category").value=state.wordCategory;
+        $("#word-category").addEventListener("change",()=>{state.wordCategory=$("#word-category").value;save();render();$("#reading-status").textContent="Vybrala sis novou sadu slov. Můžeš pokračovat ve čtení.";});
+        $("#shop-category").addEventListener("change",render);
         window.addEventListener("storage",(event)=>{if(event.key!==storageKey || !event.newValue)return;try{Object.assign(state,JSON.parse(event.newValue));render();}catch{}});
         render();
     </script>
