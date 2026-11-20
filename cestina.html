@@ -768,6 +768,7 @@
                 <p>Věta obsahuje jen písmena, která už máš vybraná.</p>
                 <div class="generated-sentence" id="generated-sentence" aria-live="polite">Klikni na „Nová věta“.</div>
                 <div class="sentence-actions">
+                    <button class="secondary-button" id="read-sentence-instructions" type="button" aria-pressed="false">🔊 Přehrát zadání</button>
                     <button class="secondary-button" id="new-sentence" type="button">Nová věta</button>
                     <button class="secondary-button" id="read-sentence" type="button" aria-pressed="false" disabled>🔊 Přehrát větu</button>
                 </div>
@@ -905,6 +906,7 @@
         const nextYesNoButton = document.querySelector("#next-yes-no");
         const generatedSentence = document.querySelector("#generated-sentence");
         const newSentenceButton = document.querySelector("#new-sentence");
+        const readSentenceInstructionsButton = document.querySelector("#read-sentence-instructions");
         const readSentenceButton = document.querySelector("#read-sentence");
         const sentenceStatus = document.querySelector("#sentence-status");
         const caseMatchingLower = document.querySelector("#case-matching-lower");
@@ -1489,7 +1491,9 @@
         }
 
         function prepareSpeechText(text) {
-            return text.toLocaleLowerCase("cs-CZ");
+            const normalized = text.toLocaleLowerCase("cs-CZ");
+            // Samostatné „me“ může mobilní hlas zaměnit za anglické zájmeno.
+            return normalized === "me" ? "slabika me" : normalized;
         }
 
         function stopReadingAudio(updateStatus = true) {
@@ -1509,7 +1513,7 @@
             });
         }
 
-        function speakReadingText(text, token = null) {
+        function speakReadingText(text, token = null, onEnd = null) {
             if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
                 readingStatus.textContent = "Tento prohlížeč nepodporuje přehrávání řeči.";
                 return;
@@ -1533,7 +1537,11 @@
             utterance.lang = "cs-CZ";
             utterance.rate = Number(document.querySelector("#reading-rate").value);
             utterance.pitch = 1;
-            utterance.onend = () => clearActiveReadingToken();
+            utterance.onend = () => {
+                if (activeReadingToken !== token) return;
+                clearActiveReadingToken();
+                if (typeof onEnd === "function") onEnd();
+            };
             utterance.onerror = (event) => {
                 if (event.error === "canceled" || event.error === "interrupted") return;
                 clearActiveReadingToken();
@@ -1808,7 +1816,9 @@
             const spokenWord = formatWordForSelectedLetters(activeMissingLetterRound.word);
             missingLetterStatus.textContent = `Správně! Slovo je ${spokenWord}.`;
             recordExerciseSuccess(activeMissingLetterRound.word, Array.from(activeMissingLetterRound.word));
-            speakReadingText(`Správně. Slovo je ${spokenWord}.`, button);
+            speakReadingText(`Správně! Správné slovo je ${spokenWord}.`, button, () => {
+                startMissingLetterRound();
+            });
         }
 
         function generatePictureRound(canonicalWords) {
@@ -2181,6 +2191,9 @@
             readReadingItems([wordItems], readWordsButton, "Všechna krátká slova byla přehrána.");
         });
         newSentenceButton.addEventListener("click", generateSentence);
+        readSentenceInstructionsButton.addEventListener("click", () => {
+            speakReadingText("Stiskni Nová věta. Věta je složená jen z písmen, která už máš vybraná. Zkus si ji přečíst, nebo stiskni Přehrát větu.", readSentenceInstructionsButton);
+        });
         newCaseMatchingRoundButton.addEventListener("click", startCaseMatchingRound);
         readCaseMatchingInstructionsButton.addEventListener("click", () => {
             speakReadingText("Vyber slovo vlevo, které má velké jen první písmeno. Potom vpravo najdi stejné slovo napsané celé velkými písmeny. Například Míla patří k MÍLA.", readCaseMatchingInstructionsButton);

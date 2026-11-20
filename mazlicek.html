@@ -65,7 +65,7 @@
             <div class="pet-scene" aria-label="Kočička čeká na společné čtení"><div class="pet" aria-hidden="true">🐱<span class="accessory" id="worn-item"></span></div><span class="scene-prop toy" id="toy-item" aria-hidden="true"></span><span class="scene-prop home" id="home-item" aria-hidden="true"></span></div>
             <div class="pet-info"><p class="eyebrow">Tvůj kamarád</p><h2 id="pet-name-heading">Mína</h2><form class="name-row" id="name-form"><label class="sr-only" for="pet-name">Jméno mazlíčka</label><input id="pet-name" maxlength="18" placeholder="Jméno mazlíčka"><button class="button" type="submit">Pojmenovat</button></form><span class="coin-pill" aria-label="Počet mincí">🪙 <span id="coins">0</span> mincí</span><span class="streak-pill" id="streak" aria-label="Série čtení">🔥 0 dní</span><p class="mood" id="pet-mood" role="status" aria-live="polite">Už se těší na společné čtení.</p><button class="button primary" id="feed" type="button">🥣 Koupit pamlsek · 6 mincí</button></div>
         </section>
-        <section class="panel" aria-labelledby="reading-title"><h2 id="reading-title">Čtecí chvilka</h2><p class="muted">Vyber si sadu a přečti slova nahlas. Za prvních šest slov za den získáš mince, další si můžeš procvičit i potom. Série se počítá už od jednoho přečteného slova denně.</p><div class="word-controls"><label for="word-category">Procvičovat:</label><select id="word-category"><option value="short">Krátká slova</option><option value="school">Škola a kamarádi</option><option value="nature">Zvířata a příroda</option><option value="long">Delší slova</option></select></div><div class="word-list" id="word-list"></div><div class="challenge-footer"><span class="coin-pill" id="earned-today">Dnešní odměna: 0 / 12 🪙</span><span class="coin-pill" id="practice-earned">Mince z cvičení dnes: 0 / 12</span></div><p class="status" id="reading-status" role="status" aria-live="polite"></p></section>
+        <section class="panel" aria-labelledby="reading-title"><h2 id="reading-title">Čtecí chvilka</h2><p class="muted">Vyber si sadu a přečti slova nahlas. Za prvních šest slov za den získáš mince, další si můžeš procvičit i potom. Série se počítá už od jednoho přečteného slova denně.</p><div class="word-controls"><label for="word-category">Procvičovat:</label><select id="word-category"><option value="short">Krátká slova</option><option value="school">Škola a kamarádi</option><option value="nature">Zvířata a příroda</option><option value="long">Delší slova</option><option value="knownLetters">Jen slova z probraných písmen</option></select></div><p class="muted">Tato sada používá písmena vybraná v <a href="cestina.html">češtině</a>.</p><div class="word-list" id="word-list"></div><div class="challenge-footer"><span class="coin-pill" id="earned-today">Dnešní odměna: 0 / 12 🪙</span><span class="coin-pill" id="practice-earned">Mince z cvičení dnes: 0 / 12</span></div><p class="status" id="reading-status" role="status" aria-live="polite"></p></section>
         <section class="panel" aria-labelledby="shop-title"><h2 id="shop-title">Obchůdek pro mazlíčka</h2><p class="muted">Vyber obleček, hračku nebo něco do pelíšku. Koupené věci můžeš kdykoliv měnit.</p><div class="shop-filter"><label for="shop-category">Prohlížet:</label> <select id="shop-category"><option value="wear">Oblečky a doplňky</option><option value="toy">Hračky</option><option value="home">Pelíšek a pokojíček</option></select></div><div class="shop" id="shop"></div><p class="status" id="shop-status" role="status" aria-live="polite"></p></section>
     </main>
     <footer>Minci získáš za přečtené slovo. Mazlíček na tebe počká, i když dnes nebudeš mít čas číst.</footer>
@@ -105,6 +105,9 @@
             nature:["koza","sova","ryba","louka","strom","kámen","motýl","květina","potok","zahrada","ježek","mravenec"],
             long:["dárek","procházka","písanka","malování","zvířátko","překvapení","kamarádství","dobrodružství","duha","čokoláda","hvězdička","pohádka"]
         };
+        const czechWords = ["MÁMA","TÁTA","PES","LES","PUSA","MÁLO","LÉTO","MELE","MALÉ","TÉMA","JEL","TAM","SAMA","MÁM","JE","SE"];
+        const learnedLettersKey = "dobrouNocHvezdicko:learned-letters:v1";
+        const defaultLearnedLetters = ["A","Á","M","P","O","I","E","É","L","S","U","T","J"];
         const today = new Date().toLocaleDateString("sv-SE");
         let state = { name:"Mína", coins:0, owned:[], worn:"", equipped:{wear:"",toy:"",home:""}, wordCategory:"short", fed:false, day:"", done:[], streak:0, lastRead:"" };
         try { const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)); if(saved && typeof saved==="object") state={...state,...saved}; } catch { /* Hra může pokračovat i bez uložených dat. */ }
@@ -120,6 +123,16 @@
         if(state.day!==today) { if(dayGap(state.lastRead,today)>1) state.streak=0; state.day=today; state.done=[]; state.fed=false; }
         const $ = (selector) => document.querySelector(selector);
         function save() { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); } catch { /* Bez úložiště funguje hra do zavření stránky. */ } }
+        function getWordsFromLearnedLetters() {
+            let selected = defaultLearnedLetters;
+            try {
+                const saved = JSON.parse(localStorage.getItem(learnedLettersKey) || "null");
+                const savedSelection = Array.isArray(saved) ? saved : saved?.selected;
+                if (Array.isArray(savedSelection) && savedSelection.every((letter) => typeof letter === "string")) selected = savedSelection;
+            } catch { /* Použijeme výchozí sadu češtiny. */ }
+            const available = new Set(selected.map((letter) => letter.toLocaleUpperCase("cs-CZ")));
+            return czechWords.filter((word) => [...word.toLocaleUpperCase("cs-CZ")].every((letter) => available.has(letter)));
+        }
         function render() {
             $("#pet-name-heading").textContent=state.name || "Mína";
             $("#pet-name").value=state.name || "Mína";
@@ -137,7 +150,10 @@
             const practiceRewards=state.practiceRewards?.date===today && Array.isArray(state.practiceRewards.ids) ? state.practiceRewards.ids.length : 0;
             $("#practice-earned").textContent=`Mince z cvičení dnes: ${practiceRewards} / 12`;
             const wordList=$("#word-list"); wordList.replaceChildren();
-            const words=wordDecks[state.wordCategory];
+            const words=state.wordCategory==="knownLetters" ? getWordsFromLearnedLetters() : wordDecks[state.wordCategory];
+            if (!words.length) {
+                const empty=document.createElement("p"); empty.className="muted"; empty.textContent="Z vybraných písmen zatím nejde složit žádné slovo. Uprav výběr písmen v češtině."; wordList.append(empty);
+            }
             words.forEach((word)=>{ const button=document.createElement("button"); const alreadyDone=state.done.includes(word); const canEarn=!alreadyDone && state.done.length<6; button.type="button"; button.className=`word${alreadyDone?" done":""}`; button.textContent=alreadyDone?`✓ ${word}`:word; button.disabled=alreadyDone; button.setAttribute("aria-label",alreadyDone?`${word} přečteno`:`Přečíst slovo ${word}${canEarn?" a získat 2 mince":""}`); button.addEventListener("click",()=>{ if(state.lastRead!==today){state.streak=dayGap(state.lastRead,today)===1?state.streak+1:1;state.lastRead=today;} state.done.push(word); if(canEarn)state.coins+=2; save(); render(); $("#reading-status").textContent=canEarn?`Skvěle! Za slovo „${word}“ máš 2 mince.`:`Výborně! Slovo „${word}“ sis procvičila. Dnešní mince už máš získané.`; }); wordList.append(button); });
             const shop=$("#shop"); shop.replaceChildren();
             items.filter(item=>item.kind===$("#shop-category").value).forEach(item=>{ const card=document.createElement("article"); card.className="shop-item"; const icon=document.createElement("span"); icon.className="shop-icon"; icon.textContent=item.icon; icon.setAttribute("aria-hidden","true"); const title=document.createElement("strong"); title.textContent=item.name; const price=document.createElement("small"); price.textContent=state.owned.includes(item.id)?"Už patří tobě":`${item.cost} mincí`; const button=document.createElement("button"); button.type="button"; button.className="button"; const isEquipped=state.equipped[item.kind]===item.id; button.textContent=isEquipped?(item.kind==="wear"?"Nasazeno":"Umístěno"):state.owned.includes(item.id)?(item.kind==="wear"?"Nasadit":"Umístit"):"Koupit"; button.disabled=isEquipped || (!state.owned.includes(item.id) && state.coins<item.cost); button.addEventListener("click",()=>{ if(state.owned.includes(item.id)) state.equipped[item.kind]=item.id; else {state.coins-=item.cost;state.owned.push(item.id);state.equipped[item.kind]=item.id;} save();render();$("#shop-status").textContent=`${item.name} je připravený pro ${state.name}.`; }); card.append(icon,title,price,button); shop.append(card); });
@@ -148,6 +164,7 @@
         $("#feed").addEventListener("click",()=>{if(state.fed||state.coins<6)return;state.coins-=6;state.fed=true;save();render();});
         $("#word-category").value=state.wordCategory;
         $("#word-category").addEventListener("change",()=>{state.wordCategory=$("#word-category").value;save();render();$("#reading-status").textContent="Vybrala sis novou sadu slov. Můžeš pokračovat ve čtení.";});
+        window.addEventListener("storage",(event)=>{if(event.key===learnedLettersKey && state.wordCategory==="knownLetters")render();});
         $("#shop-category").addEventListener("change",render);
         window.addEventListener("storage",(event)=>{if(event.key!==storageKey || !event.newValue)return;try{Object.assign(state,JSON.parse(event.newValue));render();}catch{}});
         render();
