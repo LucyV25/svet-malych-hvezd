@@ -82,8 +82,11 @@
             <a class="top-link" href="anglictina.html">Angličtina</a>
             <a class="top-link" href="prvouka.html">Prvouka</a>
             <a class="top-link" href="logopedie.html" aria-current="page">Logopedie</a>
+            <a class="top-link" href="minecraft.html">Minecraft</a>
             <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="moje-ucivo.html">Moje učivo</a>
             <a class="top-link" href="cteni.html">Čtení</a>
+            <a class="top-link" href="mazlicek.html">Mazlíček</a>
         </nav>
     </header>
     <main>
@@ -244,6 +247,31 @@
             utterance.onend = () => { if (activeUtterance === utterance) stopReading(); };
             utterance.onerror = () => { if (activeUtterance === utterance) stopReading(); };
             window.speechSynthesis.speak(utterance);
+        }
+
+        function speakSequence(parts, button) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+            stopReading();
+            activeReadButton = button;
+            if (button) button.textContent = "⏹ Zastavit";
+            const voice = window.speechSynthesis.getVoices().find((item) => item.lang?.toLowerCase().startsWith("cs"));
+            let index = 0;
+            const speakNext = () => {
+                if (index >= parts.length) { stopReading(); return; }
+                const part = parts[index++];
+                const utterance = new SpeechSynthesisUtterance(part.text);
+                if (voice) utterance.voice = voice;
+                utterance.lang = "cs-CZ";
+                utterance.rate = part.rate ?? 0.78;
+                utterance.onend = () => {
+                    if (activeReadButton !== button) return;
+                    window.setTimeout(speakNext, part.pause ?? 450);
+                };
+                utterance.onerror = () => { if (activeReadButton === button) stopReading(); };
+                activeUtterance = utterance;
+                window.speechSynthesis.speak(utterance);
+            };
+            speakNext();
         }
 
         function bindReadButton(button, getText) {
@@ -442,9 +470,16 @@
             document.querySelector("#show-sentence-example").textContent = "Ukázat příklad věty";
         }
 
-        bindReadButton(document.querySelector("#read-first"), () => {
+        const readFirstButton = document.querySelector("#read-first");
+        readFirstButton.dataset.label = readFirstButton.textContent;
+        readFirstButton.addEventListener("click", () => {
+            if (activeReadButton === readFirstButton && activeUtterance) { stopReading(); return; }
             const round = firstSoundRounds[firstIndex % firstSoundRounds.length];
-            return `Najdi obrázek, jehož název začíná hláskou ${round.sound}. Možnosti jsou: ${firstDisplayedChoices.map((item) => item.word).join(". ")}.`;
+            speakSequence([
+                { text:"Najdi obrázek, který začíná tímto písmenem.", rate:0.78, pause:650 },
+                { text:`Písmeno: ${round.sound}.`, rate:0.62, pause:750 },
+                ...firstDisplayedChoices.map((item) => ({ text:item.word, rate:0.72, pause:500 }))
+            ], readFirstButton);
         });
         bindReadButton(document.querySelector("#read-syllables"), () => {
             const item = syllableWords[syllableIndex % syllableWords.length];

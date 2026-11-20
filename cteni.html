@@ -15,6 +15,7 @@
         .topbar { display:flex; align-items:center; justify-content:space-between; gap:20px; max-width:1160px; margin:auto; padding:20px 30px; }
         .brand { display:flex; align-items:center; gap:10px; color:var(--ink); font:700 19px var(--serif); text-decoration:none; }
         .brand-mark { display:grid; width:36px; height:36px; place-items:center; border-radius:50%; background:var(--lav); font:19px sans-serif; }
+        .topbar-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 14px; }
         .top-link { color:var(--deep); font-size:13px; font-weight:650; text-decoration:none; }
         main { width:min(100% - 32px,900px); margin:auto; padding:28px 0 64px; }
         .heading { max-width:650px; margin:0 auto 24px; text-align:center; }
@@ -71,14 +72,25 @@
         footer { padding:0 20px 25px; color:#617482; font-size:12px; text-align:center; }
         @media(max-width:650px) { .topbar { padding:15px 18px; } .setup-grid,.story-list { grid-template-columns:1fr; } .letters { grid-template-columns:repeat(7,minmax(30px,1fr)); } .panel { padding:18px; } .reader-head { display:block; } .reader-tools { margin:10px 0; } .answers { grid-template-columns:1fr; } }
         @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
-    </style>
+            @media(max-width:760px) { .topbar { flex-direction:column; } }
+</style>
 </head>
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html"><span class="brand-mark" aria-hidden="true">🧭</span><span>Mise učení</span></a>
-        <a class="top-link" href="mazlicek.html">🐱 Mazlíček</a>
-        <a class="top-link" href="prvouka.html">Prvouka</a>
-        <a class="top-link" href="rozcestnik.html">← Zpět do rozcestníku</a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="prvouka.html">Prvouka</a>
+            <a class="top-link" href="logopedie.html">Logopedie</a>
+            <a class="top-link" href="minecraft.html">Minecraft</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="moje-ucivo.html">Moje učivo</a>
+            <a class="top-link" href="cteni.html" aria-current="page">Čtení</a>
+            <a class="top-link" href="mazlicek.html">Mazlíček</a>
+        </nav>
     </header>
     <main>
         <header class="heading">
