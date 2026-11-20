@@ -61,8 +61,19 @@
         .category-bucket:hover:not(:disabled) { background:var(--soft); }
         .category-bucket:disabled { cursor:default; opacity:.75; }
         .category-status { min-height:26px; margin:12px 0 0; color:var(--deep); font-weight:650; text-align:center; }
+        .activity-section { margin-top:36px; }
+        .activity-heading { margin-bottom:18px; text-align:center; }
+        .activity-heading h2 { margin-bottom:6px; font:600 clamp(24px,4vw,32px)/1.2 Georgia,"Times New Roman",serif; }
+        .activity-heading p:last-child { color:var(--muted); }
+        .sequence-options { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+        .sequence-option { min-height:72px; padding:8px; border:1px solid var(--line); border-radius:14px; background:#fff; color:var(--deep); cursor:pointer; font-weight:750; }
+        .sequence-option:disabled { background:var(--soft); cursor:default; }
+        .memory-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+        .memory-card { min-height:84px; border:1px solid var(--line); border-radius:14px; background:var(--soft); color:var(--deep); cursor:pointer; font-size:32px; font-weight:750; }
+        .memory-card.is-open,.memory-card.is-matched { background:#fff; }
+        .memory-card.is-matched { border-color:#63a67a; }
         footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
-        @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets,.sequence-options { grid-template-columns:repeat(2,minmax(0,1fr)); } .memory-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
     </style>
 </head>
 <body>
@@ -84,8 +95,10 @@
         <header class="page-heading">
             <p class="eyebrow">Poznáváme svět kolem sebe</p>
             <h1>Prvouka</h1>
-            <p>Vyber si téma, poslechni si otázku a klepni na správnou odpověď.</p>
+            <p>Vyber si téma na procvičování, nebo si zahraj některou ze samostatných her.</p>
         </header>
+        <section aria-labelledby="practice-title">
+        <div class="activity-heading"><p class="eyebrow">Otázky a odpovědi</p><h2 id="practice-title">Procvičování témat</h2><p>Vyber téma, poslechni si otázku a klepni na správnou odpověď.</p></div>
         <div class="topic-picker" id="topic-picker" role="group" aria-label="Vyber téma prvouky"></div>
         <section class="quiz-card" aria-labelledby="question-title">
             <div class="quiz-heading">
@@ -98,9 +111,11 @@
             <p class="quiz-progress" id="quiz-progress" aria-live="polite">Správné odpovědi: 0</p>
             <div class="quiz-actions"><button class="action-button primary" id="next-question" type="button">Další otázka</button></div>
         </section>
+        </section>
+        <section class="activity-section" aria-labelledby="activities-title">
+        <div class="activity-heading"><p class="eyebrow">Samostatné hry</p><h2 id="activities-title">Hry a třídění</h2><p>Každou hru můžeš spustit a procvičovat zvlášť.</p></div>
         <section class="sorting-card" aria-labelledby="sorting-title">
-            <p class="eyebrow">Hra na třídění</p>
-            <h2 id="sorting-title">Co patří ke kterému období?</h2>
+            <div class="quiz-heading"><div><p class="eyebrow">Roční období</p><h2 id="sorting-title">Co patří ke kterému období?</h2></div><button class="action-button" id="read-season-sort" type="button">🔊 Přečíst zadání</button></div>
             <p class="sorting-intro">Podívej se na obrázek a vyber roční období, ke kterému věc nejvíc patří.</p>
             <div class="sorting-item" id="season-item-symbol" aria-hidden="true"></div>
             <div class="sorting-item-label" id="season-item-label"></div>
@@ -110,8 +125,7 @@
             <div class="quiz-actions"><button class="action-button primary" id="next-season-item" type="button" hidden>Další věc</button><button class="action-button" id="restart-season-sort" type="button">Začít znovu</button></div>
         </section>
         <section class="category-card" aria-labelledby="category-title">
-            <p class="eyebrow">Hra na třídění</p>
-            <h2 id="category-title">Kam to patří?</h2>
+            <div class="quiz-heading"><div><p class="eyebrow">Skupiny věcí</p><h2 id="category-title">Kam to patří?</h2></div><button class="action-button" id="read-category-sort" type="button">🔊 Přečíst zadání</button></div>
             <p class="sorting-intro">Každá věc patří do jedné skupiny. Vyber, kam ji zařadíš.</p>
             <div class="category-item" id="category-item-symbol" aria-hidden="true"></div>
             <div class="category-item-label" id="category-item-label"></div>
@@ -119,6 +133,22 @@
             <p class="category-status" id="category-status" role="status" aria-live="polite"></p>
             <p class="quiz-progress" id="category-progress" aria-live="polite"></p>
             <div class="quiz-actions"><button class="action-button primary" id="next-category-item" type="button" hidden>Další věc</button><button class="action-button" id="restart-category-sort" type="button">Začít znovu</button></div>
+        </section>
+        <section class="sorting-card" aria-labelledby="sequence-title">
+            <div class="quiz-heading"><div><p class="eyebrow">Roční období</p><h2 id="sequence-title">Seřaď období za sebou</h2></div><button class="action-button" id="read-sequence" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro">Klepni na období v pořadí, v jakém během roku přicházejí. Začni jarem.</p>
+            <div class="sequence-options" id="sequence-options" role="group" aria-label="Vyber roční období v pořadí"></div>
+            <p class="season-status" id="sequence-status" role="status" aria-live="polite"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="restart-sequence" type="button">Zkusit znovu</button></div>
+        </section>
+        <section class="category-card" aria-labelledby="memory-title">
+            <div class="quiz-heading"><div><p class="eyebrow">Obrázkové pexeso</p><h2 id="memory-title">Najdi stejné obrázky</h2></div><button class="action-button" id="read-memory" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro">Otoč vždy dvě kartičky a hledej stejné obrázky. Vyber si téma pexesa.</p>
+            <div class="topic-picker" id="memory-topic-picker" role="group" aria-label="Téma pexesa"></div>
+            <div class="memory-grid" id="memory-grid" role="group" aria-label="Kartičky pexesa"></div>
+            <p class="category-status" id="memory-status" role="status" aria-live="polite"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="restart-memory" type="button">Zamíchat kartičky</button></div>
+        </section>
         </section>
     </main>
     <footer>Každá správná odpověď přidá minci tvému mazlíčkovi.</footer>
@@ -162,6 +192,20 @@
                 { id:"aunt", prompt:"Jak říkáme sestře maminky nebo tatínka?", symbol:"👩", choices:["Teta","Babička","Dcera"], correct:0, success:"Sestře maminky nebo tatínka říkáme teta." },
                 { id:"uncle", prompt:"Jak říkáme bratrovi maminky nebo tatínka?", symbol:"👨", choices:["Strýc","Dědeček","Syn"], correct:0, success:"Bratrovi maminky nebo tatínka říkáme strýc." },
                 { id:"sibling", prompt:"Kdo je tvoje sestra nebo bratr?", symbol:"🧒", choices:["Sourozenec","Soused","Učitel"], correct:0, success:"Sestra nebo bratr je sourozenec." }
+            ]},
+            { id:"jobs", title:"Povolání", icon:"👩‍🍳", questions:[
+                { id:"baker", prompt:"Kdo peče chleba a rohlíky?", symbol:"🥖", choices:["Pekař nebo pekařka","Hasič nebo hasička","Zahradník nebo zahradnice"], correct:0, success:"Chleba a rohlíky peče pekař nebo pekařka." },
+                { id:"firefighter", prompt:"Kdo pomáhá při požáru?", symbol:"🚒", choices:["Hasič nebo hasička","Kuchař nebo kuchařka","Knihovník nebo knihovnice"], correct:0, success:"Při požáru pomáhá hasič nebo hasička." },
+                { id:"doctor", prompt:"Kdo nás vyšetří, když jsme nemocní?", symbol:"🩺", choices:["Lékař nebo lékařka","Pekař nebo pekařka","Řidič nebo řidička"], correct:0, success:"Když jsme nemocní, pomůže lékař nebo lékařka." },
+                { id:"farmer", prompt:"Kdo pěstuje na poli obilí?", symbol:"🚜", choices:["Zemědělec nebo zemědělkyně","Zubař nebo zubařka","Pošťák nebo pošťačka"], correct:0, success:"Obilí pěstuje zemědělec nebo zemědělkyně." },
+                { id:"librarian", prompt:"Kdo půjčuje knížky v knihovně?", symbol:"📚", choices:["Knihovník nebo knihovnice","Hasič nebo hasička","Kadeřník nebo kadeřnice"], correct:0, success:"Knížky v knihovně půjčuje knihovník nebo knihovnice." }
+            ]},
+            { id:"traffic-signs", title:"Dopravní značky", icon:"🚸", questions:[
+                { id:"stop", prompt:"Co nám přikazuje značka STOP?", symbol:"🛑", choices:["Zastavit","Zrychlit","Zatroubit"], correct:0, success:"U značky STOP musíme zastavit." },
+                { id:"no-entry", prompt:"Co znamená červená značka s bílým pruhem?", symbol:"⛔", choices:["Zákaz vjezdu","Přechod pro chodce","Parkoviště"], correct:0, success:"Červená značka s bílým pruhem znamená zákaz vjezdu." },
+                { id:"children", prompt:"Na co upozorňuje značka s dětmi?", symbol:"🚸", choices:["Na místo, kde mohou přecházet děti","Na blízkou nemocnici","Na parkoviště"], correct:0, success:"Upozorňuje na místo, kde mohou přecházet děti." },
+                { id:"give-way", prompt:"Co uděláme u značky Dej přednost v jízdě?", symbol:"🔻", choices:["Dáme přednost vozidlům na hlavní silnici","Vždy zaparkujeme","Zastavíme u každého domu"], correct:0, success:"Dáme přednost vozidlům, která jedou po hlavní silnici." },
+                { id:"no-cycling", prompt:"Co zakazuje značka se symbolem kola v červeném kruhu?", symbol:"🚳", choices:["Vjezd jízdním kolům","Jízdu autobusu","Chůzi po chodníku"], correct:0, success:"Tato značka zakazuje vjezd jízdním kolům." }
             ]},
             { id:"safety", title:"Bezpečně na cestě", icon:"🚦", questions:[
                 { id:"green", prompt:"Na jakou barvu semaforu můžeme přejít?", symbol:"🚦", choices:["Na zelenou","Na červenou","Na modrou"], correct:0, success:"Přecházíme na zelenou, když je cesta volná." },
@@ -218,6 +262,11 @@
             { id:"ruler", label:"Pravítko", symbol:"📏", category:"school" },
             { id:"scissors", label:"Nůžky", symbol:"✂️", category:"school" }
         ];
+        const memoryTopics = {
+            seasons: { title:"Roční období", pairs:[{id:"spring",name:"Jaro",symbol:"🌷"},{id:"summer",name:"Léto",symbol:"☀️"},{id:"autumn",name:"Podzim",symbol:"🍂"},{id:"winter",name:"Zima",symbol:"❄️"},{id:"rain",name:"Déšť",symbol:"🌧️"},{id:"rainbow",name:"Duha",symbol:"🌈"}] },
+            jobs: { title:"Povolání", pairs:[{id:"doctor",name:"Lékař",symbol:"🩺"},{id:"baker",name:"Pekař",symbol:"🥖"},{id:"farmer",name:"Zemědělec",symbol:"🚜"},{id:"firefighter",name:"Hasič",symbol:"🚒"},{id:"teacher",name:"Učitel",symbol:"🍎"},{id:"builder",name:"Stavitel",symbol:"🧱"}] },
+            signs: { title:"Dopravní značky", pairs:[{id:"stop",name:"Stop",symbol:"🛑"},{id:"no-entry",name:"Zákaz vjezdu",symbol:"⛔"},{id:"children",name:"Pozor, děti",symbol:"🚸"},{id:"give-way",name:"Dej přednost",symbol:"🔻"},{id:"no-cycling",name:"Zákaz vjezdu kol",symbol:"🚳"},{id:"traffic-light",name:"Semafor",symbol:"🚦"}] }
+        };
 
         function stopQuestionSpeech() {
             if ("speechSynthesis" in window) window.speechSynthesis.cancel();
@@ -232,6 +281,23 @@
             stopQuestionSpeech();
             const choices = activeChoices.map((choice) => choice.label).join(". ");
             const utterance = new SpeechSynthesisUtterance(`${activeQuestion.prompt} Možnosti: ${choices}.`);
+            const voice = window.speechSynthesis.getVoices().find((item) => item.lang.toLowerCase().startsWith("cs"));
+            if (voice) utterance.voice = voice;
+            utterance.lang = "cs-CZ";
+            utterance.rate = 0.88;
+            activeUtterance = utterance;
+            utterance.onend = () => { if (activeUtterance === utterance) activeUtterance = null; };
+            utterance.onerror = () => { if (activeUtterance === utterance) activeUtterance = null; };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakCzech(text, statusElement) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                if (statusElement) statusElement.textContent = "Tento prohlížeč neumí přečíst zadání nahlas.";
+                return;
+            }
+            stopQuestionSpeech();
+            const utterance = new SpeechSynthesisUtterance(text);
             const voice = window.speechSynthesis.getVoices().find((item) => item.lang.toLowerCase().startsWith("cs"));
             if (voice) utterance.voice = voice;
             utterance.lang = "cs-CZ";
@@ -410,6 +476,144 @@
             categoryProgress.textContent = `Správně roztříděno: ${categoryIndex} z ${categoryDeck.length}`;
         }
 
+        let sequenceIndex = 0;
+        let sequenceAttempt = [];
+        const seasonSequence = [
+            { id:"spring", label:"Jaro", symbol:"🌷" },
+            { id:"summer", label:"Léto", symbol:"☀️" },
+            { id:"autumn", label:"Podzim", symbol:"🍂" },
+            { id:"winter", label:"Zima", symbol:"❄️" }
+        ];
+        const sequenceOptions = document.querySelector("#sequence-options");
+        const sequenceStatus = document.querySelector("#sequence-status");
+
+        function startSeasonSequence() {
+            sequenceIndex = 0;
+            sequenceAttempt = shuffled(seasonSequence);
+            sequenceOptions.replaceChildren(...sequenceAttempt.map((season) => {
+                const button = document.createElement("button");
+                button.className = "sequence-option";
+                button.type = "button";
+                button.textContent = `${season.symbol} ${season.label}`;
+                button.addEventListener("click", () => chooseSeasonSequence(season, button));
+                return button;
+            }));
+            sequenceStatus.textContent = "Které období je první? Začni jarem.";
+        }
+
+        function chooseSeasonSequence(season, button) {
+            if (button.disabled || sequenceIndex >= seasonSequence.length) return;
+            if (season.id !== seasonSequence[sequenceIndex].id) {
+                sequenceStatus.textContent = "Tohle období přijde později. Začni znovu jarem.";
+                sequenceIndex = 0;
+                sequenceOptions.querySelectorAll("button").forEach((option) => { option.disabled = false; });
+                return;
+            }
+            button.disabled = true;
+            sequenceIndex += 1;
+            if (sequenceIndex === seasonSequence.length) {
+                sequenceStatus.textContent = "Správně! Jaro, léto, podzim, zima. Rok se opakuje pořád dokola.";
+                window.rewardPetCoin?.("prvouka-seasons-order");
+                return;
+            }
+            sequenceStatus.textContent = `Správně! Co přijde po období ${season.label.toLowerCase()}?`;
+        }
+
+        let activeMemoryTopic = "seasons";
+        let memoryDeck = [];
+        let memoryFirst = null;
+        let memorySecond = null;
+        let memoryLocked = false;
+        let memoryMatches = 0;
+        let memoryTurn = 0;
+        let memoryBoardVersion = 0;
+        const memoryTopicPicker = document.querySelector("#memory-topic-picker");
+        const memoryGrid = document.querySelector("#memory-grid");
+        const memoryStatus = document.querySelector("#memory-status");
+
+        function renderMemoryTopics() {
+            memoryTopicPicker.replaceChildren(...Object.entries(memoryTopics).map(([id, topic]) => {
+                const button = document.createElement("button");
+                button.className = "topic-button";
+                button.type = "button";
+                button.textContent = topic.title;
+                button.setAttribute("aria-pressed", String(id === activeMemoryTopic));
+                button.addEventListener("click", () => {
+                    activeMemoryTopic = id;
+                    renderMemoryTopics();
+                    startMemoryGame();
+                });
+                return button;
+            }));
+        }
+
+        function startMemoryGame() {
+            memoryBoardVersion += 1;
+            memoryFirst = null;
+            memorySecond = null;
+            memoryLocked = false;
+            memoryMatches = 0;
+            memoryTurn = 0;
+            const topic = memoryTopics[activeMemoryTopic];
+            memoryDeck = shuffled(topic.pairs.flatMap((pair) => [pair, pair]));
+            memoryGrid.replaceChildren(...memoryDeck.map((pair, index) => {
+                const button = document.createElement("button");
+                button.className = "memory-card";
+                button.type = "button";
+                button.textContent = "❔";
+                button.setAttribute("aria-label", `Kartička ${index + 1}, zakrytá`);
+                button.dataset.pair = pair.id;
+                button.addEventListener("click", () => flipMemoryCard(button, pair, index));
+                return button;
+            }));
+            memoryStatus.textContent = `Najdi ${topic.pairs.length} dvojic obrázků.`;
+        }
+
+        function flipMemoryCard(button, pair, index) {
+            if (memoryLocked || button.disabled || button === memoryFirst) return;
+            button.textContent = pair.symbol;
+            button.classList.add("is-open");
+            button.setAttribute("aria-label", `${pair.name}, kartička ${index + 1}`);
+            if (!memoryFirst) {
+                memoryFirst = button;
+                return;
+            }
+            memorySecond = button;
+            memoryTurn += 1;
+            if (memoryFirst.dataset.pair === memorySecond.dataset.pair) {
+                const matchedPair = pair;
+                [memoryFirst, memorySecond].forEach((card) => {
+                    card.classList.remove("is-open");
+                    card.classList.add("is-matched");
+                    card.disabled = true;
+                });
+                memoryFirst = null;
+                memorySecond = null;
+                memoryMatches += 1;
+                memoryStatus.textContent = `Našla jsi dvojici ${matchedPair.name}. Počet nalezených dvojic: ${memoryMatches} z ${memoryTopics[activeMemoryTopic].pairs.length}.`;
+                window.rewardPetCoin?.(`prvouka-memory-${activeMemoryTopic}-${matchedPair.id}`);
+                if (memoryMatches === memoryTopics[activeMemoryTopic].pairs.length) {
+                    memoryStatus.textContent = `Výborně! Našla jsi všechny dvojice na ${memoryTurn} pokusů.`;
+                }
+                return;
+            }
+            memoryLocked = true;
+            memoryStatus.textContent = "Obrázky nejsou stejné. Zkus najít další dvojici.";
+            const boardVersion = memoryBoardVersion;
+            window.setTimeout(() => {
+                if (boardVersion !== memoryBoardVersion) return;
+                [memoryFirst, memorySecond].forEach((card) => {
+                    card.textContent = "❔";
+                    card.classList.remove("is-open");
+                    const cardIndex = [...memoryGrid.children].indexOf(card);
+                    card.setAttribute("aria-label", `Kartička ${cardIndex + 1}, zakrytá`);
+                });
+                memoryFirst = null;
+                memorySecond = null;
+                memoryLocked = false;
+            }, 850);
+        }
+
         function checkAnswer(button) {
             if (answered) return;
             if (button.dataset.correct === "true") {
@@ -429,14 +633,23 @@
 
         document.querySelector("#read-question").addEventListener("click", speakQuestion);
         document.querySelector("#next-question").addEventListener("click", showQuestion);
+        document.querySelector("#read-season-sort").addEventListener("click", () => speakCzech(`Roztřiď věci do ročních období. Teď je na obrázku ${seasonLabel.textContent}. Vyber jaro, léto, podzim nebo zimu.`, seasonStatus));
+        document.querySelector("#read-category-sort").addEventListener("click", () => speakCzech(`Zařaď věc do správné skupiny. Teď je na obrázku ${categoryLabel.textContent}. Vyber ovoce, oblečení, hračky nebo školní potřeby.`, categoryStatus));
+        document.querySelector("#read-sequence").addEventListener("click", () => speakCzech("Seřaď roční období tak, jak jdou během roku za sebou. Začni jarem a pokračuj létem, podzimem a zimou.", sequenceStatus));
+        document.querySelector("#read-memory").addEventListener("click", () => speakCzech(`Zahraj si obrázkové pexeso na téma ${memoryTopics[activeMemoryTopic].title}. Otoč dvě kartičky a hledej stejné obrázky.`, memoryStatus));
         nextSeasonButton.addEventListener("click", showSeasonItem);
         document.querySelector("#restart-season-sort").addEventListener("click", startSeasonSort);
         nextCategoryButton.addEventListener("click", showCategoryItem);
         document.querySelector("#restart-category-sort").addEventListener("click", startCategorySort);
+        document.querySelector("#restart-sequence").addEventListener("click", startSeasonSequence);
+        document.querySelector("#restart-memory").addEventListener("click", startMemoryGame);
         renderTopics();
         showQuestion();
         startSeasonSort();
         startCategorySort();
+        startSeasonSequence();
+        renderMemoryTopics();
+        startMemoryGame();
         window.addEventListener("beforeunload", stopQuestionSpeech);
     </script>
 </body>
