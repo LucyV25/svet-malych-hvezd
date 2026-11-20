@@ -833,6 +833,35 @@
             }
         };
 
+
+        const storyPlotVariants = {
+            school: [
+                { id:"lost-map", title:"Mapa ztracené třídy", opening:"První školní ráno schovala mlha všechny značky na chodbě. ${name} nemohla najít svou třídu a ${companion.nominative} si sedl vedle ní, aby na hledání nebyla sama.", problem:"Zazvonilo a chodba se zaplnila dětmi. ${name} cítila, že by měla spěchat, ale tím se jí hledalo ještě hůř. Rozhodla se zastavit a všimnout si, co kolem sebe opravdu vidí.", turn:"Na mapce zůstal nakreslený modrý ptáček. ${name} ho zahlédla i na dveřích knihovny a odtud už mohla hledat další obrázek. Cestou se zeptala paní učitelky, která šla kolem.", resolution:"Svou třídu našla právě včas. Nemusela dorazit první ani všechno zvládnout sama. Stačilo se zastavit, všimnout si značky a požádat o pomoc.", close:"Odpoledne si na mapku dokreslila novou značku, kterou si zapamatovala. Zítra už bude cesta o kousek známější." },
+                { id:"school-show", title:"Představení tří malých hvězd", opening:"Třída chystala malé představení pro rodiče. ${name} měla říct jednu větu, ale slova se jí při zkoušení zamotala. ${companion.nominative} jí nabídl, že si ji nejdřív pošeptají jen spolu.", problem:"V den vystoupení se za oponou ozývalo šustění kostýmů a cinkání kulis. ${name} nevěděla, jestli chce na pódium. Učitelka jí připomněla, že si může zvolit i jinou roli.", turn:"${name} pomohla držet kulisu s namalovaným měsícem. Když přišla její věta, řekla ji potichu, ale zřetelně. Nikdo ji nenutil mluvit hlasitěji ani přidávat další slova.", resolution:"Představení se povedlo, protože každý přispěl po svém. ${name} zjistila, že odvaha nemusí vypadat jako stát uprostřed jeviště. Někdy je to jeden malý krok, který si vybereme sami.", close:"Po představení si ${name} vzala sušenku ve tvaru měsíce a byla ráda, že si sama zvolila, jak se zapojí." },
+                { id:"class-garden", title:"Zahrada za oknem", opening:"Za oknem třídy byl úzký pruh hlíny, ve kterém zatím nic nerostlo. ${name} navrhla, že by tam děti mohly zasadit semínka. ${companion.nominative} objevil v kapse malý papírový sáček.", problem:"Děti se nemohly shodnout, co zasadit. Jedni chtěli vysoké slunečnice, druzí voňavé bylinky. ${name} měla vlastní nápad, ale bála se, že se do hovoru nedostane.", turn:"Učitelka dala každému chvíli na jeden návrh. ${name} navrhla zasadit od každého něco. Třída společně připravila malé místo pro květiny i bylinky.", resolution:"První den se nic neobjevilo. Děti se domluvily, kdo bude zalévat, a trpělivě čekaly. Po čase vyrašily první zelené lístky — každý trochu jiný, ale všechny patřily do stejné zahrádky.", close:"${name} si na okno přilepila obrázkový rozvrh zalévání. O zahrádku se starali společně." }
+            ],
+            anger: [
+                { id:"sandcastle", title:"Hrad z písku a velká vlna", opening:"${name} stavěla na břehu moře hrad s věžemi a mostem. Když byla skoro hotová, připlula vlna a jednu věž odnesla. ${companion.nominative} si všiml, jak se jí sevřely ruce.", problem:"${name} měla chuť do písku kopnout. Byla zklamaná, protože si na stavbě dala záležet. Nejdřív ustoupila od vody a chvíli dýchala, dokud se jí tělo trochu neuklidnilo.", turn:"Když byla připravená, řekla, že potřebuje postavit věž dál od vln. ${companion.nominative} podržel mističku s vodou, ale stavbu nechal na ní. Tentokrát udělala hrad nízký a široký.", resolution:"Další vlna se dotkla jen příkopu. Vztek jí neříkal, že je špatná; upozornil ji, že jí na stavbě záleželo a potřebovala chvilku i nový plán.", close:"Večer si na břehu nechala mušličku. Připomínala jí, že když něco nevyjde napoprvé, může se zastavit a zkusit jinou cestu." },
+                { id:"game-rules", title:"Pravidla, která se ztratila", opening:"Při hře na lesní pošťáky si děti předávaly obálku s tajným vzkazem. Když ji dostala ${name}, někdo vykřikl, že je řada na někom jiném. ${name} cítila, jak jí rudnou tváře.", problem:"Každý si pamatoval pravidla trochu jinak. ${name} řekla, že jí to připadá nespravedlivé, ale hlas se jí začal zvyšovat. ${companion.nominative} navrhl krátkou pauzu a společnou domluvu.", turn:"Děti zjistily, že žádná pravidla předem neurčily. Vymyslely jednoduché pořadí a dohodly se, že kdokoli může navrhnout změnu, když se hra zadrhne.", resolution:"Hra pokračovala a každý věděl, kdy je na řadě. ${name} nebyla potrestaná za to, že se rozzlobila. Pomohlo jí pojmenovat, co jí vadí, a potom hledat dohodu.", close:"Vzkaz nakonec dorazil do správné schránky. Uvnitř stálo: „Dobrá hra začíná tím, že se domluvíme.“" },
+                { id:"paint-spill", title:"Modrá louže na obrázku", opening:"${name} malovala noční oblohu a vybírala nejtmavší odstín modré. Sklenička se převrhla a barva se rozlila po papíře. ${companion.nominative} přinesl hadřík a položil ho vedle ní.", problem:"${name} cítila, že se jí chce plakat i křičet zároveň. Odsunula obrázek, aby se barva nerozmazala ještě víc, a potom si řekla o pomoc s uklizením stolu.", turn:"Když byla připravená, podívala se na modrou skvrnu znovu. Připomínala hluboké jezero pod noční oblohou. ${name} kolem ní domalovala rákosí, měsíc a světlo na hladině.", resolution:"Obrázek vypadal jinak než původní plán, ale ${name} ho měla ráda. Nejdřív si dovolila být naštvaná a potom sama rozhodla, jestli chce pokračovat.", close:"Obrázek uschl na parapetu. Modrá skvrna se stala nejhlubším jezerem v celém kraji." }
+            ],
+            perseverance: [
+                { id:"puzzle", title:"Poslední dílek pod kobercem", opening:"${name} skládala obrázek hvězdné lodi. Všechny dílky už měly své místo až na jeden. ${companion.nominative} se podíval pod stůl, ale tam nebyl.", problem:"${name} zkusila několik dílků, které se k sobě nehodily. Začala mít pocit, že puzzle nikdy nedokončí. Rozhodla se na chvíli přestat hledat a podívat se na obrázek na krabici.", turn:"Podle žlutého okraje poznala, jaký tvar hledá. Posunula koberec a našla dílek zapadlý u nohy židle. Potom skládala nejdřív okraj a pak malé části oblohy.", resolution:"Poslední dílek zacvakl na místo. ${name} zjistila, že požádat o nápovědu nebo změnit postup je součást řešení. Nemusela všechno uhodnout na první pokus.", close:"Hvězdná loď letěla mezi planetami. I velký úkol se dá rozdělit na malé dílky." },
+                { id:"seed", title:"Semínko, které nespěchalo", opening:"Na parapetu stál květináč s malým semínkem. ${name} ho zasadila a každé ráno čekala, jestli už vyrostlo. ${companion.nominative} jí nosil konvičku s vodou.", problem:"Po několika dnech byla hlína pořád rovná. ${name} si myslela, že udělala něco špatně a chtěla semínko vyhrabat. Dospělý jí vysvětlil, že pod povrchem může právě začínat růst.", turn:"${name} si nakreslila kalendář a každý den označila kapkou, když rostlinku zalila. Nemusela květináč kontrolovat každou chvíli; měla svůj malý plán.", resolution:"Jedno ráno se z hlíny ukázal zelený háček. Semínko potřebovalo svůj čas, péči a správné místo. ${name} měla radost, že čekala, ale věděla, že každé semínko roste vlastním tempem.", close:"Na kalendáři se objevila zelená tečka. Byla malá jako klíček, ale ${name} přesně věděla, jak dlouho na ni čekala." },
+                { id:"kite", title:"Drak, který hledal vítr", opening:"${name} si vyrobila papírového draka s dlouhým barevným ocasem. Na louce ale skoro nefoukalo a drak se pokaždé snesl do trávy. ${companion.nominative} ho opatrně zvedl.", problem:"${name} chtěla běžet rychleji, ale drak stejně neletěl. Byla unavená a začínala si myslet, že ho vyrobila špatně. Potom si všimla, že na druhém konci louky se tráva lehce vlní.", turn:"Přesunula se tam, kde vítr přicházel mezi stromy. Zkrátila ocas a poprosila kamaráda, aby podržel provázek. Když zafoukal další vánek, pustila draka vzhůru.", resolution:"Drak vystoupal nad louku. Nepomohlo jen víc běhat; ${name} pozorovala, zkoušela a změnila plán. Někdy stačí nový pokus, jindy jiná cesta nebo pomoc.", close:"Cestou domů si ${name} nesla provázek omotaný kolem dlaně. Zítra může foukat jiný vítr a ona zkusí další nápad." }
+            ],
+            helping: [
+                { id:"bird", title:"Pípnutí u lesní cesty", opening:"Na lesní cestě zaslechla ${name} tiché pípání. V trávě seděl malý ptáček a neodletěl, když se přiblížili. ${companion.nominative} navrhl, aby se na něj podívali z dálky.", problem:"${name} ho chtěla hned vzít do dlaní, aby mu pomohla. Vzpomněla si ale, že zvířátko může potřebovat něco jiného, než si myslí. Rozhlédla se po dospělém, kterému důvěřovala.", turn:"Společně zavolali správci parku a řekli mu, kde ptáčka našli. Správce věděl, jak postupovat, a požádal děti, aby nechaly kolem hnízda klid.", resolution:"Ptáček byl v bezpečí a správce se o něj postaral. ${name} pochopila, že pomoc někdy znamená udělat něco sama a jindy zavolat dospělého.", close:"Když odcházeli, ozvalo se z větví další pípnutí. ${name} věděla, koho zavolat, kdyby se něco podobného stalo znovu." },
+                { id:"basket", title:"Košík, který byl příliš těžký", opening:"U zahradní branky seděla sousedka s košíkem jablek. Vypadal těžce a ${name} jí hned nabídla pomoc. ${companion.nominative} počkal, co sousedka odpoví.", problem:"Sousedka se usmála a řekla, že košík zatím unese sama. ${name} nevěděla, jestli má nabídku zopakovat, nebo odejít. Připomněla si, že pomoc má být příjemná i tomu, kdo ji dostává.", turn:"O chvíli později sousedka zavolala, jestli by ${name} podržela branku. Potom společně uložily jablka na stůl a sousedka jí ukázala, jak se z jednoho dá upéct koláč.", resolution:"${name} zjistila, že laskavost neznamená rozhodovat za druhé. Nabídla pomoc, vyslechla odpověď a počkala, až sousedka sama řekne, co potřebuje.", close:"Odpoledne dostala jedno jablíčko na cestu. Bylo sladké a křupavé — malý dárek po pomoci, kterou si sousedka sama vybrala." },
+                { id:"lost-mitten", title:"Rukavice na lavičce", opening:"Na lavičce u hřiště ležela osamělá rukavice. ${name} ji zvedla, aby nezůstala ve sněhu. ${companion.nominative} se rozhlédl, jestli poblíž není někdo, komu patří.", problem:"Na hřišti si hrálo několik dětí a každé mělo jiné rukavice. ${name} nechtěla odcházet s cizí věcí ani obcházet hřiště sama. Rozhodla se počkat na dospělého, který měl hřiště na starosti.", turn:"Paní správcová rukavici poznala podle barevné nášivky. Zavolala k lavičce chlapečka, který si všiml, že mu jedna chybí. ${name} mu ji předala a počkala, až si ji navlékne.", resolution:"${name} pomohla tím, že věc předala dospělému a zůstala na bezpečném místě. Nemusela hledat majitele sama.", close:"Když odcházela, zkontrolovala si vlastní kapsy. Obě její rukavice byly na svém místě a jedna cizí se vrátila domů." }
+            ],
+            friendship: [
+                { id:"join-game", title:"Místo ve vláčku", opening:"Na louce děti postavily dlouhý vlak z laviček a krabic. ${name} se chtěla přidat, ale nevěděla, jestli už má vlak všechny cestující. ${companion.nominative} jí pomohl vymyslet jednoduchou otázku.", problem:"Když se zeptala, děti chvíli neslyšely, protože plánovaly další zastávku. ${name} si pomyslela, že ji možná nechtějí. Zkusila se nadechnout a připomenout si, že zatím nezná jejich odpověď.", turn:"Jedna holčička si jí všimla a ukázala volné místo u okna. ${name} si mohla vybrat, jestli chce být cestující, nebo průvodčí. Zvolila si průvodčí a přidala zastávku u Modrého kopce.", resolution:"Děti její nápad použily a vlak vyrazil. ${name} nemusela najít dokonalá slova. Stačilo se zeptat a dát ostatním chvíli, aby odpověděli.", close:"Vlak zastavil u imaginární stanice a všichni vystoupili na svačinu. Každý do hry přidal něco svého." },
+                { id:"quiet-fair", title:"Slavnost s tichým koutkem", opening:"Na náměstí začala jarní slavnost. Hrála hudba, děti běhaly mezi stánky a všude se něco dělo. ${name} se těšila na kamarády, ale po chvíli jí zvuky připadaly příliš hlasité.", problem:"${name} nevěděla, jestli odejít, když si ostatní ještě hrají. ${companion.nominative} jí připomněl, že může říct, co potřebuje, a domluvit se, kde se znovu potkají.", turn:"Našla klidný koutek pod stromem a poslala kamarádům vzkaz, že si chvíli odpočine. Jedna kamarádka si k ní přisedla, druhá pokračovala u stánku. Každá si zvolila, co jí vyhovuje.", resolution:"Po chvíli se ${name} rozhodla vrátit k ostatním. Už věděla, kde je tichý koutek a že může znovu odejít. Kamarádství nezmizelo jen proto, že si někdo potřeboval odpočinout.", close:"Když se slavnost chýlila ke konci, kamarádi se potkali u kašny. ${name} jim ukázala hvězdičku, kterou si vyrobila v tichém koutku." },
+                { id:"missed-hello", title:"Pozdrav, který zůstal ve vzduchu", opening:"Ráno zamávala ${name} kamarádovi, ale on se díval jinam a neodpověděl. ${name} si pomyslela, že se na ni zlobí. ${companion.nominative} navrhl, aby si nejdřív zkusila ověřit, co se stalo.", problem:"Celé dopoledne přemýšlela, jestli udělala něco špatně. Při společném kreslení si všimla, že kamarád působí unaveně. Rozhodla se zeptat, místo aby si domýšlela odpověď.", turn:"Kamarád jí řekl, že ráno neslyšel, protože hledal spadlou čepici. Nezlobí se. ${name} mu pověděla, co ji napadlo, a oba se trochu zasmáli.", resolution:"Nedorozumění se vysvětlilo obyčejnou otázkou. ${name} zjistila, že když si není jistá, může se zeptat. Nemusí hned vědět, co si druhý myslí.", close:"Odpoledne si zamávali znovu. Tentokrát se oba dívali a pozdrav se dostal přesně tam, kam měl." }
+            ]
+        };
+
         const companions = {
             "ježek": { nominative: "ježek", instrumental: "ježkem", genitive: "ježka" },
             "zajíček": { nominative: "zajíček", instrumental: "zajíčkem", genitive: "zajíčka" },
@@ -865,6 +894,7 @@
         const readButton = document.querySelector("#read-story");
         const speechRate = document.querySelector("#speech-rate");
         const favoritesKey = "dobrouNocHvezdicko:favorites:v1";
+        const storyHistoryKey = "miseUceni:story-variants:v1";
         const sharedStorageEnabled = window.location.protocol !== "file:";
         let favoritesStorageMode = sharedStorageEnabled ? "shared" : "local";
         const storyLengths = {
@@ -877,7 +907,7 @@
         let speechActive = false;
         let favorites = [];
         let favoritesReady = Promise.resolve();
-        let recentlyGeneratedStories = [];
+        let recentlyGeneratedStories = loadRecentStoryHistory();
 
         function pick(items) {
             return items[Math.floor(Math.random() * items.length)];
@@ -890,6 +920,23 @@
                 [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
             }
             return result;
+        }
+
+        function loadRecentStoryHistory() {
+            try {
+                const saved = JSON.parse(window.localStorage.getItem(storyHistoryKey) || "[]");
+                return Array.isArray(saved) ? saved.filter((item) => typeof item === "string" && item.length <= 12).slice(0, 24) : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function hashStorySignature(value) {
+            let hash = 2166136261;
+            for (let index = 0; index < value.length; index += 1) {
+                hash = Math.imul(hash ^ value.charCodeAt(index), 16777619);
+            }
+            return (hash >>> 0).toString(36);
         }
 
         function createCustomTheme(topic) {
@@ -928,6 +975,14 @@
             };
         }
 
+        function createCustomPlotVariants(topic) {
+            return [
+                { id:"question-map", title:`Mapa otázek: ${topic}`, opening:"Večer našla ${name} pod postelí složenou mapu. Uprostřed svítil nápis „${topic}“ a kolem něj byly tři cesty. ${companion.nominative} navrhl, aby si vybrali jen jednu.", problem:"První cesta vedla k brance s malou otázkou: Co už o tématu „${topic}“ víš? ${name} nevěděla všechno, ale vzpomněla si na jednu drobnost. Branka se po její odpovědi pootevřela.", turn:"Za brankou našli sovu, která uměla velké otázky rozdělit na malé. ${name} si vybrala jednu věc, na kterou se chce zeptat dospělého, kterému důvěřuje. Ostatní otázky mohly počkat.", resolution:"Mapa se změnila v přehled několika malých kroků. ${name} nemusela vyřešit celé téma dnes večer. Stačilo, že ví, kde začít a koho se může zeptat.", close:"Mapu si uložila na noční stolek. Až bude chtít, může si vybrat další cestu." },
+                { id:"idea-workshop", title:`Dílna nápadů: ${topic}`, opening:"V zahradním domku objevila ${name} stůl plný papírů, pastelek a prázdných kartiček. Na dveřích stálo „${topic}“. ${companion.nominative} jí podal jednu kartičku a nechal na ní místo pro její vlastní nápad.", problem:"${name} si nebyla jistá, co na kartičku napsat. Téma se zdálo příliš velké a kolem stolu leželo mnoho pomůcek. Rozhodla se vybrat jen jednu otázku, která ji právě napadá.", turn:"Z kartičky udělala obrázek a přidala k němu otazník. Potom poprosila dospělého, kterému důvěřuje, aby si ho s ní prohlédl. Společně našli malý způsob, jak se o tématu dozvědět víc.", resolution:"Dílna se nestala místem se všemi odpověďmi. Bylo to místo, kde se smělo ptát, zkoušet nápady a dělat přestávky. ${name} si jednu kartičku odnesla domů.", close:"Na zadní stranu kartičky napsala: „Jedna otázka je dobrý začátek.“" },
+                { id:"lantern-trail", title:"Lucerna pro neznámou cestu", opening:"Na cestě se setmělo a před ${name} se objevila cedule s nápisem „${topic}“. Za ní vedly tři stezky a žádná neukazovala, co čeká na konci. ${companion.nominative} rozsvítil malou lucernu.", problem:"${name} se bála, že si vybere špatně. Lucerna osvětlila jen několik kroků před nimi, ne celou cestu. Mohli se zastavit, vrátit nebo požádat o pomoc průvodkyni, která šla kolem.", turn:"Průvodkyně jim pomohla zjistit jednu věc o tématu „${topic}“. Na další otázku odpověď neznala, a tak si ji společně poznamenali na později. ${name} si vybrala, jestli chce pokračovat, nebo odpočívat.", resolution:"Nemuseli dojít až na konec stezky. Dozvěděli se jednu novou věc a našli bezpečný způsob, jak hledat další odpovědi. I malý kousek světla stačil na dnešní večer.", close:"Lucerna zůstala připravená u dveří. Další cestu si ${name} může vybrat, až bude chtít." }
+            ];
+        }
+
         function personalize(text, name, companion, topic) {
             return text
                 .replaceAll("${name}", name)
@@ -939,9 +994,11 @@
 
         function makeStory(formData) {
             const name = formData.get("childName").trim() || "malá průzkumnice";
-            const topic = formData.get("theme") === "custom" ? formData.get("customTheme").trim() : "";
-            const theme = topic ? createCustomTheme(topic) : stories[formData.get("theme")];
-            const length = storyLengths[formData.get("length")] ?? storyLengths.long;
+            const selectedTheme = formData.get("theme");
+            const topic = selectedTheme === "custom" ? formData.get("customTheme").trim() : "";
+            const theme = topic ? createCustomTheme(topic) : stories[selectedTheme];
+            const lengthKey = formData.get("length");
+            const length = storyLengths[lengthKey] ?? storyLengths.long;
             const companionSelection = formData.get("companion");
             const customCompanionName = formData.get("customCompanion").trim();
             const companion = companionSelection === "custom"
@@ -952,38 +1009,41 @@
                 }
                 : companions[companionSelection];
 
-            for (let attempt = 0; attempt < 12; attempt += 1) {
+            const plotVariants = topic ? createCustomPlotVariants(topic) : storyPlotVariants[selectedTheme];
+            let fallbackStory = null;
+            for (let attempt = 0; attempt < 36; attempt += 1) {
+                const plot = pick(plotVariants);
                 const journeyCount = Math.min(length.journeyCount, theme.journey.length);
-                const journey = shuffle(theme.journey).slice(0, journeyCount);
+                const maxJourneyStart = Math.max(0, theme.journey.length - journeyCount);
+                const journeyStart = Math.floor(Math.random() * (maxJourneyStart + 1));
+                const journey = theme.journey.slice(journeyStart, journeyStart + journeyCount);
+                const momentIndex = Math.floor(Math.random() * theme.moment.length);
+                const practiceIndex = Math.floor(Math.random() * theme.practice.length);
                 const paragraphs = [
-                    theme.opening(name, companion, topic),
-                    personalize(pick(theme.moment), name, companion, topic),
-                    personalize(pick(theme.practice), name, companion, topic),
+                    personalize(plot.opening, name, companion, topic),
+                    personalize(plot.problem, name, companion, topic),
+                    personalize(theme.moment[momentIndex], name, companion, topic),
+                    personalize(plot.turn, name, companion, topic),
+                    personalize(theme.practice[practiceIndex], name, companion, topic),
                     ...journey.map((paragraph) => personalize(paragraph, name, companion, topic)),
+                    personalize(plot.resolution, name, companion, topic),
                     personalize(theme.ending, name, companion, topic),
-                    personalize(theme.short, name, companion, topic)
+                    personalize(plot.close || theme.short, name, companion, topic)
                 ];
-                const storyKey = `${theme.title}\n${paragraphs.join("\n")}`;
+                const storyKey = hashStorySignature(`${selectedTheme}|${topic}|${plot.id}|${momentIndex}|${practiceIndex}|${journeyStart}|${lengthKey}`);
+                fallbackStory = { title: plot.title, paragraphs, readingMinutes: length.minutes };
 
                 if (!recentlyGeneratedStories.includes(storyKey)) {
-                    recentlyGeneratedStories = [storyKey, ...recentlyGeneratedStories].slice(0, 20);
-                    return { title: theme.title, paragraphs, readingMinutes: length.minutes };
+                    recentlyGeneratedStories = [storyKey, ...recentlyGeneratedStories].slice(0, 24);
+                    try {
+                        window.localStorage.setItem(storyHistoryKey, JSON.stringify(recentlyGeneratedStories));
+                    } catch {
+                        // Keep story generation available if browser storage is disabled.
+                    }
+                    return fallbackStory;
                 }
             }
-
-            const journey = shuffle(theme.journey).slice(0, Math.min(length.journeyCount, theme.journey.length));
-            return {
-                title: theme.title,
-                readingMinutes: length.minutes,
-                paragraphs: [
-                    theme.opening(name, companion, topic),
-                    personalize(pick(theme.moment), name, companion, topic),
-                    personalize(pick(theme.practice), name, companion, topic),
-                    ...journey.map((paragraph) => personalize(paragraph, name, companion, topic)),
-                    personalize(theme.ending, name, companion, topic),
-                    personalize(theme.short, name, companion, topic)
-                ]
-            };
+            return fallbackStory;
         }
 
         function isFavorite(story) {
