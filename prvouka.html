@@ -101,6 +101,22 @@
         .build-color-chip { width:28px; height:28px; border:2px solid rgba(0,0,0,.12); border-radius:50%; }
         .build-color-button[aria-pressed="true"] { outline:3px solid var(--accent); outline-offset:2px; }
         .build-color-button.is-wrong { border-color:#d7a0a0; background:#fff0f0; color:#8a3c2e; }
+        .change-row { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:10px 0; }
+        .change-item { display:grid; min-height:70px; place-items:center; border:1px solid var(--line); border-radius:12px; background:#fff; font-size:38px; }
+        .change-item.is-changed { border-color:#d9ad50; background:#fff7df; }
+        .change-item.is-wrong { border-color:#d7a0a0; background:#fff0f0; }
+        .body-layout { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:repeat(3,82px); gap:8px; max-width:390px; margin:16px auto; }
+        .body-slot { border:2px dashed #bac9d3; border-radius:13px; background:#fff; color:var(--deep); cursor:pointer; font-size:18px; font-weight:700; }
+        .body-slot.is-filled { border-style:solid; border-color:#78ad83; background:#edf8ef; font-size:34px; }
+        .body-slot.is-current { border-color:var(--accent); box-shadow:0 0 0 3px var(--soft); }
+        .body-slot.is-wrong { border-color:#d7a0a0; background:#fff0f0; }
+        .body-slot[data-part-slot="head"] { grid-area:1/2; }
+        .body-slot[data-part-slot="arms"] { grid-area:2/1; }
+        .body-slot[data-part-slot="torso"] { grid-area:2/2; }
+        .body-slot[data-part-slot="legs"] { grid-area:3/2; }
+        .body-parts { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+        .body-part { min-width:90px; min-height:54px; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--deep); cursor:pointer; font-weight:700; }
+        .body-part[aria-pressed="true"] { border-color:var(--accent); background:var(--soft); }
         footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
         @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets,.sequence-options { grid-template-columns:repeat(2,minmax(0,1fr)); } .memory-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
     </style>
@@ -136,6 +152,12 @@
             <button class="activity-button" type="button" data-activity-target="memory" aria-pressed="false">🃏 Pexeso</button>
             <button class="activity-button" type="button" data-activity-target="shapes" aria-pressed="false">🔷 Barvy a tvary</button>
             <button class="activity-button" type="button" data-activity-target="shape-build" aria-pressed="false">🧩 Sestav podle předlohy</button>
+            <button class="activity-button" type="button" data-activity-target="change-game" aria-pressed="false">👀 Co se změnilo?</button>
+            <button class="activity-button" type="button" data-activity-target="odd-one" aria-pressed="false">🔎 Co sem nepatří?</button>
+            <button class="activity-button" type="button" data-activity-target="habitats" aria-pressed="false">🐾 Kde zvíře bydlí?</button>
+            <button class="activity-button" type="button" data-activity-target="body-build" aria-pressed="false">🧍 Poskládej tělo</button>
+            <button class="activity-button" type="button" data-activity-target="safety-game" aria-pressed="false">🛡️ Bezpečně na cestě i doma</button>
+            <button class="activity-button" type="button" data-activity-target="plant-game" aria-pressed="false">🌱 Co potřebuje rostlina?</button>
         </div>
         <section data-activity-panel="topics" aria-labelledby="practice-title">
         <div class="activity-heading"><p class="eyebrow">Otázky a odpovědi</p><h2 id="practice-title">Procvičování témat</h2><p>Vyber téma, poslechni si otázku a klepni na správnou odpověď.</p></div>
@@ -209,6 +231,50 @@
             <p class="season-status" id="build-status" role="status" aria-live="polite"></p>
             <p class="quiz-progress" id="build-progress" aria-live="polite"></p>
             <div class="quiz-actions"><button class="action-button primary" id="next-build-pattern" type="button" hidden>Další předloha</button><button class="action-button" id="restart-build-patterns" type="button">Začít znovu</button></div>
+        </section>
+        <section class="category-card" data-activity-panel="change-game" aria-labelledby="change-title" hidden>
+            <div class="quiz-heading"><div><p class="eyebrow">Trénuj pozornost</p><h2 id="change-title">Co se změnilo?</h2></div><button class="action-button" id="read-change" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro">Porovnej obrázky „Předtím“ a „Teď“. Klepni na místo, kde se obrázek změnil.</p>
+            <p class="build-picker-title">Předtím</p><div class="change-row" id="change-before" aria-label="Předtím"></div>
+            <p class="build-picker-title">Teď</p><div class="change-row" id="change-after" role="group" aria-label="Klepni na změněný obrázek"></div>
+            <p class="season-status" id="change-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="change-progress"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="next-change" type="button" hidden>Další obrázek</button><button class="action-button" id="restart-change" type="button">Začít znovu</button></div>
+        </section>
+        <section class="category-card" data-activity-panel="odd-one" aria-labelledby="odd-title" hidden>
+            <div class="quiz-heading"><div><p class="eyebrow">Hledej společnou skupinu</p><h2 id="odd-title">Co sem nepatří?</h2></div><button class="action-button" id="read-odd" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro" id="odd-prompt"></p><div class="question-symbol" id="odd-symbol" aria-hidden="true"></div>
+            <div class="answer-options" id="odd-options" role="group" aria-label="Vyber obrázek, který nepatří do skupiny"></div>
+            <p class="season-status" id="odd-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="odd-progress"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="next-odd" type="button" hidden>Další skupina</button><button class="action-button" id="restart-odd" type="button">Začít znovu</button></div>
+        </section>
+        <section class="category-card" data-activity-panel="habitats" aria-labelledby="habitat-title" hidden>
+            <div class="quiz-heading"><div><p class="eyebrow">Zvířata a jejich domov</p><h2 id="habitat-title">Kde zvíře bydlí?</h2></div><button class="action-button" id="read-habitat" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro" id="habitat-prompt"></p><div class="question-symbol" id="habitat-symbol" aria-hidden="true"></div>
+            <div class="answer-options" id="habitat-options" role="group" aria-label="Vyber prostředí, kde zvíře žije"></div>
+            <p class="season-status" id="habitat-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="habitat-progress"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="next-habitat" type="button" hidden>Další zvíře</button><button class="action-button" id="restart-habitat" type="button">Začít znovu</button></div>
+        </section>
+        <section class="category-card" data-activity-panel="body-build" aria-labelledby="body-build-title" hidden>
+            <div class="quiz-heading"><div><p class="eyebrow">Postav celou postavu</p><h2 id="body-build-title">Poskládej části těla</h2></div><button class="action-button" id="read-body-build" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro">Vyber část těla a potom klepni na správné místo v postavě.</p>
+            <div class="body-layout" id="body-layout" aria-label="Postava s prázdnými místy"></div>
+            <div class="body-parts" id="body-parts" role="group" aria-label="Dostupné části těla"></div>
+            <p class="season-status" id="body-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="body-progress"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="restart-body-build" type="button">Poskládat znovu</button></div>
+        </section>
+        <section class="category-card" data-activity-panel="safety-game" aria-labelledby="safety-title" hidden>
+            <div class="quiz-heading"><div><p class="eyebrow">Rozhodni se bezpečně</p><h2 id="safety-title">Co uděláš?</h2></div><button class="action-button" id="read-safety" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro" id="safety-prompt"></p><div class="question-symbol" id="safety-symbol" aria-hidden="true"></div>
+            <div class="answer-options" id="safety-options" role="group" aria-label="Vyber bezpečné řešení"></div>
+            <p class="season-status" id="safety-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="safety-progress"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="next-safety" type="button" hidden>Další situace</button><button class="action-button" id="restart-safety" type="button">Začít znovu</button></div>
+        </section>
+        <section class="category-card" data-activity-panel="plant-game" aria-labelledby="plant-title" hidden>
+            <div class="quiz-heading"><div><p class="eyebrow">Pečujeme o přírodu</p><h2 id="plant-title">Co potřebuje rostlina?</h2></div><button class="action-button" id="read-plant" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro" id="plant-prompt"></p><div class="question-symbol" id="plant-symbol" aria-hidden="true">🌱</div>
+            <div class="answer-options" id="plant-options" role="group" aria-label="Vyber, co rostlina potřebuje"></div>
+            <p class="season-status" id="plant-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="plant-progress"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="next-plant" type="button" hidden>Další otázka</button><button class="action-button" id="restart-plant" type="button">Začít znovu</button></div>
         </section>
         <section class="category-card" aria-labelledby="printables-title">
             <p class="eyebrow">Pro rodiče</p>
@@ -360,6 +426,39 @@
             ...pattern,
             figures: pattern.items.map(([shapeId,colorId]) => shapeItems.find((item) => item.shape.id === shapeId && item.color.id === colorId))
         }));
+        const changeRounds = [
+            { before:["🍎","🐶","🚗","🌼"], after:["🍎","🐱","🚗","🌼"], changed:1 },
+            { before:["⚽","🍌","🧸","🚌"], after:["⚽","🍌","🚲","🚌"], changed:2 },
+            { before:["🌙","🐟","🏠","🎈"], after:["☀️","🐟","🏠","🎈"], changed:0 },
+            { before:["🐸","🌷","🍞","🚂"], after:["🐸","🌷","🍪","🚂"], changed:2 },
+            { before:["🧢","🐰","🍐","⭐"], after:["🧢","🐰","🍐","🌈"], changed:3 }
+        ];
+        const oddRounds = [
+            { prompt:"Který obrázek není ovoce?", items:[{symbol:"🍎",label:"jablko"},{symbol:"🍐",label:"hruška"},{symbol:"🍌",label:"banán"},{symbol:"🧦",label:"ponožka"}], correct:3, explain:"Ovoce jsou jablko, hruška a banán. Ponožka mezi ně nepatří." },
+            { prompt:"Které zvíře nežije na farmě?", items:[{symbol:"🐄",label:"kráva"},{symbol:"🐑",label:"ovce"},{symbol:"🐓",label:"slepice"},{symbol:"🐬",label:"delfín"}], correct:3, explain:"Kráva, ovce a slepice mohou žít na farmě. Delfín žije ve vodě." },
+            { prompt:"Co nepoužíváme ve škole na psaní?", items:[{symbol:"✏️",label:"tužka"},{symbol:"🖊️",label:"pero"},{symbol:"🖍️",label:"pastelka"},{symbol:"🥄",label:"lžíce"}], correct:3, explain:"Tužkou, perem i pastelkou můžeme psát nebo kreslit. Lžíce patří ke stolování." },
+            { prompt:"Co nepatří mezi dopravní prostředky?", items:[{symbol:"🚲",label:"kolo"},{symbol:"🚌",label:"autobus"},{symbol:"🚂",label:"vlak"},{symbol:"🌳",label:"strom"}], correct:3, explain:"Kolo, autobus i vlak nás mohou dopravit na místo. Strom není dopravní prostředek." },
+            { prompt:"Který obrázek není oblečení?", items:[{symbol:"👕",label:"tričko"},{symbol:"🧥",label:"bunda"},{symbol:"🧤",label:"rukavice"},{symbol:"🍉",label:"meloun"}], correct:3, explain:"Tričko, bunda a rukavice jsou oblečení. Meloun je ovoce." }
+        ];
+        const habitatRounds = [
+            { animal:"🐸", name:"Žába", prompt:"Kde žába hledá vodu a žije poblíž ní?", correct:"pond", choices:[{id:"pond",symbol:"🪷",label:"u rybníka"},{id:"forest",symbol:"🌲",label:"v lese"},{id:"farm",symbol:"🚜",label:"na farmě"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] },
+            { animal:"🦊", name:"Liška", prompt:"Kde si liška vyhrabává noru?", correct:"forest", choices:[{id:"forest",symbol:"🌳",label:"v lese"},{id:"pond",symbol:"🌊",label:"v rybníku"},{id:"farm",symbol:"🏠",label:"v chlévě"},{id:"sea",symbol:"🐚",label:"v moři"}] },
+            { animal:"🐄", name:"Kráva", prompt:"Kde se o krávu stará hospodář?", correct:"farm", choices:[{id:"farm",symbol:"🚜",label:"na farmě"},{id:"forest",symbol:"🌲",label:"v lese"},{id:"sea",symbol:"🌊",label:"v moři"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] },
+            { animal:"🐦", name:"Ptáček", prompt:"Kde si ptáček staví domov pro mláďata?", correct:"nest", choices:[{id:"nest",symbol:"🪺",label:"v hnízdě"},{id:"pond",symbol:"🪷",label:"v rybníku"},{id:"farm",symbol:"🏠",label:"v chlévě"},{id:"sea",symbol:"🐚",label:"v moři"}] },
+            { animal:"🐬", name:"Delfín", prompt:"Kde delfín plave a hledá potravu?", correct:"sea", choices:[{id:"sea",symbol:"🌊",label:"v moři"},{id:"forest",symbol:"🌳",label:"v lese"},{id:"farm",symbol:"🚜",label:"na farmě"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] }
+        ];
+        const safetyRounds = [
+            { prompt:"Chceš přejít silnici. Co uděláš?", symbol:"🚸", choices:["Rozhlédnu se a přejdu s dospělým na přechodu.","Rozběhnu se mezi zaparkovanými auty."], correct:0, explain:"Na silnici přecházíme opatrně, po rozhlédnutí a nejlépe s dospělým." },
+            { prompt:"Našel jsi venku neznámé prášky. Co uděláš?", symbol:"💊", choices:["Nedotýkám se jich a řeknu to dospělému.","Ochutnám jeden, abych zjistil, co to je."], correct:0, explain:"Neznámé léky ani věci z podlahy nikdy neochutnáváme. Zavoláme dospělého." },
+            { prompt:"Jsi v autě. Jak se připravíš na jízdu?", symbol:"🚗", choices:["Připoutám se bezpečnostním pásem.","Postavím se na sedačku."], correct:0, explain:"V autě sedíme a vždy se připoutáme bezpečnostním pásem." },
+            { prompt:"Cizí člověk tě láká, abys šel s ním. Co uděláš?", symbol:"🧍", choices:["Zůstanu na bezpečném místě a řeknu to dospělému, kterému věřím.","Půjdu s ním, protože slíbil sladkost."], correct:0, explain:"S cizím člověkem nikam neodcházíme. Vyhledáme dospělého, kterému důvěřujeme." },
+            { prompt:"Chceš si hrát venku na kole. Co si vezmeš?", symbol:"🚲", choices:["Přilbu a bezpečné místo na jízdu.","Šálu přes oči, aby byla legrace."], correct:0, explain:"Na kole nosíme správně nasazenou přilbu a jezdíme na bezpečném místě." }
+        ];
+        const plantRounds = [
+            { prompt:"Co pomáhá rostlině vyrábět potravu a růst?", correct:"☀️", choices:["☀️","🧸","🚗"], explain:"Rostlina potřebuje světlo ze slunce." },
+            { prompt:"Co musí rostlina pravidelně dostávat?", correct:"💧", choices:["💧","⚽","🧦"], explain:"Rostlina potřebuje vodu. Zaléváme ji přiměřeně." },
+            { prompt:"V čem rostou kořeny většiny rostlin?", correct:"🪴", choices:["🪴","🛏️","🚌"], explain:"Kořeny rostou v půdě, která rostlinu také drží." }
+        ];
         const roadSignSvgs = {
             stop: '<svg viewBox="0 0 120 120" aria-hidden="true"><polygon points="38,5 82,5 115,38 115,82 82,115 38,115 5,82 5,38" fill="#d92332" stroke="#fff" stroke-width="5"/><polygon points="38,10 82,10 110,38 110,82 82,110 38,110 10,82 10,38" fill="#d92332" stroke="#d92332" stroke-width="2"/><text x="60" y="68" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="22" font-weight="700">STOP</text></svg>',
             "no-entry": '<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="51" fill="#d92332"/><rect x="22" y="51" width="76" height="18" rx="3" fill="#fff"/></svg>',
@@ -690,6 +789,25 @@
         let activeBuildPattern = null;
         let buildFigureIndex = 0;
         let selectedBuildShape = null;
+        const changeBefore = document.querySelector("#change-before");
+        const changeAfter = document.querySelector("#change-after");
+        const changeStatus = document.querySelector("#change-status");
+        const changeProgress = document.querySelector("#change-progress");
+        const nextChangeButton = document.querySelector("#next-change");
+        let changeDeck = [];
+        let changeIndex = 0;
+        let changeAnswered = false;
+        const bodyLayout = document.querySelector("#body-layout");
+        const bodyParts = document.querySelector("#body-parts");
+        const bodyStatus = document.querySelector("#body-status");
+        const bodyProgress = document.querySelector("#body-progress");
+        let selectedBodyPart = null;
+        const bodyPartDefinitions = [
+            { id:"head", label:"Hlava", symbol:"🙂" },
+            { id:"torso", label:"Tělo", symbol:"👕" },
+            { id:"arms", label:"Ruce", symbol:"🙌" },
+            { id:"legs", label:"Nohy", symbol:"🦵" }
+        ];
 
         function renderMemoryTopics() {
             memoryTopicPicker.replaceChildren(...Object.entries(memoryTopics).map(([id, topic]) => {
@@ -958,6 +1076,197 @@
             buildProgress.textContent = `Předloha ${buildRoundIndex + 1} z ${buildDeck.length} · tvar ${buildFigureIndex + 1} z ${activeBuildPattern.figures.length}`;
         }
 
+        function startChangeGame() {
+            changeDeck = shuffled(changeRounds);
+            changeIndex = 0;
+            showChangeRound();
+        }
+
+        function showChangeRound() {
+            changeAnswered = false;
+            nextChangeButton.hidden = true;
+            if (changeIndex >= changeDeck.length) {
+                changeStatus.textContent = "Výborně! Našla jsi všechny změny.";
+                changeProgress.textContent = `Hotovo: ${changeDeck.length} z ${changeDeck.length}`;
+                changeBefore.replaceChildren();
+                changeAfter.replaceChildren();
+                nextChangeButton.textContent = "Zahrát znovu";
+                nextChangeButton.hidden = false;
+                return;
+            }
+            const round = changeDeck[changeIndex];
+            changeBefore.replaceChildren(...round.before.map((symbol) => {
+                const item = document.createElement("span");
+                item.className = "change-item";
+                item.textContent = symbol;
+                return item;
+            }));
+            changeAfter.replaceChildren(...round.after.map((symbol, index) => {
+                const button = document.createElement("button");
+                button.className = "change-item";
+                button.type = "button";
+                button.textContent = symbol;
+                button.setAttribute("aria-label", `Obrázek číslo ${index + 1}: ${symbol}`);
+                button.addEventListener("click", () => {
+                    if (changeAnswered) return;
+                    if (index !== round.changed) {
+                        button.classList.add("is-wrong");
+                        changeStatus.textContent = "Tohle zůstalo stejné. Porovnej oba řádky ještě jednou.";
+                        window.setTimeout(() => button.classList.remove("is-wrong"), 650);
+                        return;
+                    }
+                    changeAnswered = true;
+                    button.classList.add("is-correct", "is-changed");
+                    changeAfter.querySelectorAll("button").forEach((option) => { option.disabled = true; });
+                    changeStatus.textContent = "Správně! Našla jsi obrázek, který se změnil.";
+                    changeProgress.textContent = `Obrázek ${changeIndex + 1} z ${changeDeck.length}`;
+                    window.rewardPetCoin?.(`prvouka-change-${changeIndex}`);
+                    nextChangeButton.textContent = changeIndex + 1 >= changeDeck.length ? "Zahrát znovu" : "Další obrázek";
+                    nextChangeButton.hidden = false;
+                });
+                return button;
+            }));
+            changeStatus.textContent = "Který obrázek je jiný?";
+            changeProgress.textContent = `Obrázek ${changeIndex + 1} z ${changeDeck.length}`;
+            nextChangeButton.textContent = "Další obrázek";
+        }
+
+        function createChoiceGame(config) {
+            const prompt = document.querySelector(`#${config.prefix}-prompt`);
+            const symbol = document.querySelector(`#${config.prefix}-symbol`);
+            const options = document.querySelector(`#${config.prefix}-options`);
+            const status = document.querySelector(`#${config.prefix}-status`);
+            const progress = document.querySelector(`#${config.prefix}-progress`);
+            const next = document.querySelector(`#next-${config.prefix}`);
+            const read = document.querySelector(`#read-${config.prefix}`);
+            let deck = [];
+            let index = 0;
+            let answeredRound = false;
+
+            const start = () => { deck = shuffled(config.rounds); index = 0; render(); };
+            const render = () => {
+                answeredRound = false;
+                next.hidden = true;
+                if (index >= deck.length) {
+                    prompt.textContent = config.completeText;
+                    if (symbol) { symbol.textContent = "🎉"; symbol.hidden = false; }
+                    options.replaceChildren();
+                    status.textContent = config.completeText;
+                    progress.textContent = `Hotovo: ${deck.length} z ${deck.length}`;
+                    next.textContent = "Zahrát znovu";
+                    next.hidden = false;
+                    return;
+                }
+                const round = deck[index];
+                prompt.textContent = round.prompt;
+                if (symbol) {
+                    symbol.textContent = round.symbol ?? config.defaultSymbol ?? "";
+                    symbol.hidden = !symbol.textContent;
+                }
+                options.replaceChildren(...round.choices.map((choice, choiceIndex) => {
+                    const button = document.createElement("button");
+                    button.className = "answer-option";
+                    button.type = "button";
+                    const icon = typeof choice === "string" ? "" : choice.symbol ?? "";
+                    const label = typeof choice === "string" ? choice : choice.label;
+                    button.textContent = icon ? `${icon} ${label}` : label;
+                    button.setAttribute("aria-label", label);
+                    button.addEventListener("click", () => {
+                        if (answeredRound) return;
+                        if (!config.isCorrect(round, choice, choiceIndex)) {
+                            button.classList.add("is-wrong");
+                            status.textContent = config.tryAgainText;
+                            window.setTimeout(() => button.classList.remove("is-wrong"), 650);
+                            return;
+                        }
+                        answeredRound = true;
+                        button.classList.add("is-correct");
+                        options.querySelectorAll("button").forEach((item) => { item.disabled = true; });
+                        status.textContent = config.successText(round);
+                        window.rewardPetCoin?.(`prvouka-${config.prefix}-${round.id ?? round.prompt}`);
+                        next.textContent = index + 1 >= deck.length ? "Zahrát znovu" : config.nextLabel;
+                        next.hidden = false;
+                    });
+                    return button;
+                }));
+                status.textContent = config.startText;
+                progress.textContent = `Úkol ${index + 1} z ${deck.length}`;
+                next.textContent = config.nextLabel;
+            };
+
+            read.addEventListener("click", () => {
+                const round = deck[index] ?? deck[0];
+                if (round) speakCzech(`${round.prompt} ${config.voiceInstruction}`, status);
+            });
+            next.addEventListener("click", () => {
+                if (index >= deck.length) start();
+                else { index += 1; render(); }
+            });
+            document.querySelector(`#restart-${config.prefix}`).addEventListener("click", start);
+            start();
+            return { start };
+        }
+
+        function startBodyBuild() {
+            selectedBodyPart = null;
+            const parts = shuffled(bodyPartDefinitions);
+            const filled = new Set();
+            bodyLayout.replaceChildren(...bodyPartDefinitions.map((part) => {
+                const slot = document.createElement("button");
+                slot.className = "body-slot";
+                slot.type = "button";
+                slot.dataset.partSlot = part.id;
+                slot.textContent = part.label;
+                slot.setAttribute("aria-label", `Místo pro ${part.label.toLowerCase()}`);
+                slot.addEventListener("click", () => {
+                    if (!selectedBodyPart || filled.has(part.id)) return;
+                    if (selectedBodyPart.id !== part.id) {
+                        bodyStatus.textContent = "Tohle místo je pro jinou část těla. Zkus to znovu.";
+                        slot.classList.add("is-wrong");
+                        window.setTimeout(() => slot.classList.remove("is-wrong"), 650);
+                        return;
+                    }
+                    filled.add(part.id);
+                    slot.classList.remove("is-current");
+                    slot.classList.add("is-filled");
+                    slot.textContent = part.symbol;
+                    slot.setAttribute("aria-label", part.label);
+                    const choice = bodyParts.querySelector(`[data-part-choice="${part.id}"]`);
+                    if (choice) { choice.disabled = true; choice.setAttribute("aria-pressed", "false"); }
+                    selectedBodyPart = null;
+                    bodyParts.querySelectorAll("button").forEach((button) => button.setAttribute("aria-pressed", "false"));
+                    bodyProgress.textContent = `Složené části: ${filled.size} z ${bodyPartDefinitions.length}`;
+                    if (filled.size === bodyPartDefinitions.length) {
+                        bodyStatus.textContent = "Hotovo! Poskládala jsi celou postavu.";
+                        window.rewardPetCoin?.("prvouka-body-build");
+                    } else {
+                        bodyStatus.textContent = `Správně, to jsou ${part.label.toLowerCase()}. Vyber další část.`;
+                        const nextPart = parts.find((item) => !filled.has(item.id));
+                        if (nextPart) bodyLayout.querySelector(`[data-part-slot="${nextPart.id}"]`)?.classList.add("is-current");
+                    }
+                });
+                return slot;
+            }));
+            bodyParts.replaceChildren(...parts.map((part) => {
+                const button = document.createElement("button");
+                button.className = "body-part";
+                button.type = "button";
+                button.dataset.partChoice = part.id;
+                button.textContent = `${part.symbol} ${part.label}`;
+                button.setAttribute("aria-pressed", "false");
+                button.addEventListener("click", () => {
+                    if (button.disabled) return;
+                    selectedBodyPart = part;
+                    bodyParts.querySelectorAll("button").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+                    bodyStatus.textContent = `Vybrala jsi ${part.label.toLowerCase()}. Najdi pro ni místo v postavě.`;
+                    bodyLayout.querySelectorAll(".body-slot").forEach((slot) => slot.classList.toggle("is-current", slot.dataset.partSlot === part.id));
+                });
+                return button;
+            }));
+            bodyStatus.textContent = "Vyber část těla a umísti ji na správné místo.";
+            bodyProgress.textContent = `Složené části: 0 z ${bodyPartDefinitions.length}`;
+        }
+
         function checkAnswer(button) {
             if (answered) return;
             if (button.dataset.correct === "true") {
@@ -975,6 +1284,40 @@
             quizStatus.textContent = "To není ono. Zkus jinou odpověď.";
         }
 
+        createChoiceGame({
+            prefix:"odd", rounds:oddRounds, startText:"Pozorně si prohlédni obrázky.",
+            tryAgainText:"Zkus najít obrázek, který do skupiny nepatří.",
+            completeText:"Výborně! Našla jsi všechny obrázky, které do skupiny nepatří.",
+            nextLabel:"Další skupina", voiceInstruction:"Vyber obrázek, který do skupiny nepatří.",
+            isCorrect:(round, choice, choiceIndex) => choiceIndex === round.correct,
+            successText:(round) => round.explain
+        });
+        createChoiceGame({
+            prefix:"habitat", rounds:habitatRounds, startText:"Vyber domov tohoto zvířete.",
+            tryAgainText:"Tohle prostředí není jeho domov. Zkus to znovu.",
+            completeText:"Skvěle! Zvířatům jsi našla jejich domovy.",
+            nextLabel:"Další zvíře", voiceInstruction:"Vyber prostředí, kde toto zvíře žije.",
+            isCorrect:(round, choice) => choice.id === round.correct,
+            successText:(round) => `${round.name} najdeme ${round.choices.find((item) => item.id === round.correct).label}.`
+        });
+        createChoiceGame({
+            prefix:"safety", rounds:safetyRounds, startText:"Vyber bezpečné řešení.",
+            tryAgainText:"Zkus vybrat bezpečnější možnost.",
+            completeText:"Výborně! Víš, jak se v těchto situacích zachovat bezpečně.",
+            nextLabel:"Další situace", voiceInstruction:"Co uděláš? Vyber bezpečné řešení.",
+            isCorrect:(round, choice, choiceIndex) => choiceIndex === round.correct,
+            successText:(round) => round.explain
+        });
+        createChoiceGame({
+            prefix:"plant", rounds:plantRounds, startText:"Vyber správný obrázek.",
+            defaultSymbol:"🌱",
+            tryAgainText:"Tohle rostlině nepomůže. Zkus jiný obrázek.",
+            completeText:"Paráda! Už víš, co rostlina potřebuje k růstu.",
+            nextLabel:"Další otázka", voiceInstruction:"Vyber správnou odpověď.",
+            isCorrect:(round, choice) => choice === round.correct,
+            successText:(round) => round.explain
+        });
+
         document.querySelector("#read-question").addEventListener("click", speakQuestion);
         document.querySelector("#next-question").addEventListener("click", showQuestion);
         document.querySelector("#read-season-sort").addEventListener("click", () => speakCzech(`Roztřiď věci do ročních období. Teď je na obrázku ${seasonLabel.textContent}. Vyber jaro, léto, podzim nebo zimu.`, seasonStatus));
@@ -983,6 +1326,8 @@
         document.querySelector("#read-memory").addEventListener("click", () => speakCzech(`Zahraj si obrázkové pexeso na téma ${memoryTopics[activeMemoryTopic].title}. Otoč dvě kartičky a hledej stejné obrázky.`, memoryStatus));
         document.querySelector("#read-shapes").addEventListener("click", () => speakCzech("Prohlédni si předlohu. Potom klepni na stejný geometrický tvar ve stejné barvě.", shapeStatus));
         document.querySelector("#read-shape-build").addEventListener("click", () => speakCzech("Podívej se na předlohu. Sestav svůj obrázek stejně. U každého políčka vyber nejprve tvar a potom barvu. Začni prvním tvarem.", buildStatus));
+        document.querySelector("#read-change").addEventListener("click", () => speakCzech("Porovnej obrázky předtím a teď. Klepni na místo, kde se obrázek změnil.", changeStatus));
+        document.querySelector("#read-body-build").addEventListener("click", () => speakCzech("Poskládej postavu. Vyber část těla a klepni na její správné místo.", bodyStatus));
         nextSeasonButton.addEventListener("click", showSeasonItem);
         document.querySelector("#restart-season-sort").addEventListener("click", startSeasonSort);
         nextCategoryButton.addEventListener("click", showCategoryItem);
@@ -996,6 +1341,12 @@
             else { buildRoundIndex += 1; showBuildPattern(); }
         });
         document.querySelector("#restart-build-patterns").addEventListener("click", startBuildPatterns);
+        nextChangeButton.addEventListener("click", () => {
+            if (changeIndex >= changeDeck.length - 1) startChangeGame();
+            else { changeIndex += 1; showChangeRound(); }
+        });
+        document.querySelector("#restart-change").addEventListener("click", startChangeGame);
+        document.querySelector("#restart-body-build").addEventListener("click", startBodyBuild);
         document.querySelectorAll("[data-activity-target]").forEach((button) => {
             button.addEventListener("click", () => {
                 stopQuestionSpeech();
@@ -1017,6 +1368,8 @@
         startMemoryGame();
         startShapeGame();
         startBuildPatterns();
+        startChangeGame();
+        startBodyBuild();
         window.addEventListener("beforeunload", stopQuestionSpeech);
     </script>
 </body>
