@@ -229,6 +229,7 @@
             <a class="top-link" href="minecraft.html">Minecraft</a>
             <a class="top-link" href="advent.html">Advent</a>
             <a class="top-link" href="cteni.html">Čtení</a>
+            <a class="top-link" href="mazlicek.html">🐱 Mazlíček</a>
         </nav>
     </header>
     <main>
@@ -260,6 +261,7 @@
         </section>
     </main>
     <footer>Chyba nevadí. Každé nové slovíčko je malé dobrodružství.</footer>
+    <script src="scripts/pet-rewards.js"></script>
     <script>
         const categories = [
             {
@@ -627,6 +629,7 @@
                 choice.disabled = true;
             });
             gameStatus.textContent = `Správně! ${activeAnswer.czech} se řekne ${activeAnswer.english}.`;
+            window.rewardPetCoin?.(`english-${activeAnswer.english.toLocaleLowerCase("en-US")}`);
             speak(`${activeAnswer.english}. Great job!`, "en");
         }
 

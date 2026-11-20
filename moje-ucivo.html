@@ -264,6 +264,7 @@
             <a class="top-link" href="anglictina.html">Angličtina</a>
             <a class="top-link" href="moje-ucivo.html" aria-current="page">Moje učivo</a>
             <a class="top-link" href="cteni.html">Čtení</a>
+            <a class="top-link" href="mazlicek.html">🐱 Mazlíček</a>
         </nav>
     </header>
     <main>
@@ -337,6 +338,7 @@
         </section>
     </main>
     <footer>Každé dítě se učí svým tempem. Krátké procvičení úplně stačí.</footer>
+    <script src="scripts/pet-rewards.js"></script>
     <script>
         const storageKey = "dobrouNocHvezdicko:custom-learning-topics:v1";
         const maxTopics = 100;
@@ -684,6 +686,7 @@
             reveal.disabled = answerRevealed;
             reveal.addEventListener("click", () => {
                 answerRevealed = true;
+                window.rewardPetCoin?.(`custom-card-${activeTopic.id}-${card.id}`);
                 const answer = document.createElement("p");
                 answer.className = "activity-answer";
                 answer.textContent = card.answer;
@@ -771,6 +774,7 @@
                 return;
             }
             matchedPairIds.add(card.id);
+            window.rewardPetCoin?.(`custom-pair-${activeTopic.id}-${card.id}`);
             selectedPairId = "";
             renderPairRound();
             if (matchedPairIds.size === activePairCards.length) {
@@ -823,6 +827,7 @@
                 return;
             }
             answerCompleted = true;
+            window.rewardPetCoin?.(`custom-listen-${activeTopic.id}-${activePromptCard.id}`);
             button.classList.add("correct");
             activityContent.querySelectorAll(".activity-choice").forEach((choice) => { choice.disabled = true; });
             activityStatus.textContent = `Správně! ${activePromptCard.prompt} — ${activePromptCard.answer}.`;

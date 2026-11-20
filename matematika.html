@@ -303,6 +303,7 @@
             <a class="top-link" href="minecraft.html">Minecraft</a>
             <a class="top-link" href="advent.html">Advent</a>
             <a class="top-link" href="cteni.html">Čtení</a>
+            <a class="top-link" href="mazlicek.html">🐱 Mazlíček</a>
         </nav>
     </header>
 
@@ -344,6 +345,7 @@
 
     <footer>Každý malý krok se počítá. Cvičte jen tak dlouho, jak je vám příjemné.</footer>
 
+    <script src="scripts/pet-rewards.js"></script>
     <script>
         const numberLimitKey = "dobrouNocHvezdicko:number-limit:v1";
         const mathExercises = document.querySelector("#math-exercises");
@@ -582,14 +584,17 @@
 
         function checkNumberBondAnswers() {
             let correct = 0;
-            generatedNumberBonds.forEach((bond) => {
+            generatedNumberBonds.forEach((bond, index) => {
                 const value = bond.input.value;
                 const isCorrect = value !== "" && Number.isInteger(Number(value)) && Number(value) === bond.missing;
                 bond.row.classList.toggle("is-correct", isCorrect);
                 bond.row.classList.toggle("is-incorrect", !isCorrect);
                 bond.input.classList.toggle("is-correct", isCorrect);
                 bond.input.classList.toggle("is-incorrect", value !== "" && !isCorrect);
-                if (isCorrect) correct += 1;
+                if (isCorrect) {
+                    correct += 1;
+                    window.rewardPetCoin?.(`math-bond-${index}`);
+                }
             });
             numberBondStatus.textContent = `Správně: ${correct} z ${generatedNumberBonds.length}.`;
             const score = correct === 0 ? "Nemáš zatím žádný správný příklad z pěti."
@@ -607,14 +612,17 @@
         function checkMathAnswers() {
             let correct = 0;
             let unanswered = 0;
-            generatedMathQuestions.forEach((question) => {
+            generatedMathQuestions.forEach((question, index) => {
                 const value = question.type === "compare" ? question.selectedAnswer : question.input.value;
                 const isAnswered = value !== "";
                 const isCorrect = isAnswered && String(question.answer) === value;
                 question.row.classList.toggle("is-correct", isCorrect);
                 question.row.classList.toggle("is-incorrect", isAnswered && !isCorrect);
                 if (!isAnswered) unanswered += 1;
-                if (isCorrect) correct += 1;
+                if (isCorrect) {
+                    correct += 1;
+                    window.rewardPetCoin?.(`math-question-${index}`);
+                }
             });
             const detail = unanswered ? ` Ještě zbývá ${unanswered} ${unanswered === 1 ? "odpověď" : "odpovědí"}.` : "";
             mathStatus.textContent = `Správně: ${correct} z ${generatedMathQuestions.length}.${detail}`;

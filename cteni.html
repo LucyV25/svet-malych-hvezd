@@ -72,6 +72,7 @@
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html"><span class="brand-mark" aria-hidden="true">☾</span><span>Svět malé hvězdičky</span></a>
+        <a class="top-link" href="mazlicek.html">🐱 Mazlíček</a>
         <a class="top-link" href="rozcestnik.html">← Zpět do rozcestníku</a>
     </header>
     <main>
@@ -114,6 +115,7 @@
         </section>
     </main>
     <footer>Čteme vlastním tempem. Hvězdička je za snahu, ne za rychlost.</footer>
+    <script src="scripts/pet-rewards.js"></script>
     <script>
         const alphabet = [..."AÁBCČDĎEÉĚFGHIÍJKLMNŇOÓPQRŘSŠTŤUÚŮVWXYÝZŽ"];
         const stories = [
@@ -248,6 +250,7 @@
             if(index===activeStory.correct) {
                 $("#feedback").textContent="Přesně tak! Příběh je dokončený. ⭐"; buttons[index].classList.add("correct");
                 if(!state.completed.includes(activeStory.id)) state.completed.push(activeStory.id);
+                window.rewardPetCoin?.(`reading-story-${activeStory.id}`);
                 state.creations.push({title:activeStory.title,text:storyPath.join(" ")}); state.creations=state.creations.slice(-30);
                 save(); renderProgress(); renderCreations(); renderStories(); $("#question-box").hidden=true; $("#completion").hidden=false; $("#continue").hidden=false; return;
             }

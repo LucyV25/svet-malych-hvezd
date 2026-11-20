@@ -19,6 +19,8 @@ const minecraftPage = await readFile(new URL("../minecraft.html", import.meta.ur
 const adventPage = await readFile(new URL("../advent.html", import.meta.url));
 const customLearningPage = await readFile(new URL("../moje-ucivo.html", import.meta.url));
 const readingPage = await readFile(new URL("../cteni.html", import.meta.url));
+const petPage = await readFile(new URL("../mazlicek.html", import.meta.url));
+const petRewardsScript = await readFile(new URL("./pet-rewards.js", import.meta.url));
 const handwritingFont = await readFile(new URL("../assets/fonts/Borel-Regular.ttf", import.meta.url));
 const pages = new Map([
     ["/", storyPage],
@@ -31,10 +33,12 @@ const pages = new Map([
     ["/minecraft.html", minecraftPage],
     ["/advent.html", adventPage],
     ["/moje-ucivo.html", customLearningPage],
-    ["/cteni.html", readingPage]
+    ["/cteni.html", readingPage],
+    ["/mazlicek.html", petPage]
 ]);
 const assets = new Map([
-    ["/assets/fonts/Borel-Regular.ttf", { content: handwritingFont, contentType: "font/ttf" }]
+    ["/assets/fonts/Borel-Regular.ttf", { content: handwritingFont, contentType: "font/ttf" }],
+    ["/scripts/pet-rewards.js", { content: petRewardsScript, contentType: "text/javascript; charset=utf-8" }]
 ]);
 const favoritesPath = fileURLToPath(new URL("../data/favorites.json", import.meta.url));
 const maxRequestBytes = 1_000_000;

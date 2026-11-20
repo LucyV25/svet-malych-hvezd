@@ -652,6 +652,7 @@
             <a class="top-link" href="minecraft.html">Minecraft</a>
             <a class="top-link" href="advent.html">Advent</a>
             <a class="top-link" href="cteni.html">Čtení</a>
+            <a class="top-link" href="mazlicek.html">🐱 Mazlíček</a>
         </nav>
     </header>
 
@@ -836,6 +837,7 @@
 
     <footer>Každý malý krok se počítá. Cvičte jen tak dlouho, jak je vám příjemné.</footer>
 
+    <script src="scripts/pet-rewards.js"></script>
     <script>
         const learnedLettersKey = "dobrouNocHvezdicko:learned-letters:v1";
         const progressKey = "dobrouNocHvezdicko:czech-progress:v1";
@@ -1054,6 +1056,8 @@
 
         function recordExerciseSuccess(word = "", letters = []) {
             czechProgress.stars += 1;
+            if (word) window.rewardPetCoin?.(`czech-${word.toLocaleLowerCase("cs-CZ")}`);
+            else if (letters.length) window.rewardPetCoin?.(`czech-letter-${letters.join("").toLocaleLowerCase("cs-CZ")}`);
 
             if (word) {
                 const todayKey = localDateKey();

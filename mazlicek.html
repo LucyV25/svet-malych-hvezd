@@ -59,7 +59,7 @@
             <div class="pet-scene" aria-label="Kočička čeká na společné čtení"><div class="pet" aria-hidden="true">🐱<span class="accessory" id="worn-item"></span></div></div>
             <div class="pet-info"><p class="eyebrow">Tvůj kamarád</p><h2 id="pet-name-heading">Mína</h2><form class="name-row" id="name-form"><label class="sr-only" for="pet-name">Jméno mazlíčka</label><input id="pet-name" maxlength="18" placeholder="Jméno mazlíčka"><button class="button" type="submit">Pojmenovat</button></form><span class="coin-pill" aria-label="Počet mincí">🪙 <span id="coins">0</span> mincí</span><span class="streak-pill" id="streak" aria-label="Série čtení">🔥 0 dní</span><p class="mood" id="pet-mood" role="status" aria-live="polite">Už se těší na společné čtení.</p><button class="button primary" id="feed" type="button">🥣 Koupit pamlsek · 6 mincí</button></div>
         </section>
-        <section class="panel" aria-labelledby="reading-title"><h2 id="reading-title">Dnešní čtecí chvilka</h2><p class="muted">Přečti slovo nahlas. Až ho přečteš, klepni na kartičku a přidej mince do kasičky. Série se počítá už od jednoho slovíčka za den.</p><div class="word-list" id="word-list"></div><div class="challenge-footer"><span class="coin-pill" id="earned-today">Dnešní odměna: 0 / 12 🪙</span><span class="muted">Nová sada slov přijde zítra.</span></div><p class="status" id="reading-status" role="status" aria-live="polite"></p></section>
+        <section class="panel" aria-labelledby="reading-title"><h2 id="reading-title">Dnešní čtecí chvilka</h2><p class="muted">Přečti slovo nahlas. Až ho přečteš, klepni na kartičku a přidej mince do kasičky. Série se počítá už od jednoho slovíčka za den.</p><div class="word-list" id="word-list"></div><div class="challenge-footer"><span class="coin-pill" id="earned-today">Dnešní odměna: 0 / 12 🪙</span><span class="coin-pill" id="practice-earned">Mince z cvičení dnes: 0 / 12</span><span class="muted">Nová sada slov přijde zítra.</span></div><p class="status" id="reading-status" role="status" aria-live="polite"></p></section>
         <section class="panel" aria-labelledby="shop-title"><h2 id="shop-title">Obchůdek pro mazlíčka</h2><p class="muted">Vyber doplněk. Zakoupený doplněk můžeš kdykoliv vyměnit.</p><div class="shop" id="shop"></div><p class="status" id="shop-status" role="status" aria-live="polite"></p></section>
     </main>
     <footer>Minci získáš za přečtené slovo. Mazlíček na tebe počká, i když dnes nebudeš mít čas číst.</footer>
@@ -97,6 +97,8 @@
             $("#pet-mood").textContent=state.fed ? `${state.name} si pochutnala a spokojeně odpočívá.` : `Už se těší na společné čtení${state.name.endsWith("a")?" a pamlsek":""}.`;
             const earned=state.done.length*2;
             $("#earned-today").textContent=`Dnešní odměna: ${earned} / 12 🪙`;
+            const practiceRewards=state.practiceRewards?.date===today && Array.isArray(state.practiceRewards.ids) ? state.practiceRewards.ids.length : 0;
+            $("#practice-earned").textContent=`Mince z cvičení dnes: ${practiceRewards} / 12`;
             const wordList=$("#word-list"); wordList.replaceChildren();
             const words=wordSets[Math.floor(Date.parse(`${today}T00:00:00Z`)/86400000)%wordSets.length];
             words.forEach((word,index)=>{ const button=document.createElement("button"); button.type="button"; button.className=`word${state.done.includes(index)?" done":""}`; button.textContent=state.done.includes(index)?`✓ ${word}`:word; button.disabled=state.done.includes(index); button.setAttribute("aria-label",state.done.includes(index)?`${word} přečteno`:`Přečíst slovo ${word} a získat 2 mince`); button.addEventListener("click",()=>{ if(state.lastRead!==today){state.streak=dayGap(state.lastRead,today)===1?state.streak+1:1;state.lastRead=today;} state.done.push(index); state.coins+=2; save(); render(); $("#reading-status").textContent=`Skvěle! Za slovo „${word}“ máš 2 mince.`; }); wordList.append(button); });
@@ -107,6 +109,7 @@
         }
         $("#name-form").addEventListener("submit",event=>{event.preventDefault();const name=$("#pet-name").value.trim();if(!name)return;state.name=name;save();render();$("#shop-status").textContent=`Těší mě, ${name}!`;});
         $("#feed").addEventListener("click",()=>{if(state.fed||state.coins<6)return;state.coins-=6;state.fed=true;save();render();});
+        window.addEventListener("storage",(event)=>{if(event.key!==storageKey || !event.newValue)return;try{Object.assign(state,JSON.parse(event.newValue));render();}catch{}});
         render();
     </script>
 </body>

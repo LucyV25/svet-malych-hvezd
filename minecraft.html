@@ -343,6 +343,7 @@
             <a class="top-link" href="minecraft.html" aria-current="page">Minecraft</a>
             <a class="top-link" href="advent.html">Advent</a>
             <a class="top-link" href="cteni.html">Čtení</a>
+            <a class="top-link" href="mazlicek.html">🐱 Mazlíček</a>
         </nav>
     </header>
     <main>
@@ -503,6 +504,7 @@
         </div>
     </main>
     <footer>Každý malý krok se počítá. V Minecraftu i ve škole se učíme bezpečně a hravě.</footer>
+    <script src="scripts/pet-rewards.js"></script>
     <script>
         const missionCount = 9;
         const progressStorageKey = "minecraft-adventure-progress-v1";
@@ -891,6 +893,7 @@
             if (!isMissionComplete(level, index)) {
                 completedMissions.add(missionKey(level, index));
                 saveAdventureProgress();
+                window.rewardPetCoin?.(`minecraft-${level}-${index}`);
             }
             const tile = mapGrid.querySelector(`[data-mission="${index}"]`);
             if (tile) tile.classList.add("is-done");
