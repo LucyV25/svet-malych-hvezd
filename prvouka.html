@@ -1163,7 +1163,8 @@
                     symbol.textContent = round.symbol ?? config.defaultSymbol ?? "";
                     symbol.hidden = !symbol.textContent;
                 }
-                options.replaceChildren(...round.choices.map((choice, choiceIndex) => {
+                const choices = config.getChoices ? config.getChoices(round) : round.choices;
+                options.replaceChildren(...choices.map((choice, choiceIndex) => {
                     const button = document.createElement("button");
                     button.className = "answer-option";
                     button.type = "button";
@@ -1286,6 +1287,7 @@
 
         createChoiceGame({
             prefix:"odd", rounds:oddRounds, startText:"Pozorně si prohlédni obrázky.",
+            getChoices:(round) => round.items,
             tryAgainText:"Zkus najít obrázek, který do skupiny nepatří.",
             completeText:"Výborně! Našla jsi všechny obrázky, které do skupiny nepatří.",
             nextLabel:"Další skupina", voiceInstruction:"Vyber obrázek, který do skupiny nepatří.",
