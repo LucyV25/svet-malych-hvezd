@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f2fb">
+    <meta name="description" content="Vyberte si matematiku nebo češtinu k procvičování.">
+    <title>Cvičení — Svět malé hvězdičky</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #352844;
+            --muted: #756a80;
+            --paper: #fffdfd;
+            --accent: #8052b8;
+            --accent-dark: #62398f;
+            --lavender: #eee5f7;
+            --line: #e9e0ed;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 22px 32px;
+        }
+        .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-family: var(--serif); font-size: 19px; font-weight: 700; text-decoration: none; }
+        .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: var(--lavender); font-family: sans-serif; font-size: 19px; }
+        .topbar-actions { display: flex; align-items: center; gap: 20px; }
+        .top-link { color: var(--accent-dark); font-size: 13px; font-weight: 650; text-decoration: none; }
+        .top-link:hover { text-decoration: underline; }
+        main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 26px 0 70px; }
+        .page-heading { max-width: 640px; margin: 0 auto 28px; text-align: center; }
+        .eyebrow { margin: 0 0 10px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+        h1, h2, p { margin-top: 0; }
+        .page-heading h1 { margin: 0 0 8px; font-family: var(--serif); font-size: clamp(30px, 5vw, 42px); font-weight: 500; line-height: 1.2; }
+        .page-heading p:last-child { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+        .subject-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .subject-card {
+            display: block;
+            padding: 28px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+            color: inherit;
+            text-decoration: none;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .subject-card:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(97, 63, 117, .12); }
+        .subject-card h2 { margin: 0 0 8px; color: var(--accent-dark); font-family: var(--serif); font-size: 24px; font-weight: 500; }
+        .subject-card p { margin: 0; color: var(--muted); font-size: 13px; }
+        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        @media (max-width: 700px) {
+            .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
+            .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 12px; }
+            main { width: min(100% - 28px, 560px); padding-top: 22px; }
+            .subject-grid { grid-template-columns: 1fr; }
+            .subject-card { padding: 23px; }
+        }
+        @media (max-width: 390px) {
+            .brand { gap: 7px; font-size: 16px; }
+            .topbar-actions { gap: 9px; }
+            .top-link { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
+            <span class="brand-mark" aria-hidden="true">☾</span>
+            <span>Svět malé hvězdičky</span>
+        </a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">Krátce a hravě</p>
+            <h1>Vyberte si cvičení</h1>
+            <p>Matematika, čeština i angličtina mají každá svou vlastní stránku.</p>
+        </header>
+        <div class="subject-grid">
+            <a class="subject-card" href="matematika.html">
+                <h2>Matematika</h2>
+                <p>Počítání, sčítání, odčítání a porovnávání s nastavitelným rozsahem.</p>
+            </a>
+            <a class="subject-card" href="cestina.html">
+                <h2>Čeština</h2>
+                <p>Probraná velká i malá písmena, slabiky a krátká slova.</p>
+            </a>
+            <a class="subject-card" href="anglictina.html">
+                <h2>Angličtina</h2>
+                <p>První slovíčka, obrázky a poslech anglické výslovnosti.</p>
+            </a>
+        </div>
+    </main>
+    <footer>Každý malý krok se počítá. Cvičte jen tak dlouho, jak je vám příjemné.</footer>
+</body>
+</html>

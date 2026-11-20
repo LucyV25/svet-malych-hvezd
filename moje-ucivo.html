@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f2fb">
+    <meta name="description" content="Vytvořte vlastní procvičování pro děti z učiva, které právě probírají.">
+    <title>Moje učivo — Svět malé hvězdičky</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #352844;
+            --muted: #756a80;
+            --paper: #fffdfd;
+            --accent: #8052b8;
+            --accent-dark: #62398f;
+            --lavender: #eee5f7;
+            --line: #e9e0ed;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        button, input, select { font: inherit; }
+        button, a, input, select { -webkit-tap-highlight-color: transparent; }
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid #b99adb;
+            outline-offset: 3px;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 22px 32px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--lavender);
+            font-family: sans-serif;
+            font-size: 19px;
+        }
+        .topbar-actions { display: flex; align-items: center; gap: 16px; }
+        .top-link { color: var(--accent-dark); font-size: 13px; font-weight: 650; text-decoration: none; }
+        .top-link:hover { text-decoration: underline; }
+        .top-link[aria-current="page"] { color: var(--muted); }
+        main { width: min(100% - 40px, 900px); margin: 0 auto; padding: 30px 0 70px; }
+        .page-heading { max-width: 680px; margin: 0 auto 26px; text-align: center; }
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        h1, h2, h3, p { margin-top: 0; }
+        .page-heading h1 {
+            margin: 0 0 8px;
+            font-family: var(--serif);
+            font-size: clamp(30px, 5vw, 42px);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+        .page-heading p:last-child { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+        .panel {
+            margin-top: 18px;
+            padding: 24px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+        }
+        .panel h2 {
+            margin: 0 0 5px;
+            font-family: var(--serif);
+            font-size: 23px;
+            font-weight: 500;
+        }
+        .intro { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
+        .storage-note {
+            padding: 11px 14px;
+            border: 1px solid #e8def0;
+            border-radius: 11px;
+            background: #f8f3fb;
+            color: #59466a;
+            font-size: 12px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        .field { display: grid; gap: 5px; }
+        .field.full { grid-column: 1 / -1; }
+        .field label, .field-title { color: #49365b; font-size: 12px; font-weight: 700; }
+        .field input, .field select {
+            width: 100%;
+            min-height: 42px;
+            padding: 8px 10px;
+            border: 1px solid #d9c9e6;
+            border-radius: 9px;
+            background: #fff;
+            color: var(--ink);
+        }
+        .template-help { min-height: 22px; margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+        .cards-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 18px 0 9px;
+        }
+        .cards-heading h3 { margin: 0; color: #49365b; font-size: 15px; }
+        .topic-row {
+            display: grid;
+            grid-template-columns: 76px minmax(0, 1fr) minmax(0, 1fr) 40px;
+            align-items: end;
+            gap: 9px;
+            margin-top: 10px;
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+        }
+        .topic-row .field label { font-size: 11px; }
+        .topic-row input { min-height: 40px; }
+        .topic-row .emoji-field input { text-align: center; font-size: 22px; }
+        .remove-row {
+            min-height: 40px;
+            border: 1px solid #ead8d8;
+            border-radius: 9px;
+            background: #fff8f8;
+            color: #914e4e;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .form-actions, .activity-actions, .topic-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .button {
+            min-height: 42px;
+            padding: 7px 14px;
+            border: 1px solid #e1d5e9;
+            border-radius: 10px;
+            background: #fff;
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 650;
+        }
+        .button.primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+        .button.danger { border-color: #e8caca; color: #914e4e; }
+        .button:disabled { cursor: default; opacity: .6; }
+        .status { min-height: 22px; margin: 10px 0 0; color: var(--accent-dark); font-size: 13px; text-align: center; }
+        .topic-list { display: grid; gap: 12px; }
+        .topic-card {
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            background: linear-gradient(145deg, #fff, #fcf9fe);
+        }
+        .topic-card h3 { margin: 0 0 3px; color: var(--accent-dark); font-family: var(--serif); font-size: 19px; }
+        .topic-meta { margin: 0; color: var(--muted); font-size: 12px; }
+        .empty-state { padding: 18px; border: 1px dashed #d9c9e6; border-radius: 12px; color: var(--muted); text-align: center; }
+        .activity-card { text-align: center; }
+        .activity-card[hidden], .panel[hidden] { display: none; }
+        .activity-prompt {
+            display: grid;
+            min-height: 180px;
+            place-items: center;
+            gap: 4px;
+            margin: 14px auto;
+            padding: 18px;
+            border: 1px solid #e5d6ef;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #eaf4fb, #fff3d8);
+        }
+        .activity-emoji { font-size: 54px; line-height: 1.2; }
+        .activity-word { margin: 0; color: var(--accent-dark); font-family: var(--serif); font-size: clamp(25px, 6vw, 34px); font-weight: 700; }
+        .activity-answer { margin: 6px 0 0; color: #317349; font-size: 20px; font-weight: 700; }
+        .activity-choices, .pair-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .activity-choice, .pair-choice {
+            min-height: 50px;
+            padding: 8px 10px;
+            border: 1px solid #d9c9e6;
+            border-radius: 10px;
+            background: #fff;
+            color: #553674;
+            cursor: pointer;
+            font-family: var(--serif);
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .activity-choice.correct, .pair-choice.correct { border-color: #63a67a; background: #edf8ef; color: #317349; }
+        .activity-choice.wrong, .pair-choice.wrong { border-color: #c87878; background: #fff1f1; color: #9a4141; }
+        .activity-choice:disabled, .pair-choice:disabled { cursor: default; opacity: 1; }
+        .pair-column { display: grid; align-content: start; gap: 8px; }
+        .pair-column h3 { margin: 0; color: var(--muted); font-size: 12px; }
+        .pair-choice[aria-pressed="true"] { border-color: var(--accent); background: #f3ebfa; }
+        .activity-instructions { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        @media (max-width: 760px) {
+            .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
+            .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 10px 14px; }
+            main { width: min(100% - 28px, 600px); padding-top: 22px; }
+            .panel { padding: 20px; }
+            .topic-row { grid-template-columns: 64px 1fr 1fr; }
+            .topic-row .remove-row { grid-column: 1 / -1; }
+        }
+        @media (max-width: 480px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .field.full { grid-column: auto; }
+            .topic-row { grid-template-columns: 62px minmax(0, 1fr); }
+            .topic-row .field:not(.emoji-field) { grid-column: 1 / -1; }
+            .topic-row .remove-row { grid-column: auto; }
+            .pair-columns { gap: 7px; }
+            .pair-choice { padding: 7px 4px; font-size: 16px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
+            <span class="brand-mark" aria-hidden="true">☾</span>
+            <span>Svět malé hvězdičky</span>
+        </a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="rozcestnik.html">Rozcestník</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="moje-ucivo.html" aria-current="page">Moje učivo</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">Pro rodiče i děti</p>
+            <h1>Moje učivo</h1>
+            <p>Vytvořte jednoduché procvičování z toho, co právě probíráte. Vyplníte pár slov a aktivitu připravíme za vás.</p>
+        </header>
+        <section class="panel" aria-labelledby="create-title">
+            <h2 id="create-title">Připravit nové téma</h2>
+            <p class="intro">Například slovíčka, písmena nebo příklady ze školy. Není potřeba nic programovat.</p>
+            <p class="storage-note">Témata se ukládají jen v tomto prohlížeči a na tomto zařízení. Zatím se nesdílejí s ostatními rodiči ani mezi zařízeními.</p>
+            <form id="topic-form">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="topic-title">Název tématu</label>
+                        <input id="topic-title" name="title" type="text" maxlength="60" placeholder="např. Slova s písmenem M" required>
+                    </div>
+                    <div class="field">
+                        <label for="topic-subject">Předmět</label>
+                        <select id="topic-subject" name="subject">
+                            <option value="czech">Čeština</option>
+                            <option value="math">Matematika</option>
+                            <option value="english">Angličtina</option>
+                            <option value="other">Jiné učivo</option>
+                        </select>
+                    </div>
+                    <div class="field full">
+                        <label for="topic-template">Jak si chceš učivo procvičovat?</label>
+                        <select id="topic-template" name="template">
+                            <option value="cards">Obrázkové kartičky</option>
+                            <option value="pairs">Přiřazování dvojic</option>
+                            <option value="listen">Poslechni a vyber odpověď</option>
+                        </select>
+                        <p class="template-help" id="template-help"></p>
+                    </div>
+                </div>
+                <div class="cards-heading">
+                    <h3>Slova, příklady nebo pojmy</h3>
+                    <button class="button" id="add-topic-row" type="button">＋ Přidat řádek</button>
+                </div>
+                <div id="topic-rows"></div>
+                <p class="intro" id="row-requirement"></p>
+                <div class="form-actions">
+                    <button class="button primary" id="save-topic" type="submit">Uložit téma</button>
+                    <button class="button" id="cancel-edit" type="button" hidden>Zrušit úpravy</button>
+                </div>
+                <p class="status" id="form-status" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+        <section class="panel" aria-labelledby="saved-title">
+            <h2 id="saved-title">Uložená témata</h2>
+            <p class="intro">Téma můžeš kdykoliv upravit, smazat nebo otevřít pro dítě.</p>
+            <div class="topic-list" id="topic-list" aria-live="polite"></div>
+        </section>
+        <section class="panel activity-card" id="activity-panel" aria-labelledby="activity-title" hidden>
+            <h2 id="activity-title"></h2>
+            <p class="activity-instructions" id="activity-instructions"></p>
+            <div id="activity-content"></div>
+            <div class="activity-actions">
+                <button class="button" id="play-instructions" type="button">🔊 Přehrát zadání</button>
+                <button class="button" id="play-prompt" type="button" hidden>🔊 Přehrát slovo</button>
+                <button class="button" id="stop-speech" type="button" hidden>⏹ Zastavit</button>
+                <button class="button primary" id="next-activity" type="button" hidden>Další</button>
+                <button class="button" id="close-activity" type="button">Zavřít cvičení</button>
+            </div>
+            <p class="status" id="activity-status" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+    <footer>Každé dítě se učí svým tempem. Krátké procvičení úplně stačí.</footer>
+    <script>
+        const storageKey = "dobrouNocHvezdicko:custom-learning-topics:v1";
+        const maxTopics = 100;
+        const maxCards = 50;
+        const subjectNames = {
+            czech: "Čeština",
+            math: "Matematika",
+            english: "Angličtina",
+            other: "Jiné učivo"
+        };
+        const templateNames = {
+            cards: "Obrázkové kartičky",
+            pairs: "Přiřazování dvojic",
+            listen: "Poslechni a vyber odpověď"
+        };
+        const templateHelp = {
+            cards: "Dítě uvidí slovo nebo příklad, může si ho poslechnout a pak odhalit odpověď.",
+            pairs: "Dítě propojí každé slovo nebo příklad se správnou odpovědí. Potřebuješ alespoň dvě dvojice.",
+            listen: "Dítě si poslechne slovo nebo otázku a vybere správnou odpověď ze tří možností. Potřebuješ alespoň tři řádky."
+        };
+        const topicForm = document.querySelector("#topic-form");
+        const topicTitleInput = document.querySelector("#topic-title");
+        const topicSubjectSelect = document.querySelector("#topic-subject");
+        const topicTemplateSelect = document.querySelector("#topic-template");
+        const topicRows = document.querySelector("#topic-rows");
+        const rowRequirement = document.querySelector("#row-requirement");
+        const formStatus = document.querySelector("#form-status");
+        const topicList = document.querySelector("#topic-list");
+        const activityPanel = document.querySelector("#activity-panel");
+        const activityTitle = document.querySelector("#activity-title");
+        const activityInstructions = document.querySelector("#activity-instructions");
+        const activityContent = document.querySelector("#activity-content");
+        const activityStatus = document.querySelector("#activity-status");
+        const playInstructionsButton = document.querySelector("#play-instructions");
+        const playPromptButton = document.querySelector("#play-prompt");
+        const stopSpeechButton = document.querySelector("#stop-speech");
+        const nextActivityButton = document.querySelector("#next-activity");
+        let topics = loadTopics();
+        let editingTopicId = null;
+        let activeTopic = null;
+        let activeCardIndex = 0;
+        let activePromptCard = null;
+        let activePairCards = [];
+        let activePairOrder = [];
+        let matchedPairIds = new Set();
+        let selectedPairId = "";
+        let answerRevealed = false;
+        let answerCompleted = false;
+        let activeUtterance = null;
+
+        function makeId() {
+            return globalThis.crypto?.randomUUID?.()
+                ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+        }
+
+        function isValidCard(card) {
+            return card && typeof card.id === "string"
+                && typeof card.prompt === "string" && card.prompt.trim().length > 0 && card.prompt.length <= 120
+                && typeof card.answer === "string" && card.answer.trim().length > 0 && card.answer.length <= 120
+                && typeof card.emoji === "string" && card.emoji.length <= 12;
+        }
+
+        function isValidTopic(topic) {
+            return topic && typeof topic.id === "string"
+                && typeof topic.title === "string" && topic.title.trim().length > 0 && topic.title.length <= 60
+                && Object.hasOwn(subjectNames, topic.subject)
+                && Object.hasOwn(templateNames, topic.template)
+                && Array.isArray(topic.cards) && topic.cards.length > 0 && topic.cards.length <= maxCards
+                && topic.cards.every(isValidCard);
+        }
+
+        function loadTopics() {
+            try {
+                const saved = window.localStorage.getItem(storageKey);
+                if (saved === null) return [];
+                const parsed = JSON.parse(saved);
+                if (!Array.isArray(parsed) || parsed.length > maxTopics || !parsed.every(isValidTopic)) {
+                    throw new Error("Uložená témata mají neočekávaný formát.");
+                }
+                return parsed;
+            } catch (error) {
+                console.error("Vlastní témata se nepodařilo načíst.", error);
+                formStatus.textContent = "Uložená témata se nepodařilo načíst. Předchozí data nebyla změněna.";
+                return [];
+            }
+        }
+
+        function saveTopics(nextTopics) {
+            try {
+                window.localStorage.setItem(storageKey, JSON.stringify(nextTopics));
+                topics = nextTopics;
+                return true;
+            } catch (error) {
+                console.error("Vlastní témata se nepodařilo uložit.", error);
+                formStatus.textContent = "Téma se nepodařilo uložit. Zkontroluj volné místo v úložišti prohlížeče.";
+                return false;
+            }
+        }
+
+        function createTopicRow(card = {}) {
+            const row = document.createElement("div");
+            row.className = "topic-row";
+            row.innerHTML = `
+                <div class="field emoji-field">
+                    <label>Obrázek</label>
+                    <input type="text" maxlength="12" placeholder="⭐" aria-label="Obrázek nebo emoji">
+                </div>
+                <div class="field">
+                    <label>Slovo nebo příklad</label>
+                    <input type="text" maxlength="120" placeholder="např. 2 + 3">
+                </div>
+                <div class="field">
+                    <label>Odpověď nebo význam</label>
+                    <input type="text" maxlength="120" placeholder="např. 5">
+                </div>
+                <button class="remove-row" type="button" aria-label="Odebrat řádek">×</button>`;
+            const inputs = row.querySelectorAll("input");
+            inputs[0].value = card.emoji ?? "";
+            inputs[1].value = card.prompt ?? "";
+            inputs[2].value = card.answer ?? "";
+            inputs[1].setAttribute("aria-label", "Slovo, příklad nebo pojem");
+            inputs[2].setAttribute("aria-label", "Odpověď nebo význam");
+            row.querySelector(".remove-row").addEventListener("click", () => {
+                if (topicRows.children.length <= 1) {
+                    formStatus.textContent = "Každé téma musí mít alespoň jeden řádek.";
+                    return;
+                }
+                row.remove();
+                updateRowRequirement();
+            });
+            topicRows.append(row);
+            updateRowRequirement();
+        }
+
+        function updateRowRequirement() {
+            const count = topicRows.children.length;
+            topicRows.querySelectorAll(".remove-row").forEach((button) => {
+                button.disabled = count <= 1;
+            });
+            rowRequirement.textContent = topicTemplateSelect.value === "listen"
+                ? `Pro tuto hru přidej alespoň 3 řádky. Teď máš ${count}.`
+                : topicTemplateSelect.value === "pairs"
+                    ? `Pro přiřazování přidej alespoň 2 řádky. Teď máš ${count}.`
+                    : `Přidej alespoň jeden řádek. Teď máš ${count}.`;
+        }
+
+        function clearEditor() {
+            topicForm.reset();
+            topicRows.replaceChildren();
+            createTopicRow();
+            createTopicRow();
+            createTopicRow();
+            editingTopicId = null;
+            document.querySelector("#save-topic").textContent = "Uložit téma";
+            document.querySelector("#cancel-edit").hidden = true;
+            formStatus.textContent = "";
+            updateTemplateHelp();
+        }
+
+        function updateTemplateHelp() {
+            document.querySelector("#template-help").textContent = templateHelp[topicTemplateSelect.value];
+            updateRowRequirement();
+        }
+
+        function renderTopics() {
+            if (!topics.length) {
+                const empty = document.createElement("p");
+                empty.className = "empty-state";
+                empty.textContent = "Zatím tu nejsou žádná témata. Vytvoř první nahoře.";
+                topicList.replaceChildren(empty);
+                return;
+            }
+
+            topicList.replaceChildren(...topics.map((topic) => {
+                const card = document.createElement("article");
+                card.className = "topic-card";
+                const heading = document.createElement("h3");
+                heading.textContent = topic.title;
+                const meta = document.createElement("p");
+                meta.className = "topic-meta";
+                meta.textContent = `${subjectNames[topic.subject]} · ${templateNames[topic.template]} · ${topic.cards.length} položek`;
+                const actions = document.createElement("div");
+                actions.className = "topic-actions";
+                const playButton = createButton("Spustit pro dítě", "primary");
+                playButton.addEventListener("click", () => startActivity(topic));
+                const editButton = createButton("Upravit");
+                editButton.addEventListener("click", () => editTopic(topic));
+                const deleteButton = createButton("Smazat", "danger");
+                deleteButton.addEventListener("click", () => deleteTopic(topic));
+                actions.append(playButton, editButton, deleteButton);
+                card.append(heading, meta, actions);
+                return card;
+            }));
+        }
+
+        function createButton(label, kind = "") {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = `button${kind ? ` ${kind}` : ""}`;
+            button.textContent = label;
+            return button;
+        }
+
+        function collectCards() {
+            return [...topicRows.querySelectorAll(".topic-row")].map((row) => {
+                const inputs = row.querySelectorAll("input");
+                const card = {
+                    id: row.dataset.cardId || makeId(),
+                    emoji: inputs[0].value.trim(),
+                    prompt: inputs[1].value.trim(),
+                    answer: inputs[2].value.trim()
+                };
+                return card.prompt || card.answer || card.emoji ? card : null;
+            }).filter(Boolean);
+        }
+
+        topicForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const cards = collectCards();
+            const minimum = topicTemplateSelect.value === "listen" ? 3
+                : topicTemplateSelect.value === "pairs" ? 2 : 1;
+            if (cards.length < minimum) {
+                formStatus.textContent = `Pro vybranou aktivitu přidej alespoň ${minimum} položek.`;
+                return;
+            }
+            if (cards.some((card) => !card.prompt || !card.answer)) {
+                formStatus.textContent = "U každého vyplněného řádku doplň slovo nebo příklad i odpověď.";
+                return;
+            }
+            if (topicTemplateSelect.value === "pairs"
+                && (new Set(cards.map((card) => card.prompt.toLocaleLowerCase("cs-CZ"))).size !== cards.length
+                    || new Set(cards.map((card) => card.answer.toLocaleLowerCase("cs-CZ"))).size !== cards.length)) {
+                formStatus.textContent = "U přiřazování musí být každé slovo i každá odpověď jedinečná.";
+                return;
+            }
+            if (topicTemplateSelect.value === "listen"
+                && new Set(cards.map((card) => card.answer.toLocaleLowerCase("cs-CZ"))).size !== cards.length) {
+                formStatus.textContent = "U poslechové hry musí mít každá odpověď jiný text.";
+                return;
+            }
+
+            const topic = {
+                id: editingTopicId ?? makeId(),
+                title: topicTitleInput.value.trim(),
+                subject: topicSubjectSelect.value,
+                template: topicTemplateSelect.value,
+                cards,
+                updatedAt: new Date().toISOString()
+            };
+            if (!isValidTopic(topic)) {
+                formStatus.textContent = "Zkontroluj název tématu a vyplň slovo i odpověď u každého řádku.";
+                return;
+            }
+            if (!editingTopicId && topics.length >= maxTopics) {
+                formStatus.textContent = "Dosáhli jsme limitu 100 uložených témat. Některé nejdřív smaž.";
+                return;
+            }
+
+            const nextTopics = editingTopicId
+                ? topics.map((item) => item.id === editingTopicId ? topic : item)
+                : [...topics, topic];
+            if (!saveTopics(nextTopics)) return;
+            renderTopics();
+            clearEditor();
+            formStatus.textContent = "Téma je uložené v tomto prohlížeči.";
+        });
+
+        function editTopic(topic) {
+            editingTopicId = topic.id;
+            topicTitleInput.value = topic.title;
+            topicSubjectSelect.value = topic.subject;
+            topicTemplateSelect.value = topic.template;
+            topicRows.replaceChildren();
+            topic.cards.forEach((card) => {
+                createTopicRow(card);
+                topicRows.lastElementChild.dataset.cardId = card.id;
+            });
+            document.querySelector("#save-topic").textContent = "Uložit změny";
+            document.querySelector("#cancel-edit").hidden = false;
+            updateTemplateHelp();
+            formStatus.textContent = "Upravuješ uložené téma.";
+            topicForm.scrollIntoView({ behavior: "smooth", block: "start" });
+            topicTitleInput.focus();
+        }
+
+        function deleteTopic(topic) {
+            if (!window.confirm(`Opravdu smazat téma „${topic.title}“?`)) return;
+            const nextTopics = topics.filter((item) => item.id !== topic.id);
+            if (saveTopics(nextTopics)) {
+                renderTopics();
+                formStatus.textContent = "Téma bylo smazáno.";
+                if (activeTopic?.id === topic.id) closeActivity();
+            }
+        }
+
+        function shuffle(items) {
+            const result = [...items];
+            for (let index = result.length - 1; index > 0; index -= 1) {
+                const swapIndex = Math.floor(Math.random() * (index + 1));
+                [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+            }
+            return result;
+        }
+
+        function startActivity(topic) {
+            stopSpeech(false);
+            activeTopic = topic;
+            activeCardIndex = 0;
+            activePromptCard = null;
+            activePairCards = [];
+            activePairOrder = [];
+            matchedPairIds = new Set();
+            selectedPairId = "";
+            answerRevealed = false;
+            answerCompleted = false;
+            activityTitle.textContent = topic.title;
+            activityPanel.hidden = false;
+            activityPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+            if (topic.template === "cards") renderFlashcard();
+            if (topic.template === "pairs") startPairRound();
+            if (topic.template === "listen") startListenRound();
+        }
+
+        function renderFlashcard() {
+            const card = activeTopic.cards[activeCardIndex];
+            activityInstructions.textContent = `Kartička ${activeCardIndex + 1} z ${activeTopic.cards.length}.`;
+            playPromptButton.hidden = false;
+            nextActivityButton.hidden = false;
+            nextActivityButton.textContent = activeCardIndex === activeTopic.cards.length - 1 ? "Začít znovu" : "Další kartička";
+            const prompt = document.createElement("div");
+            prompt.className = "activity-prompt";
+            if (card.emoji) {
+                const emoji = document.createElement("span");
+                emoji.className = "activity-emoji";
+                emoji.textContent = card.emoji;
+                emoji.setAttribute("aria-hidden", "true");
+                prompt.append(emoji);
+            }
+            const word = document.createElement("p");
+            word.className = "activity-word";
+            word.lang = activeTopic.subject === "english" ? "en" : "cs";
+            word.textContent = card.prompt;
+            prompt.append(word);
+            const reveal = createButton(answerRevealed ? "Odpověď je ukázaná" : "Ukázat odpověď", "primary");
+            reveal.disabled = answerRevealed;
+            reveal.addEventListener("click", () => {
+                answerRevealed = true;
+                const answer = document.createElement("p");
+                answer.className = "activity-answer";
+                answer.textContent = card.answer;
+                prompt.append(answer);
+                reveal.textContent = "Odpověď je ukázaná";
+                reveal.disabled = true;
+                activityStatus.textContent = "Výborně, můžeš pokračovat.";
+                speak(card.answer, "cs", activityStatus);
+            });
+            activityContent.replaceChildren(prompt, reveal);
+            activityStatus.textContent = "";
+        }
+
+        function startPairRound() {
+            const shuffledCards = shuffle(activeTopic.cards);
+            activePairCards = shuffledCards.slice(0, Math.min(4, shuffledCards.length));
+            activePairOrder = shuffle(activePairCards);
+            matchedPairIds = new Set();
+            selectedPairId = "";
+            renderPairRound();
+        }
+
+        function renderPairRound() {
+            activityInstructions.textContent = "Vyber slovo vlevo a najdi jeho dvojici vpravo.";
+            playPromptButton.hidden = true;
+            nextActivityButton.hidden = false;
+            nextActivityButton.textContent = matchedPairIds.size === activePairCards.length ? "Nové dvojice" : "Zamíchat dvojice";
+            const columns = document.createElement("div");
+            columns.className = "pair-columns";
+            const left = document.createElement("div");
+            left.className = "pair-column";
+            const leftTitle = document.createElement("h3");
+            leftTitle.textContent = "Slovo nebo příklad";
+            left.append(leftTitle, ...activePairCards.map((card) => createPairButton(card, "prompt")));
+            const right = document.createElement("div");
+            right.className = "pair-column";
+            const rightTitle = document.createElement("h3");
+            rightTitle.textContent = "Odpověď";
+            right.append(rightTitle, ...activePairOrder.map((card) => createPairButton(card, "answer")));
+            columns.append(left, right);
+            activityContent.replaceChildren(columns);
+            activityStatus.textContent = matchedPairIds.size === activePairCards.length
+                ? "Výborně! Našla jsi všechny dvojice."
+                : "Správná dvojice zezelená.";
+        }
+
+        function createPairButton(card, side) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "pair-choice";
+            button.dataset.cardId = card.id;
+            button.dataset.side = side;
+            button.textContent = side === "prompt" ? `${card.emoji ? `${card.emoji} ` : ""}${card.prompt}` : card.answer;
+            button.setAttribute("aria-pressed", String(side === "prompt" && selectedPairId === card.id));
+            if (matchedPairIds.has(card.id)) {
+                button.classList.add("correct");
+                button.disabled = true;
+            }
+            if (side === "prompt" && selectedPairId === card.id) button.setAttribute("aria-pressed", "true");
+            button.addEventListener("click", () => choosePair(card, side));
+            return button;
+        }
+
+        function choosePair(card, side) {
+            if (matchedPairIds.has(card.id)) return;
+            activityContent.querySelectorAll(".pair-choice.wrong").forEach((button) => button.classList.remove("wrong"));
+            if (side === "prompt") {
+                selectedPairId = card.id;
+                renderPairRound();
+                activityStatus.textContent = `Vybráno ${card.prompt}. Najdi jeho odpověď.`;
+                speak(card.prompt, activeTopic.subject === "english" ? "en" : "cs", activityStatus);
+                return;
+            }
+            if (!selectedPairId) {
+                activityStatus.textContent = "Nejdřív vyber slovo nebo příklad vlevo.";
+                return;
+            }
+            if (card.id !== selectedPairId) {
+                const wrongButton = [...activityContent.querySelectorAll(".pair-choice")].find((button) => (
+                    button.dataset.side === "answer" && button.dataset.cardId === card.id
+                ));
+                wrongButton?.classList.add("wrong");
+                activityStatus.textContent = "To není správná dvojice. Zkus to znovu.";
+                speak("To není správná dvojice. Zkus to znovu.", "cs", activityStatus);
+                return;
+            }
+            matchedPairIds.add(card.id);
+            selectedPairId = "";
+            renderPairRound();
+            if (matchedPairIds.size === activePairCards.length) {
+                activityStatus.textContent = "Výborně! Našla jsi všechny dvojice.";
+                speak("Výborně! Našla jsi všechny dvojice.", "cs", activityStatus);
+            } else {
+                activityStatus.textContent = `Správně! ${card.prompt} patří k ${card.answer}.`;
+                speak(`Správně! ${card.prompt} patří k ${card.answer}.`, "cs", activityStatus);
+            }
+        }
+
+        function startListenRound() {
+            activePromptCard = activeTopic.cards[Math.floor(Math.random() * activeTopic.cards.length)];
+            answerCompleted = false;
+            activityInstructions.textContent = "Poslechni si slovo nebo příklad a vyber správnou odpověď.";
+            playPromptButton.hidden = false;
+            nextActivityButton.hidden = false;
+            nextActivityButton.textContent = "Další otázka";
+            const choices = shuffle([
+                activePromptCard,
+                ...shuffle(activeTopic.cards.filter((card) => card.id !== activePromptCard.id)).slice(0, 2)
+            ]);
+            const prompt = document.createElement("div");
+            prompt.className = "activity-prompt";
+            const listenHint = document.createElement("p");
+            listenHint.className = "intro";
+            listenHint.textContent = "Stiskni „Přehrát slovo“.";
+            prompt.append(listenHint);
+            const choicesContainer = document.createElement("div");
+            choicesContainer.className = "activity-choices";
+            choices.forEach((card) => {
+                const choice = document.createElement("button");
+                choice.type = "button";
+                choice.className = "activity-choice";
+                choice.dataset.cardId = card.id;
+                choice.textContent = `${card.emoji ? `${card.emoji} ` : ""}${card.answer}`;
+                choice.addEventListener("click", () => chooseListenAnswer(card, choice));
+                choicesContainer.append(choice);
+            });
+            activityContent.replaceChildren(prompt, choicesContainer);
+            activityStatus.textContent = "";
+        }
+
+        function chooseListenAnswer(card, button) {
+            if (answerCompleted) return;
+            if (card.id !== activePromptCard.id) {
+                button.classList.add("wrong");
+                activityStatus.textContent = "To není správná odpověď. Poslechni si slovo znovu a zkus to ještě jednou.";
+                speak("To není správná odpověď. Zkus to ještě jednou.", "cs", activityStatus);
+                return;
+            }
+            answerCompleted = true;
+            button.classList.add("correct");
+            activityContent.querySelectorAll(".activity-choice").forEach((choice) => { choice.disabled = true; });
+            activityStatus.textContent = `Správně! ${activePromptCard.prompt} — ${activePromptCard.answer}.`;
+            speak(`Správně! ${activePromptCard.prompt}. ${activePromptCard.answer}.`, "cs", activityStatus);
+        }
+
+        function speak(text, language, statusElement) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                statusElement.textContent = "Tento prohlížeč nepodporuje čtení nahlas.";
+                return;
+            }
+            stopSpeech(false);
+            const utterance = new SpeechSynthesisUtterance(text);
+            const prefix = language === "en" ? "en" : "cs";
+            const voice = window.speechSynthesis.getVoices()
+                .find((item) => item.lang?.toLowerCase().startsWith(prefix));
+            if (voice) utterance.voice = voice;
+            utterance.lang = language === "en" ? "en-US" : "cs-CZ";
+            utterance.rate = language === "en" ? 0.82 : 0.9;
+            activeUtterance = utterance;
+            stopSpeechButton.hidden = false;
+            utterance.onend = () => {
+                if (activeUtterance !== utterance) return;
+                activeUtterance = null;
+                stopSpeechButton.hidden = true;
+            };
+            utterance.onerror = (event) => {
+                if (event.error === "canceled" || event.error === "interrupted" || activeUtterance !== utterance) return;
+                activeUtterance = null;
+                stopSpeechButton.hidden = true;
+                statusElement.textContent = "Přehrávání se nepovedlo. Zkontroluj zvuk a hlasové nastavení zařízení.";
+            };
+            window.speechSynthesis.speak(utterance);
+            statusElement.textContent = "Přehrávám nahlas.";
+        }
+
+        function stopSpeech(clearStatus = true) {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            activeUtterance = null;
+            stopSpeechButton.hidden = true;
+            if (clearStatus) activityStatus.textContent = "Přehrávání bylo zastaveno.";
+        }
+
+        function closeActivity() {
+            stopSpeech(false);
+            activityPanel.hidden = true;
+            activeTopic = null;
+        }
+
+        document.querySelector("#add-topic-row").addEventListener("click", () => {
+            if (topicRows.children.length >= maxCards) {
+                formStatus.textContent = `Jedno téma může mít nejvýše ${maxCards} položek.`;
+                return;
+            }
+            createTopicRow();
+            topicRows.lastElementChild.querySelector("input").focus();
+        });
+        topicTemplateSelect.addEventListener("change", updateTemplateHelp);
+        document.querySelector("#cancel-edit").addEventListener("click", clearEditor);
+        nextActivityButton.addEventListener("click", () => {
+            if (!activeTopic) return;
+            stopSpeech(false);
+            if (activeTopic.template === "cards") {
+                activeCardIndex = (activeCardIndex + 1) % activeTopic.cards.length;
+                answerRevealed = false;
+                renderFlashcard();
+            } else if (activeTopic.template === "pairs") {
+                startPairRound();
+            } else {
+                startListenRound();
+            }
+        });
+        playInstructionsButton.addEventListener("click", () => {
+            if (!activeTopic) return;
+            const instructions = activeTopic.template === "cards"
+                ? "Podívej se na kartičku. Můžeš si slovo poslechnout a potom ukázat odpověď."
+                : activeTopic.template === "pairs"
+                    ? "Vyber slovo nebo příklad vlevo a najdi správnou odpověď vpravo."
+                    : "Poslechni si slovo nebo příklad a klepni na správnou odpověď.";
+            speak(instructions, "cs", activityStatus);
+        });
+        playPromptButton.addEventListener("click", () => {
+            if (!activeTopic) return;
+            if (activeTopic.template === "cards") {
+                const card = activeTopic.cards[activeCardIndex];
+                speak(card.prompt, activeTopic.subject === "english" ? "en" : "cs", activityStatus);
+            } else if (activeTopic.template === "listen" && activePromptCard) {
+                speak(activePromptCard.prompt, activeTopic.subject === "english" ? "en" : "cs", activityStatus);
+            }
+        });
+        stopSpeechButton.addEventListener("click", () => stopSpeech());
+        document.querySelector("#close-activity").addEventListener("click", closeActivity);
+        window.addEventListener("beforeunload", () => {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        });
+        createTopicRow();
+        createTopicRow();
+        createTopicRow();
+        renderTopics();
+        updateTemplateHelp();
+    </script>
+</body>
+</html>

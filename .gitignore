@@ -1,0 +1,4 @@
+node_modules/
+data/favorites.json
+data/favorites.json.*.tmp
+.DS_Store

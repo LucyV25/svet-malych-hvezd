@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f2fb">
+    <meta name="description" content="Jemné pohádky na dobrou noc o emocích, odvaze a malých školních dobrodružstvích.">
+    <title>Pohádky na míru — Svět malé hvězdičky</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #352844;
+            --muted: #756a80;
+            --paper: #fffdfd;
+            --canvas: #f8f2fb;
+            --accent: #8052b8;
+            --accent-dark: #62398f;
+            --lavender: #eee5f7;
+            --pink: #f8e6f2;
+            --sky: #e6f3fb;
+            --gold: #fff3d6;
+            --line: #e9e0ed;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        button, input, select { font: inherit; }
+        button, a, input, select { -webkit-tap-highlight-color: transparent; }
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid #b99adb;
+            outline-offset: 3px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 22px 32px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--lavender);
+            font-family: sans-serif;
+            font-size: 19px;
+        }
+
+        .top-note {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .top-link {
+            color: var(--accent-dark);
+            font-size: 13px;
+            font-weight: 650;
+            text-decoration: none;
+        }
+
+        .top-link:hover { text-decoration: underline; }
+
+        main {
+            width: min(100% - 40px, 920px);
+            margin: 0 auto;
+            padding: 26px 0 70px;
+        }
+
+        .intro {
+            max-width: 670px;
+            margin: 0 auto 34px;
+            text-align: center;
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3, p { margin-top: 0; }
+
+        h1 {
+            margin-bottom: 12px;
+            font-family: var(--serif);
+            font-size: clamp(36px, 6vw, 54px);
+            font-weight: 500;
+            letter-spacing: -.045em;
+            line-height: 1.1;
+        }
+
+        .intro-copy {
+            max-width: 555px;
+            margin: 0 auto;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .generator-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 260px;
+            overflow: hidden;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 22px;
+            background: var(--paper);
+            box-shadow: 0 14px 40px rgba(97, 63, 117, .08);
+        }
+
+        .form-panel { padding: 34px 38px 30px; }
+
+        .form-panel h2 {
+            margin-bottom: 4px;
+            font-family: var(--serif);
+            font-size: 25px;
+            font-weight: 500;
+        }
+
+        .form-lead {
+            margin-bottom: 26px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .field { margin-bottom: 21px; }
+
+        .field label, .field legend, .field-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #49365b;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .field-hint {
+            margin: -4px 0 9px;
+            color: #81758b;
+            font-size: 12px;
+        }
+
+        input, select {
+            width: 100%;
+            min-height: 47px;
+            padding: 0 14px;
+            border: 1px solid #e4dbe8;
+            border-radius: 10px;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        input::placeholder { color: #9b91a3; }
+
+        .select-wrap { position: relative; }
+        select { appearance: none; padding-right: 42px; cursor: pointer; }
+        .select-wrap::after {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            color: var(--muted);
+            content: "⌄";
+            font-size: 18px;
+            pointer-events: none;
+            transform: translateY(-57%);
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .duration-note {
+            display: flex;
+            min-height: 47px;
+            align-items: center;
+            gap: 9px;
+            padding: 0 12px;
+            border: 1px solid #e4dbe8;
+            border-radius: 10px;
+            background: #f7f2fb;
+            color: #5b4770;
+            font-size: 13px;
+        }
+
+        .duration-note span { color: #8c62b3; font-size: 16px; }
+
+        .submit-button {
+            display: flex;
+            width: 100%;
+            min-height: 51px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 5px;
+            border: 0;
+            border-radius: 11px;
+            background: var(--accent);
+            color: white;
+            cursor: pointer;
+            font-weight: 650;
+            transition: background .2s, transform .2s;
+        }
+
+        .submit-button:hover { background: var(--accent-dark); transform: translateY(-1px); }
+        .submit-button span { font-size: 17px; }
+
+        .privacy-note {
+            margin: 13px 0 0;
+            color: #81758b;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .aside-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 29px 25px;
+            background: linear-gradient(160deg, var(--lavender), var(--pink));
+        }
+
+        .aside-illustration {
+            display: grid;
+            min-height: 170px;
+            place-items: center;
+            border-radius: 16px;
+            background: linear-gradient(145deg, var(--sky), var(--gold));
+            font-size: 73px;
+        }
+
+        .aside-panel h3 {
+            margin: 25px 0 8px;
+            font-family: var(--serif);
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .aside-panel p {
+            margin-bottom: 20px;
+            color: #695b75;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .gentle-points { display: grid; gap: 10px; }
+        .gentle-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            color: #514360;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .gentle-point span { color: #b86193; font-size: 14px; }
+
+        .story-card {
+            margin-top: 24px;
+            padding: 35px clamp(24px, 6vw, 64px) 38px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 22px;
+            background: var(--paper);
+            box-shadow: 0 14px 40px rgba(97, 63, 117, .08);
+        }
+
+        .story-card[hidden] { display: none; }
+        .favorites-card {
+            margin-top: 24px;
+            padding: 27px 30px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 22px;
+            background: var(--paper);
+            box-shadow: 0 14px 40px rgba(97, 63, 117, .08);
+        }
+
+        .favorites-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 15px;
+        }
+
+        .favorites-heading .eyebrow { margin-bottom: 3px; }
+        .favorites-heading h2 {
+            margin: 0;
+            font-family: var(--serif);
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .favorites-count {
+            display: grid;
+            min-width: 32px;
+            height: 32px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--lavender);
+            color: var(--accent-dark);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .favorites-tools {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 7px;
+        }
+
+        .favorites-tools .secondary-button { min-height: 36px; padding: 0 11px; font-size: 12px; }
+
+        .favorites-empty {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .favorite-list { display: grid; gap: 10px; }
+        .favorite-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 15px 16px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .favorite-copy { min-width: 0; }
+        .favorite-copy h3 {
+            margin: 0 0 3px;
+            font-family: var(--serif);
+            font-size: 17px;
+            font-weight: 500;
+        }
+        .favorite-copy p {
+            display: -webkit-box;
+            overflow: hidden;
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        .favorite-actions { display: flex; flex-shrink: 0; gap: 7px; }
+        .favorite-actions .secondary-button { min-height: 36px; padding: 0 11px; font-size: 12px; }
+
+        .story-heading { text-align: center; }
+        .story-heading .eyebrow { margin-bottom: 7px; }
+        .story-heading h2 {
+            margin-bottom: 21px;
+            font-family: var(--serif);
+            font-size: clamp(26px, 4vw, 34px);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .story-heading .reading-time {
+            margin: -13px 0 23px;
+            color: #81758b;
+            font-size: 12px;
+        }
+
+        .story-text {
+            max-width: 650px;
+            margin: 0 auto;
+            color: #4c4055;
+            font-family: var(--serif);
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        .story-text p { margin: 0 0 17px; }
+        .story-text p:last-child { margin-bottom: 0; }
+
+        .story-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .secondary-button {
+            min-height: 42px;
+            padding: 0 16px;
+            border: 1px solid #e5daeb;
+            border-radius: 9px;
+            background: transparent;
+            color: #63487c;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .secondary-button:hover { background: #f7effa; }
+
+        .speech-control {
+            display: inline-flex;
+            min-height: 42px;
+            align-items: center;
+            gap: 8px;
+            padding: 0 10px;
+            border: 1px solid #e5daeb;
+            border-radius: 9px;
+            color: #63487c;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .speech-control select {
+            width: auto;
+            min-height: 32px;
+            padding: 0 28px 0 8px;
+            border: 0;
+            font-size: 12px;
+        }
+
+        .story-text.is-reading {
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(238, 229, 247, .55), transparent);
+        }
+
+        .toast {
+            min-height: 22px;
+            margin: 12px 0 0;
+            color: var(--accent-dark);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        footer {
+            padding: 0 20px 24px;
+            color: #81758b;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
+            .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 11px; }
+            .top-note { max-width: 125px; text-align: right; }
+            main { width: min(100% - 28px, 560px); padding-top: 22px; }
+            .intro { margin-bottom: 25px; }
+            .intro-copy { font-size: 14px; }
+            .generator-card { grid-template-columns: 1fr; border-radius: 17px; }
+            .form-panel { padding: 27px 23px 24px; }
+            .aside-panel { display: none; }
+            .field-row { gap: 11px; }
+            .story-card, .favorites-card { margin-top: 17px; padding: 26px 20px; border-radius: 17px; }
+            .story-text { font-size: 16px; }
+            .favorites-heading { align-items: flex-start; }
+            .favorites-tools { max-width: 58%; }
+            .favorite-item { align-items: flex-start; flex-direction: column; gap: 10px; }
+            .favorite-actions { width: 100%; }
+        }
+
+        @media (max-width: 390px) {
+            .field-row { grid-template-columns: 1fr; gap: 0; }
+        }
+
+        @media print {
+            body { background: #fff; }
+            .topbar, .intro, .generator-card, .favorites-card, footer, .story-actions, .toast { display: none !important; }
+            main { width: 100%; padding: 0; }
+            .story-card { display: block !important; border: 0; box-shadow: none; }
+            .story-text { max-width: 650px; color: #222; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
+            <span class="brand-mark" aria-hidden="true">☾</span>
+            <span>Svět malé hvězdičky</span>
+        </a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html" aria-current="page">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="minecraft.html">Minecraft</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="intro" aria-labelledby="page-title">
+            <p class="eyebrow">Večerní chvilka spolu</p>
+            <h1 id="page-title">Každý pocit má<br>svůj příběh.</h1>
+            <p class="intro-copy">Vymyslete pohádku, ve které je místo na odvahu, laskavost i dny, kdy toho je trochu moc.</p>
+        </section>
+
+        <section class="generator-card" aria-labelledby="generator-title">
+            <div class="form-panel">
+                <h2 id="generator-title">Jaký příběh dnes potřebujete?</h2>
+                <p class="form-lead">Stačí pár drobností a můžeme se vydat do pohádky.</p>
+
+                <form id="story-form">
+                    <div class="field">
+                        <label for="child-name">Jak jí říkáte?</label>
+                        <input id="child-name" name="childName" type="text" maxlength="24" placeholder="Třeba Anička (můžete nechat prázdné)">
+                    </div>
+
+                    <div class="field">
+                        <label for="theme">O čem si dnes budeme povídat?</label>
+                        <div class="select-wrap">
+                            <select id="theme" name="theme" aria-controls="custom-theme-field" aria-expanded="false">
+                                <option value="school">První třída a nové věci</option>
+                                <option value="anger">Když přijde vztek</option>
+                                <option value="perseverance">Když se něco nedaří</option>
+                                <option value="helping">Pomáhání a laskavost</option>
+                                <option value="friendship">Kamarádství a citlivé srdce</option>
+                                <option value="custom">Vlastní téma…</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="field" id="custom-theme-field" hidden>
+                        <label for="custom-theme">O čem má být vaše pohádka?</label>
+                        <input id="custom-theme" name="customTheme" type="text" maxlength="60" pattern=".*\S.*" title="Zadejte alespoň jeden znak, který není mezera." placeholder="Například strach ze tmy nebo návštěva lékaře">
+                        <p class="field-hint">Napište téma nebo situaci, kterou chcete v příběhu otevřít.</p>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="companion">Pohádkový kamarád</label>
+                            <div class="select-wrap">
+                                <select id="companion" name="companion" aria-controls="custom-companion-field" aria-expanded="false">
+                                    <option value="ježek">Ježek</option>
+                                    <option value="zajíček">Zajíček</option>
+                                    <option value="medvídek">Medvídek</option>
+                                    <option value="dráček">Dráček</option>
+                                    <option value="průvodce">Soví průvodce</option>
+                                    <option value="custom">Vlastní parťák…</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="story-length">Délka pohádky</label>
+                            <div class="select-wrap">
+                                <select id="story-length" name="length">
+                                    <option value="short">Krátká — asi 3 minuty</option>
+                                    <option value="medium">Střední — asi 6 minut</option>
+                                    <option value="long" selected>Delší — asi 10 minut</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field" id="custom-companion-field" hidden>
+                        <label for="custom-companion">Jak se váš parťák jmenuje?</label>
+                        <input id="custom-companion" name="customCompanion" type="text" maxlength="32" pattern=".*\S.*" title="Zadejte alespoň jeden znak, který není mezera." placeholder="Třeba Bublina nebo rytíř Tom">
+                    </div>
+
+                    <button class="submit-button" type="submit"><span aria-hidden="true">✦</span> Vymyslet pohádku</button>
+                    <p class="privacy-note">Bez účtu. Oblíbené zůstávají v prohlížeči, nebo na vašem počítači při sdílení.</p>
+                </form>
+            </div>
+
+            <aside class="aside-panel" aria-label="Náš laskavý přístup">
+                <div>
+                    <div class="aside-illustration" aria-hidden="true">🦄</div>
+                    <h3>Jemně a bez tlaku</h3>
+                    <p>Citlivost není něco, co je třeba spravit. Je to způsob, jak svět prožíváme — a každý se může učit svým tempem.</p>
+                </div>
+                <div class="gentle-points">
+                    <div class="gentle-point"><span aria-hidden="true">✳</span><span>Všechny pocity jsou v pořádku.</span></div>
+                    <div class="gentle-point"><span aria-hidden="true">✳</span><span>Požádat o pomoc je také odvaha.</span></div>
+                    <div class="gentle-point"><span aria-hidden="true">✳</span><span>Nemusíme všechno zvládnout napoprvé.</span></div>
+                </div>
+            </aside>
+        </section>
+
+        <section class="favorites-card" aria-labelledby="favorites-title">
+            <div class="favorites-heading">
+                <div>
+                    <p class="eyebrow">Vaše večerní polička</p>
+                    <h2 id="favorites-title">Oblíbené pohádky</h2>
+                </div>
+                <div class="favorites-tools">
+                    <span class="favorites-count" id="favorites-count" aria-label="Počet oblíbených pohádek">0</span>
+                    <button class="secondary-button" id="export-favorites" type="button">Stáhnout zálohu</button>
+                    <button class="secondary-button" id="import-favorites-button" type="button">Nahrát zálohu</button>
+                    <input id="import-favorites-file" type="file" accept="application/json,.json" hidden>
+                </div>
+            </div>
+            <p class="favorites-empty" id="favorites-empty">Zatím tu žádná pohádka není. Až nějakou uložíte, najdete ji tady.</p>
+            <div class="favorite-list" id="favorite-list"></div>
+            <p class="toast" id="favorites-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="story-card" id="story-card" aria-labelledby="story-title" aria-live="polite" hidden>
+            <div class="story-heading">
+                <p class="eyebrow">Pohádka pro dnešní večer</p>
+                <h2 id="story-title"></h2>
+                <p class="reading-time">☾ Asi 10 minut čtení</p>
+            </div>
+            <div class="story-text" id="story-text"></div>
+            <div class="story-actions">
+                <button class="secondary-button" id="read-story" type="button" aria-pressed="false">Přečíst nahlas</button>
+                <label class="speech-control" for="speech-rate">
+                    Tempo
+                    <select id="speech-rate" aria-label="Tempo čtení">
+                        <option value="0.75">Pomalu</option>
+                        <option value="0.9" selected>Normálně</option>
+                        <option value="1.05">Rychleji</option>
+                    </select>
+                </label>
+                <button class="secondary-button" id="save-story" type="button" aria-pressed="false">Uložit do oblíbených</button>
+                <button class="secondary-button" id="copy-story" type="button">Zkopírovat pohádku</button>
+                <button class="secondary-button" id="print-story" type="button">Vytisknout</button>
+                <button class="secondary-button" id="new-story" type="button">Vymyslet jinou</button>
+            </div>
+            <p class="toast" id="story-status" role="status" aria-live="polite"></p>
+        </section>
+
+    </main>
+
+    <footer>Pohádka může otevřít rozhovor. Na pocity nemusíme být sami.</footer>
+
+    <script>
+        const stories = {
+            school: {
+                title: "Škola, kde se smělo ptát",
+                opening: (name, companion) => `Když ${name} poprvé vstoupila do školy, připadala jí chodba dlouhá jako cesta přes celé království. Vedle ní cupital ${companion.nominative}, který měl v batůžku schovaný kamínek pro štěstí.`,
+                moment: [
+                    "Ve třídě čekaly nové tváře, písmenka a spousta zvuků. Některé děti se hned pustily do práce. ${name} se rozhlížela a její srdíčko tlouklo o trochu rychleji.",
+                    "Paní učitelka napsala na tabuli písmenko, které se ${name} chvíli pletlo. Zamračila se. Vypadalo to, že všichni ostatní už vědí, jak na to."
+                ],
+                practice: [
+                    "„Nemusíš vědět všechno hned,“ zašeptal ${companion}. „Můžeš se nadechnout, rozhlédnout se a zeptat se.“ ${name} zkusila pomalý nádech nosem a dlouhý výdech. Pak zvedla ruku. Paní učitelka přišla blíž a ukázala jí první tah.",
+                    "Paní učitelka si všimla jejího zamračeného čela. „Každé písmenko se učí po malých kouscích,“ řekla. ${name} ukázala, co už zkusila, a společně našly další krok."
+                ],
+                journey: [
+                    "O přestávce se chodba proměnila v řeku hlasů a kroků. ${name} se na chvilku zastavila u dveří. ${companion} nikam nespěchal. Našli klidné místo u okna, odkud bylo vidět na školní zahradu. Chvíli spolu pozorovali vrabce, jak poskakují po zábradlí.",
+                    "Když zazvonilo, ${name} se bála, že nenajde svou třídu. Vzpomněla si na značku s modrou hvězdou, kterou cestou zahlédla, a zkusila ji najít. Nešlo to hned. Mohla se ale zeptat paní učitelky, která šla kolem. Ukázala jí správné dveře a usmála se.",
+                    "Ve třídě dostali za úkol napsat své jméno. První písmenko se povedlo, druhé se naklonilo na bok a poslední se schovalo až pod čáru. ${name} se na něj zamračila. Pak si všimla, že i kamarád vedle gumuje a zkouší to znovu.",
+                    "„Chceš, abych ti ukázala, odkud začít?“ nabídla paní učitelka. ${name} přikývla. Nemusela se tvářit, že všechno ví. Společně našly první tah a pak další. Jméno na papíře nebylo úplně rovné, zato patřilo jí a ona ho napsala sama.",
+                    "Po svačině si třída četla krátkou pohádku. Když přišla řada na ${name}, písmenka se na stránce zdála být drobounká. „Můžu číst jen kousek?“ zeptala se. Paní učitelka přikývla. Jeden řádek stačil. Nikdo po ní nechtěl, aby zvládla celou stránku.",
+                    "Na zahradě se k ní přidala holčička, kterou ještě neznala. Nejdřív stály vedle sebe a dívaly se na mraky. Pak jedna ukázala na oblak ve tvaru velryby a druhá na obláček jako nadýchanou bábovku. Slova přicházela pomalu, ale úsměv už byl společný.",
+                    "Když se den chýlil ke konci, ${name} si vzpomněla na všechny nové věci. Některé byly příjemné, jiné hlučné a jedna byla těžká. ${companion} jí připomněl, že nemusí rozhodovat, jestli byl den dobrý nebo špatný. Mohl být od každého trochu.",
+                    "Ráno se jí také zdálo, že si musí všechno zapamatovat: kam dát bačkory, kdy vytáhnout sešit a kde čekat na oběd. Po cestě domů zjistila, že si zapamatovala jen některé věci. To nevadilo. Ve třídě visel obrázkový rozvrh a paní učitelka ho s dětmi ráda znovu prošla.",
+                    "Druhý den si ${name} připravila batůžek už večer. Vybrala si penál a sešit, ale nemohla najít gumu. Chvíli hledala, pak poprosila o pomoc. Guma se schovala pod knížku. Byla ráda, že ji našli, a ještě raději, že na hledání nebyla sama.",
+                    "Ve třídě někdo upustil krabici pastelek. Hluk ${name} překvapil a na okamžik si zakryla uši. Paní učitelka se zeptala, jestli chce otevřít okno nebo si na chvíli sednout stranou. Vybrala si místo u okna, kde mohla dál poslouchat, ale měla kolem sebe víc prostoru.",
+                    "Při počítání dostala každý malou hromádku knoflíků. ${name} je přerovnávala po dvou, ale jeden se skutálel pod lavici. Nejdřív ji napadlo, že úkol pokazila. Potom si ho v klidu vytáhla a pokračovala. Jedna zatoulaná věc neznamenala, že se celý úkol nepovedl.",
+                    "O velké přestávce si ${name} všimla, že spolužák sedí sám. Nevěděla, jestli si chce povídat, tak se ho zeptala. Chlapec řekl, že chce chvilku klid. ${name} to respektovala a posadila se o kousek dál. Nemusela ho rozveselovat ani vymýšlet řešení.",
+                    "Později si chlapec sám přisedl a ukázal jí obrázek svého psa. ${name} mu vyprávěla o kamínku pro štěstí. Ani jeden se nemusel změnit, aby spolu mohli chvíli být. Někdy se kamarádství začne jednou větou, jindy jen tím, že si vedle sebe necháme místo.",
+                    "Když přišel čas na úkol, ${name} se zasekla u prvního řádku. Paní učitelka jí připomněla, že se může ozvat. Společně našly, kde začít, a pak už pokračovala sama. Když práce trvá déle než ostatním, neznamená to, že jsme pomalí nebo že to neumíme.",
+                    "Jednoho rána se jí nechtělo pustit maminky u dveří. Bylo jí smutno a trochu se bála, že se jí bude stýskat celý den. Maminka jí řekla, kdy zase přijde, a paní učitelka jí nabídla, že spolu pověsí kabát. Stesk nemusel hned zmizet, aby mohla udělat první krok do třídy.",
+                    "Večer se jí zdál sen o školní zahradě. Vrabci tam pořád poskakovali a modrá hvězda ukazovala cestu do třídy. Kdyby se ráno zase cítila nejistě, mohla si vzpomenout, že se už jednou zeptala, našla cestu a zvládla jeden řádek. To pro jeden den úplně stačilo.",
+                    "Cestou domů si ${name} vybrala jednu maličkost, kterou si chce zapamatovat: našla správnou třídu a požádala o pomoc. Byly to malé kroky, ale patřily jí. Zítra může přijít další. A když bude potřebovat, může se znovu zeptat.",
+                    "Večer si doma povídali o škole jen tolik, kolik ${name} chtěla. Potom si odložila batůžek a přitulila se ke své oblíbené dece. Škola počká do rána. Teď už nemusela nic umět ani nikomu nic dokazovat. Stačilo odpočívat."
+                ],
+                ending: "${name} zjistila, že škola není závod. Každý den se může naučit jednu malou věc, poznat jednoho člověka nebo si říct o chvilku klidu. A když je toho moc, doma ji čeká náruč, která nic nezkouší a jen je.",
+                short: "Večer položila kamínek na noční stolek. Nemusel dokazovat, že je odvážný — stačilo, že jí připomínal: zítra to může zkusit zase, vlastním tempem."
+            },
+            anger: {
+                title: "Mrak, který potřeboval vydechnout",
+                opening: (name, companion) => `Jedno odpoledne stavěla ${name} s ${companion.instrumental} věž z měsíčních kostek. Byla skoro tak vysoká jako oblak, když do ní omylem ťukl ocásek. Kostky se rozkutálely po celé jeskyni.`,
+                moment: [
+                    "V bříšku se ${name} rozžhavil oranžový mrak. Pěsti se zatnuly a slova se tlačila ven hlasitěji, než by chtěla. „Tohle je pořádná zloba,“ všiml si ${companionGenitive}.",
+                    "„Já se tak snažila!“ vykřikla ${name}. Byla rozzlobená a taky jí to bylo líto. Obojí se do jejího srdce vešlo najednou."
+                ],
+                practice: [
+                    "„Vztek může přijít. Nemusíme ale nechat ruce ani slova ublížit,“ řekl ${companion}. Společně položili ruce na bříško. Nádech jako přivonět ke květině, výdech jako sfouknout svíčku. Ještě jednou. A ještě pomaleji.",
+                    "Nejdřív si ${name} poprosila o chvilku sama. Když byla připravená, řekla: „Jsem naštvaná, protože jsem tu věž dlouho stavěla.“ ${companion} poslouchal. Její mrak se nemusel hned ztratit, jen už nebyl tak bouřlivý."
+                ],
+                journey: [
+                    "Kostky byly rozházené všude kolem. ${name} cítila, jak jí v uších stále hučí. ${companion} nabídl, že zatím posbírá jen ty, které leží u dveří. Na zbytek nemuseli spěchat. Když se člověk zlobí, někdy pomůže nejdřív udělat v pokoji trochu místa.",
+                    "Z oranžového mraku vykoukla malá jiskřička. „Já už nechci křičet, ale pořád jsem naštvaná,“ řekla ${name}. ${companion} odpověděl: „To dává smysl. Pocit nemusí zmizet hned jen proto, že jsme se nadechli.“ Mrak směl zůstat, jen už nemusel rozhodovat za ni.",
+                    "Zkusili si všimnout, co jim tělo povídá. ${name} měla horké tváře a sevřené prsty. Pomalu je rozevřela, jako by pouštěla do dlaní světlo. Pak se opřela zády o měkký mech. Nemusela se usmívat ani být hned veselá.",
+                    "„Chceš, abych tu s tebou byl, nebo raději chvíli sama?“ zeptal se ${companion}. ${name} si vybrala chvilku ticha. ${companion} si sedl kousek dál, aby ji nerušil. I tohle byla domluva: říct si, co pomáhá, a dát druhému prostor.",
+                    "Za chvíli už ${name} dokázala mluvit klidněji. Řekla, že se lekla, když se věž zřítila, a mrzelo ji, kolik času jí stavba zabrala. ${companion} přiznal, že si svého ocásku nevšiml. Nehledali viníka; snažili se navzájem pochopit.",
+                    "Společně se podívali na kostky. Některé se odkutálely pod skříňku a jedna se skutálela až k jezírku. Mohli postavit věž znovu, ale nemuseli. ${name} navrhla postavit místo ní nízkou vesničku, která se tak snadno nepřevrhne.",
+                    "Při stavění se jedna stříška zase sesunula. Tentokrát ${name} cítila jen malé zaškubání v bříšku. Zastavila se a řekla: „Potřebuju chvilku.“ ${companion} přikývl. Chvilka odpočinku nebyla prohra; byla to péče o sebe.",
+                    "Když byli připravení, přidali k vesničce most a malé náměstí. Stavba nebyla dokonalá a jedna věž se nakláněla. Přesto se jim líbila. Uměli se domluvit na tom, co udělat příště, a to bylo důležitější než rovné střechy.",
+                    "Na druhý den se ${name} probudila trochu mrzutá. Nemohla najít oblíbenou ponožku a snídaně jí připadala příliš studená. Její mrak se znovu začal nafukovat. Všimla si ho tentokrát dřív: měla napjatá ramena a chtělo se jí dupnout.",
+                    "Nejdřív řekla: „Potřebuju chvíli, než se obuju.“ Dospělý, který byl poblíž, jí pomohl najít druhou ponožku. ${name} se nemusela za svůj vztek stydět. Mohla ale říct, co se děje, místo aby někoho odstrčila.",
+                    "Cestou ven si všimla, že mrak se už zmenšuje. Nezmizel úplně, ale mohla jít dál. Zkusila se nadechnout a pojmenovat tři věci, které vidí: strom, lavičku a červenou střechu. Její pozornost se pomalu vrátila k cestě.",
+                    "Odpoledne jí kamarád omylem vzal pastelku, kterou chtěla použít. Vztek znovu zaťukal na dveře. ${name} řekla: „Tuhle jsem měla připravenou. Vrať mi ji, prosím.“ Kamarád se omluvil a podal jí ji zpátky. Slova pomohla víc než křik.",
+                    "Když se někdy přece jen stane, že zvolá moc hlasitě, pořád může přijít oprava. ${name} může říct: „Mrzí mě, že jsem křičela. Byla jsem rozzlobená, ale příště zkusím říct, co potřebuji.“ Omluva nevymaže pocit, ale může znovu spojit lidi.",
+                    "Večer si ${name} nakreslila několik různých mraků. Jeden byl obrovský a tmavý, jiný jen maličký. Vedle nakreslila cesty, které jí pomáhají: dýchání, tichý kout, prosbu o pomoc a chvíli o samotě. Nemusela si pamatovat všechny; stačilo, že má na výběr.",
+                    "Některé dny bude mrak přicházet častěji, jiné dny skoro vůbec. ${companion} jí připomněl, že to není zkouška, ve které se musí získat plný počet bodů. Každý pokus všimnout si pocitu je důležitý, i když se člověk někdy rozčílí znovu.",
+                    "Jednou se mrak objevil, když se měla rozloučit s kamarádkou. Chtěla si ještě hrát, ale bylo už pozdě. „Je mi líto, že hra končí,“ řekla a sevřela ruce. Dospělý ji vyslechl a pomohl jí rozloučit se. Nemusela předstírat, že je spokojená; mohla být smutná i rozzlobená a přesto jít domů.",
+                    "Když se uložila do postele, představila si, jak její mrak pomalu přechází přes obzor. Nemusela ho zahánět. Mohl se unavit a odplout, zatímco ona odpočívala. Ráno přijde nový den a s ním nové možnosti, jak dát najevo, co právě potřebuje.",
+                    "Před spaním si ${name} představila svůj mrak. Už nebyl ohnivý, jen tmavě oranžový a pomalu plul večerní oblohou. Věděla, že se někdy může vrátit. Až přijde, může zkusit dýchat, říct, co potřebuje, nebo zavolat někoho, komu věří."
+                ],
+                ending: "Kostky počkaly. Pocity také nepotřebují zmizet na povel. Když se ${name} cítila připravená, společně se domluvili, co zkusí příště — třeba postavit věž dál od ocásků.",
+                short: "V noci už mrak odpočíval. ${name} věděla, že když se zase objeví, může dýchat, říct si o prostor nebo zavolat někoho blízkého."
+            },
+            perseverance: {
+                title: "Obrázek, který rostl po kouskách",
+                opening: (name, companion) => `Na výtvarnou výpravu si ${name} vybrala nakreslit nočního motýla. Jenže jedno křídlo bylo větší než druhé a barvy se rozpily. „Tohle neumím,“ povzdechla si.`,
+                moment: [
+                    "${companion} se posadil vedle ní. „Když se něco nedaří, neznamená to, že to nedokážeš. Jen možná potřebuješ jiný krok, pomoc nebo přestávku.“",
+                    "Papír vypadal jinak, než si ${name} představovala. Na chvilku měla chuť obrázek zmuchlat a schovat. Její ruce už byly unavené."
+                ],
+                practice: [
+                    "${name} odložila pastelku a protáhla si prsty. Pak si vybrala jedinou maličkost: dokreslit tečky na křídla. Nemusela dokončit všechno právě teď.",
+                    "„Můžeš mi ukázat, jak na to?“ zeptala se ${name}. Společně zkusili nový tvar. Nebyl stejný jako na obrázku v knížce, ale měl něco, co měl jen ten její."
+                ],
+                journey: [
+                    "Nejdřív si ${name} řekla, co ji na obrázku trápí. Křídla nebyla stejná a barva se rozpila. Když to vyslovila, nebyl to už jen velký chumel nezdaru. Byly to dvě konkrétní věci, se kterými mohla něco zkusit udělat.",
+                    "${companion} jí ukázal, že motýli v zahradě také nemají každé křídlo úplně stejné. Některé mají skvrnku, jiné proužek. ${name} se podívala na svůj papír z větší dálky. Možná nebyl pokažený. Možná se z něj klubalo něco nového.",
+                    "Přesto si nebyla jistá. Zeptala se, jestli jí ${companion} podrží kelímek s vodou, aby se nepřevrhl. Pomohl jí, aniž by obrázek dokončil za ni. ${name} si mohla sama vybrat, kterou část chce malovat dál.",
+                    "Zkusila na křídlo přidat drobné tečky. Některé byly malé, jiné se slily do větších. ${name} si všimla, že se soustředí na další tah, ne na to, jestli je obrázek dokonalý. Šlo jí to lépe, když nemusela myslet na všechno najednou.",
+                    "Po chvíli ji začala bolet ruka. Položila pastelku a zatřásla prsty. „Když si dám pauzu, počítá se to ještě jako snaha?“ zeptala se. ${companion} jí řekl, že odpočinek pomáhá tělu i hlavě pokračovat, pokud chtějí.",
+                    "Na zahradě našli pravého nočního motýla. Seděl na listu a nehýbal se. Čekali potichu, až roztáhne křídla. Jedno měl trochu pomačkané, ale přesto vzlétl. ${name} si pomyslela, že někdy stačí dělat věci po svém a vlastním tempem.",
+                    "Když se vrátili k obrázku, ${name} se rozhodla, že druhé křídlo nebude kopírovat. Nakreslila na něj měsíc a tři hvězdy. Teď každé křídlo vyprávělo jinou část příběhu. Obrázek byl její, a proto mohl být právě takový.",
+                    "Druhý den chtěla motýla ukázat ostatním. Byla trochu nervózní, tak si obrázek nejdřív prohlédla s ${companionInstrumental}. Nemusela ho nikomu ukazovat, pokud by nechtěla. Nakonec se rozhodla, že ho vezme s sebou a uvidí, jak se bude cítit.",
+                    "Když se jí příště něco nepovedlo, vzpomněla si na svůj obrázek. Nemusela to zvládnout napoprvé, nemusela pokračovat bez přestávky a mohla požádat o pomoc. Vybrala si vždycky jen další malý krok. A někdy si vybrala, že už pro dnešek stačí.",
+                    "Ve škole dostala za úkol postavit z papíru malou lodičku. ${name} si vzpomněla na motýla a zkusila první přehyb. Papír se jí ale roztrhl. Hned ji napadlo, že ostatním to jde lépe. Pak si všimla, že také obracejí návody a ptají se jeden druhého.",
+                    "${companion} jí navrhl, aby se podívala jen na první obrázek v návodu. Nemusela zatím přemýšlet o celé lodi. ${name} přeložila roh a uhladila ho prstem. Potom se zastavila, zkontrolovala, co má, a teprve pak přešla k dalšímu obrázku.",
+                    "Ani druhý pokus se nepovedl přesně. ${name} si povzdechla, ale tentokrát papír nezmuchlala. Zeptala se paní učitelky, jestli může dostat nový list. Dostala ho a mohla začít znovu. Druhý pokus nebyl důkaz, že první byl zbytečný; díky němu věděla, co udělat jinak.",
+                    "Když měla lodičku hotovou, nebyla úplně rovná. Přesto ji položila na vodu v umyvadle. Chvíli plula a potom se převrátila. ${name} se tomu zasmála. Byl to papírový člun, ne zkouška, jestli je dost šikovná. Mohla si užít, že ho sama vyrobila.",
+                    "Doma si vzpomněla na chvíli, kdy se jí nepovedlo zapnout knoflík. Tehdy ji někdo ukázal, jak látku přidržet. Dnes už to uměla sama. Některé dovednosti rostou pomalu, tak jako semínko, které je dlouho schované v hlíně.",
+                    "Večer se ${name} podívala na motýla na stěně. Přidala k němu papírovou lodičku a vedle malý obrázek ruky, která žádá o pomoc. Všechny tři věci jí připomínaly různé způsoby, jak pokračovat: zkusit jiný krok, odpočinout si nebo někoho zavolat.",
+                    "Následující týden začala kreslit další zvíře. Když se jí první čára nepovedla, nezahodila papír. Zastavila se a zeptala se sama sebe, jestli chce pokračovat. Rozhodla se udělat ještě jeden tah. Když už se jí nechtělo, obrázek odložila na zítra.",
+                    "Pokaždé, když se učíme něco nového, můžeme být chvíli začátečníkem. ${name} nemusela být rychlejší než nikdo jiný. Mohla se dívat, zkoušet, ptát se a odpočívat. Tohle nebyla tajná zkratka k dokonalosti, ale její vlastní cesta k tomu, co se chtěla naučit.",
+                    "Na konci týdne si prohlédla první a poslední kresbu. Všimla si, že se naučila míchat barvy a přidávat jemné čárky. Ne všechno se změnilo. Pořád měla někdy chuť přestat a pořád si občas řekla o radu. Jen už věděla, že může zkusit víc než jednu cestu."
+                ],
+                ending: "${name} zjistila, že vytrvalost neznamená nikdy se neunavit ani nikdy nepřestat. Někdy je to jeden další pokus, jindy přestávka nebo prosba o pomoc. Všechny tři cesty jsou v pořádku.",
+                short: "Motýla si pověsila k posteli. Jeho křídla nebyla stejná — a přesto s nimi ve fantazii odletěl až ke hvězdám."
+            },
+            helping: {
+                title: "Malá lucerna laskavosti",
+                opening: (name, companion) => `Cestou přes les si ${name} všimla, že ${companion.nominative} nese košík plný šišek. Šel pomalu a díval se do země. „Vypadá to těžké,“ řekla ${name}.`,
+                moment: [
+                    "Chvilku váhala. Chtěla pomoct, ale nevěděla jak. Vtom si vzpomněla, že nejlepší pomoc začíná otázkou.",
+                    "„Mám ti s košíkem pomoct?“ zeptala se. ${companion} se usmál. „To by bylo milé. Mohl bys nést tuhle menší tašku?“"
+                ],
+                practice: [
+                    "${name} vzala menší tašku. Šli spolu a povídali si o tom, co v lese slyší. Cesta už nebyla tak dlouhá — a košík nesl každý jen kousek.",
+                    "Pomoc se ale může říct i „teď ne, děkuju“. ${companion} jí pověděl, že laskavost neznamená zapomenout na sebe. Když ${name} potřebovala odpočinek, našli pařez a dali si pauzu."
+                ],
+                journey: [
+                    "Cestou potkali ježka, kterému se rozsypaly šišky. ${name} se chtěla hned rozběhnout a všechny posbírat, ale zastavila se. „Chceš pomoct?“ zeptala se. Ježek ukázal na ty, které se skutálely pod kapradí. Ostatní už měl skoro v košíku.",
+                    "Společně hledali šišky v měkkém mechu. Jedna byla schovaná za kamenem a druhá se kutálela z kopce. ${name} se zasmála, když ji ${companion} dohonil. Pomáhání nemuselo být vážné ani velkolepé. Bylo to společné hledání.",
+                    "Když měli hotovo, ježek poděkoval. ${name} se cítila příjemně, ale trochu unaveně. „Teď si odpočinu,“ řekla. ${companion} přikývl a našli si místo pod stromem. Pomáhat druhým neznamenalo zapomenout, že i její síly mají své hranice.",
+                    "U stromu potkali veverku, která nemohla dosáhnout na oříšek. ${name} se zeptala, jestli chce, aby ho podala. Veverka vysvětlila, že si chce nejdřív zkusit vylézt sama. ${name} jí držela palce a zůstala poblíž pro případ, že by o pomoc požádala.",
+                    "Veverce se podařilo dostat na větev. Měla radost, že to zvládla sama, a ${name} měla radost s ní. ${companion} jí pošeptal, že někdy pomáháme tím, že něco uděláme, a jindy tím, že druhému necháme prostor.",
+                    "Když se setmělo, lesní zvířátka připravovala lucerničky na večerní slavnost. ${name} nabídla, že odnese několik lehkých světýlek. Když jí připadalo, že jich je moc, poprosila o pomoc. Nikdo se nezlobil. Rozdělili si je mezi sebe.",
+                    "Na slavnosti se rozsvítily lucerny různých barev. Každá zářila jinak, ale dohromady osvětlily celou mýtinu. ${name} si všimla, že každý přispěl něčím jiným: někdo donesl světlo, někdo zazpíval a někdo jen seděl vedle unaveného kamaráda.",
+                    "Ježek jí podal malou papírovou hvězdičku. „Děkuju, že ses zeptala, co potřebuji,“ řekl. ${name} pochopila, že nemusí hádat ani za všechny všechno vyřešit. Stačí si všimnout, zeptat se a společně najít něco, co je příjemné pro oba.",
+                    "Cestou domů už lucerny svítily jen v dálce. ${name} cítila v nohách příjemnou únavu. Pomohla, odpočinula si a nechala ostatní zkusit jejich vlastní cestu. To byl celý dnešní díl laskavosti a úplně stačil.",
+                    "Dalšího rána našla u lesní pěšiny malého ptáčka, kterému se zamotaly nožky do trávy. ${name} se k němu chtěla sklonit, ale nevěděla, co dělat. Zavolala dospělého lesního správce, který ptáčka bezpečně uvolnil. Pomáhat někdy znamená přivolat někoho, kdo ví, jak na to.",
+                    "Správce poděkoval ${name}, že nezůstala sama a přivolala pomoc. Nemusela ptáčka zachraňovat vlastníma rukama. Mohla udělat to, co bylo v jejích silách. ${companion} jí připomněl, že všimnout si potíží a říct o nich někomu důvěryhodnému je také důležitá pomoc.",
+                    "U potoka se potkali s bobrem, který stavěl hráz. ${name} nabídla, že mu podá větvičky. Bobr přijal jen dvě a zbytek si chtěl přinést sám. ${name} mu je podala a pak se dívala, jak pokračuje. Nemusela přidávat další práci, o kterou ji nikdo nepožádal.",
+                    "Později ${name} sama potřebovala pomoc s těžkým košíkem. Chvíli váhala, jestli si má říct. Pak připomněla ježkovi a veverce, že i ona může přijmout pomoc od ostatních. Rozdělili si košík a společně dorazili na mýtinu.",
+                    "Na cestě viděli malé světlušky. Každá svítila jen trochu, ale dohromady ukazovaly stezku. ${name} se zeptala, jestli se světlušky neunaví. ${companion} odpověděl, že i ony si občas sednou na list a odpočinou si. Světlo se nemusí rozsvítit pořád.",
+                    "Na slavnosti jedna zvířátka chtěla tančit a jiná si přála poslouchat hudbu. Nikdo nemusel dělat obojí. ${name} si chvíli zatancovala, pak si sedla vedle kamaráda a poslouchala. Její volba se mohla změnit, když se změnila její nálada.",
+                    "Když se někdo zeptal, jestli ještě pomůže s lucernami, ${name} odpověděla, že dnes už ne. Bylo jí trochu nepříjemné odmítnout, ale kamarád její odpověď přijal. Ostatní našli další ruce a lucerny stejně rozsvítili. Její laskavost nemusela znamenat, že řekne ano na všechno.",
+                    "Na slavnosti si ${name} všimla, že malá myška hledá svou rodinu. Nevěděla, kde ji hledat, a tak společně zašli za pořadatelem slavnosti. Myška se brzy našla se svým tatínkem. ${name} měla radost, že pomohla přivolat někoho, kdo mohl situaci bezpečně vyřešit.",
+                    "Když pak sama zatoužila po klidném koutku, kamarádi jí jeden ukázali. Nikdo jí nevyčítal, že odchází od slavnosti. Mohla se vrátit, až bude chtít, nebo tam zůstat až do konce. Její potřeba klidu byla stejně důležitá jako radost ostatních z hudby.",
+                    "Před usnutím si ${name} vzpomněla na ptáčka, bobra i košík. V každé chvíli pomohlo něco jiného: zavolat dospělého, respektovat přání nebo požádat o pomoc sama. Nemusela znát všechny odpovědi. Stačilo jí zůstat všímavá a nezapomenout ani na sebe."
+                ],
+                ending: "${name} pochopila, že i malá nabídka může někomu zpříjemnit den. A že když si není jistá, může se zeptat — druhý člověk ví nejlépe, co potřebuje.",
+                short: "Ještě než usnula, rozsvítila se v lese maličká lucerna. Nebyla velká, ale její teplé světlo stačilo na pár dalších kroků."
+            },
+            friendship: {
+                title: "Tichý koutek pod lípou",
+                opening: (name, companion) => `Na louce bylo veselo a hlasito. ${name} si chtěla hrát s ostatními, ale tolik zvuků najednou jí zamotalo myšlenky. ${companion.nominative} si všiml, že ztichla.`,
+                moment: [
+                    "„Je toho na mě moc,“ zašeptala. Nemusela to vysvětlovat dlouhými slovy. Její tělo potřebovalo klidnější místo.",
+                    "Pod starou lípou byl měkký stín. ${name} si tam na chvíli sedla a poslouchala listy. Kamarádství přece nemusí znamenat, že jsme pořád uprostřed všeho dění."
+                ],
+                practice: [
+                    "Když si odpočinula, potkala zajíčka, který si kreslil. „Můžu se dívat?“ zeptala se. Za chvíli kreslili vedle sebe, v tichu, které jim oběma vyhovovalo.",
+                    "„Někdy potřebuju chvilku klidu,“ řekla ${name}. Kamarád přikývl. „Já zase někdy nevím, co říct. Můžeme si to povědět.“ A tak spolu našli způsob, který byl příjemný oběma."
+                ],
+                journey: [
+                    "Zajíček ukázal ${name} své pastelky. Měl jich jen pár, ale uměl s nimi nakreslit celý les. ${name} se dívala, jak se na papíře objevují stromy. Nemusela hned vědět, co říct. Mohla jen být vedle něj a dýchat klidný vzduch.",
+                    "Po chvilce se zajíček zeptal, jestli si chce kreslit také. ${name} přikývla. Nakreslila modrý kopec a na něm malý domeček. Zajíček se neptal, proč je kopec modrý. Jen přidal cestu, která vedla až k jejímu domečku.",
+                    "Z dálky se ozvalo hlasité volání ostatních. ${name} sebou trhla. Zajíček si všiml, že ztichla, a navrhl, že mohou zůstat ještě chvíli pod stromem. Nemusel ji přemlouvat ani jí vysvětlovat, že se nemá bát. Stačilo, že jí uvěřil.",
+                    "Když byla připravená, šli se podívat na louku. ${name} si stoupla trochu stranou a pozorovala hru. Pak uviděla, že jedno z dětí staví domeček z větviček. „Můžu přidat střechu?“ zeptala se. Děti jí udělaly místo.",
+                    "Domeček měl střechu z listů a dveře z kůry. ${name} navrhla, že dovnitř pověsí malou kytičku. Jeden kamarád chtěl přidat kamínek a druhý větvičku. Každý přinesl svůj nápad a nikdo nemusel změnit ten svůj, aby mohl být součástí společné hry.",
+                    "Když se hra stala zase příliš hlučnou, ${name} ukázala zajíčkovi jejich domluvené znamení — dlaň položenou na srdci. Zajíček jí nabídl, že si spolu na chvíli sednou. Pak se ${name} rozhodne, jestli se vrátí, nebo půjde domů.",
+                    "Na cestě k lavičce si povídali o tom, co je pro ně příjemné. Zajíček měl rád, když se ho kamarádi zeptali, než mu něco vzali z ruky. ${name} měla ráda, když na ni nikdo nespěchal. Každý mohl druhému říct, co potřebuje.",
+                    "Později se k nim přidala další holčička. Chvíli nevěděla, jak začít. ${name} jí ukázala modrý kopec na obrázku a zeptala se, jestli chce dokreslit obláček. I tiché pozvání může být začátkem přátelství. A když někdo odmítne, neznamená to, že jsme udělali něco špatně.",
+                    "Když se loučili, ${name} věděla, že kamarádství může vypadat různě. Někdy je to společná hra, jindy tiché kreslení a někdy chvilka o samotě. Její citlivost jí pomáhala všímat si, co se děje uvnitř ní i kolem ní.",
+                    "Za několik dní si ${name} všimla, že nová holčička sedí při svačině sama. Sama si vzpomněla na svůj první den v hlučné třídě. Nevěděla, jestli chce holčička společnost, a tak se zeptala, zda si může přisednout. Holčička přikývla, ale zatím nic neříkala.",
+                    "${name} nezačala hned vyprávět dlouhý příběh. Položila na stůl svůj kamínek pro štěstí a řekla, že ho našla na cestě do školy. Holčička si ho chvíli prohlížela. Pak ukázala na obrázek na obalu svačiny. Povídání začalo malou věcí, které si obě všimly.",
+                    "Později si spolu chtěly hrát, ale každá měla jiný nápad. Jedna chtěla stavět, druhá běhat. Chvíli nevěděly, co dělat. ${name} navrhla, že nejdřív postaví domeček a potom si kolem něj zahrají na cestovatele. Našly hru, ve které bylo místo pro obě.",
+                    "Když se znovu ozval hlasitý zvuk, nová kamarádka ztichla. ${name} se jí zeptala, jestli chce jít na chvíli k oknu. Neřekla jí, že se nemá bát. Jen jí nabídla možnost, která dřív pomohla i jí. Společně se dívaly na mraky, dokud nebyly připravené vrátit se.",
+                    "Někdy se kamarád může mračit nebo chtít být sám. To nemusí znamenat, že už nás nemá rád. ${name} se naučila zeptat, jestli se něco stalo, a potom dát druhému čas odpovědět. Nemusela hned hledat řešení; důležité bylo, že naslouchala.",
+                    "Jednoho dne si holčička hrála s někým jiným. ${name} se cítila trochu odstrčená. Řekla si, že ten pocit může mít, a vybrala si, že zatím půjde kreslit se zajíčkem. Později ji kamarádka pozvala do hry. Jejich přátelství se nemuselo dokazovat tím, že jsou spolu každou minutu.",
+                    "Po škole si ${name} s dospělým doma povídala o tom, co se jí na přátelství líbí a co je někdy těžké. Nemusela mít připravené správné odpovědi. Dospělý ji poslouchal a připomněl jí, že pokud ji někdo trápí nebo jí ubližuje, může to říct bezpečnému dospělému.",
+                    "V noci se jí zdál sen o modrém kopci. Na jeho vrcholu seděly různé děti a každá měla kolem sebe tolik prostoru, kolik potřebovala. Někdo si povídal, někdo kreslil a někdo jen pozoroval hvězdy. Všichni mohli být součástí výpravy po svém.",
+                    "Ráno se probudila s pocitem, že by se chtěla s někým kamarádit, ale neví, jak začít. ${companion} jí připomněl, že nemusí vymyslet nic zvláštního. Může se zeptat, jestli si někdo chce kreslit, nebo nabídnout místo vedle sebe. A když to dnes nevyjde, může to zkusit jindy.",
+                    "Při cestě do školy potkala holčičku, která měla podobný batůžek. Pozdravila ji a zeptala se, jestli zná cestu k zahradě. Chvíli šly vedle sebe a potom si povídaly o svých oblíbených barvách. Nové přátelství nemuselo být hotové hned. Mohlo teprve začínat."
+                ],
+                ending: "${name} si zapamatovala, že její citlivé srdce si všímá mnoha věcí. Může si říct o klid, o společnost i o pomoc. Opravdový kamarád se snaží naslouchat — a ona může naslouchat jemu.",
+                short: "Pod lípou se pomalu stmívalo. Louka nikam neodešla a zítra na ní čekalo další setkání, přesně takové, na jaké bude mít ${name} chuť."
+            }
+        };
+
+        const companions = {
+            "ježek": { nominative: "ježek", instrumental: "ježkem", genitive: "ježka" },
+            "zajíček": { nominative: "zajíček", instrumental: "zajíčkem", genitive: "zajíčka" },
+            "medvídek": { nominative: "medvídek", instrumental: "medvídkem", genitive: "medvídka" },
+            "dráček": { nominative: "dráček", instrumental: "dráčkem", genitive: "dráčka" },
+            "průvodce": { nominative: "soví průvodce", instrumental: "sovím průvodcem", genitive: "sovího průvodce" }
+        };
+
+        const form = document.querySelector("#story-form");
+        const themeSelect = document.querySelector("#theme");
+        const customThemeField = document.querySelector("#custom-theme-field");
+        const customThemeInput = document.querySelector("#custom-theme");
+        const companionSelect = document.querySelector("#companion");
+        const customCompanionField = document.querySelector("#custom-companion-field");
+        const customCompanionInput = document.querySelector("#custom-companion");
+        const storyLengthSelect = document.querySelector("#story-length");
+        const durationNote = document.querySelector(".reading-time");
+        const storyCard = document.querySelector("#story-card");
+        const storyTitle = document.querySelector("#story-title");
+        const storyText = document.querySelector("#story-text");
+        const storyStatus = document.querySelector("#story-status");
+        const favoritesStatus = document.querySelector("#favorites-status");
+        const favoritesCount = document.querySelector("#favorites-count");
+        const favoritesEmpty = document.querySelector("#favorites-empty");
+        const favoriteList = document.querySelector("#favorite-list");
+        const exportFavoritesButton = document.querySelector("#export-favorites");
+        const importFavoritesButton = document.querySelector("#import-favorites-button");
+        const importFavoritesInput = document.querySelector("#import-favorites-file");
+        const saveButton = document.querySelector("#save-story");
+        const readButton = document.querySelector("#read-story");
+        const speechRate = document.querySelector("#speech-rate");
+        const favoritesKey = "dobrouNocHvezdicko:favorites:v1";
+        const sharedStorageEnabled = window.location.protocol !== "file:";
+        const storyLengths = {
+            short: { journeyCount: 2, minutes: 3 },
+            medium: { journeyCount: 4, minutes: 6 },
+            long: { journeyCount: 6, minutes: 10 }
+        };
+        let currentStoryData = null;
+        let currentStory = "";
+        let speechActive = false;
+        let favorites = [];
+        let favoritesReady = Promise.resolve();
+        let recentlyGeneratedStories = [];
+
+        function pick(items) {
+            return items[Math.floor(Math.random() * items.length)];
+        }
+
+        function shuffle(items) {
+            const result = [...items];
+            for (let index = result.length - 1; index > 0; index -= 1) {
+                const swapIndex = Math.floor(Math.random() * (index + 1));
+                [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+            }
+            return result;
+        }
+
+        function createCustomTheme(topic) {
+            return {
+                title: `Výprava za tématem: ${topic}`,
+                opening: (name, companion) => `Jednoho večera našla ${name} mapu, na které zářil nápis „${topic}“. Vedle ní stál ${companion.nominative}, který si ji prohlédl společně s ní. „Tohle může být naše dnešní výprava. Půjdeme pomalu a kdykoli si můžeme odpočinout.“`,
+                moment: [
+                    "U první zatáčky se na mapě znovu objevilo téma „${topic}“. ${name} se zastavila. Nevěděla přesně, co ji čeká, a její srdce začalo tlouct rychleji. „Můžeme se nejdřív podívat, co už o tom víme,“ navrhl její kamarád.",
+                    "Na cestě ležela kartička s nápisem „${topic}“. ${name} ji zvedla a chvíli o ní přemýšlela. Měla v hlavě několik otázek, ale nemusela na ně přijít všechny hned. Mohla si vybrat jen tu, která jí připadala nejdůležitější."
+                ],
+                practice: [
+                    "„Nemusíme všechno vyřešit najednou,“ připomněl jí kamarád. ${name} si položila dlaň na bříško, pomalu se nadechla a ještě pomaleji vydechla. Pak řekla jednu věc, kterou si o tématu „${topic}“ myslí, a jednu věc, na kterou se chce zeptat.",
+                    "${name} si všimla, že má napjatá ramena. Protáhla se jako kočka a rozhlédla se kolem sebe. Byla na bezpečné lesní cestě se svým kamarádem. Mohla pokračovat, zpomalit nebo se vrátit. Už jen to, že měla na výběr, jí trochu pomohlo."
+                ],
+                journey: [
+                    "Mapa vedla k malému mostu přes potůček. Na jeho zábradlí někdo napsal „Dnes stačí jeden krok“. ${name} se podívala na vodu a řekla, že neví, co bude za mostem. Kamarád přikývl. Nemuseli to vědět předem; mohli se podívat společně.",
+                    "Na druhé straně našli tři lucerničky. Každá svítila jinak. ${name} si vybrala tu nejmenší, protože její světlo bylo příjemné a neoslňovalo. Kamarád jí řekl, že i malá informace nebo malá otázka může osvětlit kousek cesty kolem tématu „${topic}“.",
+                    "V lese potkali starou sovu, která se zeptala, co už o výpravě vědí. ${name} jí pověděla, co ji napadlo. Sova ji nepřerušovala a nesnažila se hned všechno opravit. Když domluvila, zeptala se, jestli chce radu, nebo jen další chvíli poslouchat.",
+                    "${name} si vybrala radu. Sova jí ukázala, jak si velkou otázku rozdělit na menší. Nemuseli dnes odpovědět na všechno o tématu „${topic}“. Mohli zjistit jednu drobnost a zbytek nechat na jindy. Výprava nikam neutíkala.",
+                    "Za stromem se objevila široká louka a na ní spousta různých stezek. Jedna byla rovná, druhá vedla kolem květin a třetí mizela mezi stromy. ${name} si mohla vybrat, kterou zkusí. Nemusela jít tou, po které šli ostatní.",
+                    "Nejdřív se jí zdálo, že by měla být odvážná a jít rychle. Potom si vzpomněla, že odvaha může být i říct „potřebuju chvilku“. Posadila se s kamarádem do trávy a pozorovala obláček, který se pomalu sunul po obloze.",
+                    "Když si odpočinula, řekla nahlas, co jí na tématu „${topic}“ připadá příjemné a co je pro ni těžké. Některé věci se jí vyslovovaly snadno, jiné jen šeptem. Kamarád jí naslouchal. Nemusela své pocity obhajovat ani se za ně omlouvat.",
+                    "Na konci stezky čekala zamčená branka. ${name} ji zkusila otevřít sama, ale nešla. Mohla se rozzlobit na sebe nebo na branku, ale nejdřív se zastavila. Zkusila se nadechnout a pak poprosila kamaráda, jestli se podívá s ní.",
+                    "Společně našli malý háček, který branku držel zavřenou. Nebyla rozbitá a ani ${name} neudělala nic špatně. Jen si všimli něčeho, co předtím neviděli. Někdy pomůže změnit pohled, někdy požádat o druhý pár očí.",
+                    "Za brankou stál domeček s teplým světlem v okně. Bydlela v něm paní, které ${name} důvěřovala. Mohla jí říct, na co přišla a co jí pořád vrtá hlavou. Paní ji vyslechla a nabídla, že se na další otázku podívají společně.",
+                    "V domečku měli velkou tabuli. ${name} na ni nakreslila tři malé krůčky: zeptat se, zjistit jednu věc a pak si odpočinout. Téma „${topic}“ se tím nezměnilo v něco úplně snadného. Mělo ale okolo sebe víc prostoru a několik možných cest.",
+                    "Když se jeden krůček nepovedl podle plánu, nikdo tabuli nezahodil. Paní se zeptala, co by mohlo pomoci příště. ${name} navrhla zkusit jiný čas a vzít si s sebou kamaráda. Její nápad se počítal, i když ještě neměla hotové řešení.",
+                    "Venku se mezitím setmělo. ${name} si všimla, že je unavená, a rozhodla se dnešní výpravu ukončit. Nemusela dojít až na konec mapy. Kamarád jí slíbil, že značka „${topic}“ počká na další den přesně tam, kde ji nechali.",
+                    "Cestou zpátky si povídali o tom, co jí pomohlo: klidný nádech, možnost zvolit si tempo a někdo, kdo poslouchal. Jindy může pomoct něco jiného. ${name} nemusela mít jediný správný návod; mohla hledat, co vyhovuje právě jí.",
+                    "Před spaním si ${name} připomněla, že se může ptát dospělého, kterému důvěřuje, kdykoli ji něco trápí nebo zneklidňuje. Nemusí na to být sama. I malá otázka může být dobrý začátek rozhovoru.",
+                    "Ve snu se mapa změnila v měkkou přikrývku posetou hvězdami. Nápis „${topic}“ na ní zůstal, ale už nevypadal jako úkol. Byl to jen jeden z příběhů, o kterých se mohou povídat, až bude ${name} připravená.",
+                    "Ráno si ${name} vzpomněla na výpravu a vybrala si, jestli chce udělat další maličký krok, nebo si ještě nechat čas. Obojí bylo v pořádku. Její cesta nemusela vypadat jako cesta nikoho jiného."
+                ],
+                ending: "${name} zjistila, že o tématu „${topic}“ nemusí vědět všechno hned. Může se ptát, říct si o pomoc, udělat jeden malý krok nebo si odpočinout. Každý z těch kroků může být součástí její vlastní výpravy.",
+                short: "Kamarád jí nechal mapu u postele. Až bude chtít, mohou se k ní vrátit. Teď už bylo dost hledání; nastal čas na klidný spánek."
+            };
+        }
+
+        function personalize(text, name, companion, topic) {
+            return text
+                .replaceAll("${name}", name)
+                .replaceAll("${companion}", companion.nominative)
+                .replaceAll("${companionInstrumental}", companion.instrumental)
+                .replaceAll("${companionGenitive}", companion.genitive)
+                .replaceAll("${topic}", topic);
+        }
+
+        function makeStory(formData) {
+            const name = formData.get("childName").trim() || "malá průzkumnice";
+            const topic = formData.get("theme") === "custom" ? formData.get("customTheme").trim() : "";
+            const theme = topic ? createCustomTheme(topic) : stories[formData.get("theme")];
+            const length = storyLengths[formData.get("length")] ?? storyLengths.long;
+            const companionSelection = formData.get("companion");
+            const customCompanionName = formData.get("customCompanion").trim();
+            const companion = companionSelection === "custom"
+                ? {
+                    nominative: `kamarád jménem ${customCompanionName}`,
+                    instrumental: `kamarádem jménem ${customCompanionName}`,
+                    genitive: `kamaráda jménem ${customCompanionName}`
+                }
+                : companions[companionSelection];
+
+            for (let attempt = 0; attempt < 12; attempt += 1) {
+                const journeyCount = Math.min(length.journeyCount, theme.journey.length);
+                const journey = shuffle(theme.journey).slice(0, journeyCount);
+                const paragraphs = [
+                    theme.opening(name, companion, topic),
+                    personalize(pick(theme.moment), name, companion, topic),
+                    personalize(pick(theme.practice), name, companion, topic),
+                    ...journey.map((paragraph) => personalize(paragraph, name, companion, topic)),
+                    personalize(theme.ending, name, companion, topic),
+                    personalize(theme.short, name, companion, topic)
+                ];
+                const storyKey = `${theme.title}\n${paragraphs.join("\n")}`;
+
+                if (!recentlyGeneratedStories.includes(storyKey)) {
+                    recentlyGeneratedStories = [storyKey, ...recentlyGeneratedStories].slice(0, 20);
+                    return { title: theme.title, paragraphs, readingMinutes: length.minutes };
+                }
+            }
+
+            const journey = shuffle(theme.journey).slice(0, Math.min(length.journeyCount, theme.journey.length));
+            return {
+                title: theme.title,
+                readingMinutes: length.minutes,
+                paragraphs: [
+                    theme.opening(name, companion, topic),
+                    personalize(pick(theme.moment), name, companion, topic),
+                    personalize(pick(theme.practice), name, companion, topic),
+                    ...journey.map((paragraph) => personalize(paragraph, name, companion, topic)),
+                    personalize(theme.ending, name, companion, topic),
+                    personalize(theme.short, name, companion, topic)
+                ]
+            };
+        }
+
+        function isFavorite(story) {
+            return story
+                && typeof story.id === "string"
+                && story.id.length <= 100
+                && typeof story.title === "string"
+                && story.title.length > 0
+                && story.title.length <= 160
+                && Array.isArray(story.paragraphs)
+                && story.paragraphs.length > 0
+                && story.paragraphs.length <= 50
+                && story.paragraphs.every((paragraph) => typeof paragraph === "string" && paragraph.length <= 5000)
+                && (story.readingMinutes === undefined || [3, 6, 10].includes(story.readingMinutes))
+                && typeof story.createdAt === "string"
+                && !Number.isNaN(Date.parse(story.createdAt));
+        }
+
+        function loadLocalFavorites() {
+            try {
+                const stored = window.localStorage.getItem(favoritesKey);
+                if (!stored) return [];
+
+                const parsed = JSON.parse(stored);
+                if (!Array.isArray(parsed) || !parsed.every(isFavorite)) {
+                    throw new Error("Uložené oblíbené pohádky nemají očekávaný formát.");
+                }
+                return parsed;
+            } catch (error) {
+                console.error("Oblíbené pohádky se nepodařilo načíst z tohoto prohlížeče.", error);
+                favoritesStatus.textContent = "Oblíbené pohádky se nepodařilo načíst z tohoto prohlížeče.";
+                return [];
+            }
+        }
+
+        function mergeFavorites(primary, secondary) {
+            const merged = [...primary];
+            const existing = new Set(merged.map((favorite) =>
+                `${favorite.title}\n${favorite.paragraphs.join("\n")}`
+            ));
+
+            secondary.forEach((favorite) => {
+                const key = `${favorite.title}\n${favorite.paragraphs.join("\n")}`;
+                if (!existing.has(key)) {
+                    existing.add(key);
+                    merged.push(favorite);
+                }
+            });
+            return merged;
+        }
+
+        async function persistFavorites(nextFavorites) {
+            if (sharedStorageEnabled) {
+                try {
+                    const response = await fetch("/api/favorites", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            additions: nextFavorites.filter((next) =>
+                                !favorites.some((current) => current.id === next.id)
+                            ),
+                            removeIds: favorites
+                                .filter((current) => !nextFavorites.some((next) => next.id === current.id))
+                                .map((favorite) => favorite.id)
+                        }),
+                        cache: "no-store"
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Favorite server returned HTTP ${response.status}.`);
+                    }
+                    const result = await response.json();
+                    if (!Array.isArray(result.favorites) || !result.favorites.every(isFavorite)) {
+                        throw new Error("The shared favorites response has an invalid format.");
+                    }
+                    favorites = result.favorites;
+                    return true;
+                } catch (error) {
+                    console.error("Oblíbené pohádky se nepodařilo uložit na počítači.", error);
+                    favoritesStatus.textContent = "Sdílené oblíbené se nepodařilo uložit. Zkontrolujte připojení k počítači.";
+                    return false;
+                }
+            }
+
+            try {
+                window.localStorage.setItem(favoritesKey, JSON.stringify(nextFavorites));
+                favorites = nextFavorites;
+                return true;
+            } catch (error) {
+                console.error("Oblíbenou pohádku se nepodařilo uložit.", error);
+                favoritesStatus.textContent = "Pohádku se nepodařilo uložit. Zkontrolujte, jestli má prohlížeč místo pro ukládání.";
+                return false;
+            }
+        }
+
+        async function initializeFavorites() {
+            const localFavorites = loadLocalFavorites();
+            if (!sharedStorageEnabled) {
+                favorites = localFavorites;
+                renderFavorites();
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/favorites", { cache: "no-store" });
+                if (!response.ok) {
+                    throw new Error(`Favorite server returned HTTP ${response.status}.`);
+                }
+
+                const sharedFavorites = await response.json();
+                if (!Array.isArray(sharedFavorites) || !sharedFavorites.every(isFavorite)) {
+                    throw new Error("The shared favorites response has an invalid format.");
+                }
+
+                favorites = sharedFavorites;
+                const mergedFavorites = mergeFavorites(sharedFavorites, localFavorites);
+                if (mergedFavorites.length > sharedFavorites.length) {
+                    if (await persistFavorites(mergedFavorites)) {
+                        favoritesStatus.textContent = "Oblíbené z tohoto prohlížeče byly přidány ke sdíleným.";
+                    }
+                }
+                renderFavorites();
+            } catch (error) {
+                console.error("Sdílené oblíbené pohádky se nepodařilo načíst.", error);
+                favorites = localFavorites;
+                renderFavorites();
+                favoritesStatus.textContent = "Sdílené úložiště není dostupné. Zobrazuji oblíbené z tohoto prohlížeče.";
+            }
+        }
+
+        function stopReading(updateStatus = true) {
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
+            speechActive = false;
+            storyText.classList.remove("is-reading");
+            readButton.textContent = "Přečíst nahlas";
+            readButton.setAttribute("aria-pressed", "false");
+            if (updateStatus) {
+                storyStatus.textContent = "Čtení bylo zastaveno.";
+            }
+        }
+
+        function readStoryAloud() {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                storyStatus.textContent = "Tento prohlížeč nepodporuje čtení nahlas.";
+                return;
+            }
+
+            if (speechActive) {
+                stopReading();
+                return;
+            }
+
+            const text = `${storyTitle.textContent}. ${currentStoryData.paragraphs.join(". ")}`;
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = window.speechSynthesis.getVoices();
+            const czechVoice = voices.find((voice) => voice.lang?.toLowerCase().startsWith("cs"));
+            if (czechVoice) {
+                utterance.voice = czechVoice;
+            }
+            utterance.lang = "cs-CZ";
+            utterance.rate = Number(speechRate.value);
+            utterance.pitch = 1;
+            utterance.onstart = () => {
+                speechActive = true;
+                storyText.classList.add("is-reading");
+                readButton.textContent = "Zastavit čtení";
+                readButton.setAttribute("aria-pressed", "true");
+                storyStatus.textContent = "Pohádka se čte nahlas.";
+            };
+            utterance.onend = () => stopReading(false);
+            utterance.onerror = (event) => {
+                if (event.error === "canceled" || event.error === "interrupted") return;
+                stopReading(false);
+                storyStatus.textContent = "Čtení nahlas se nepovedlo spustit.";
+            };
+
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function showStory(story) {
+            stopReading(false);
+            storyTitle.textContent = story.title;
+            const readingMinutes = [3, 6, 10].includes(story.readingMinutes) ? story.readingMinutes : 10;
+            durationNote.textContent = `☾ Asi ${readingMinutes} ${readingMinutes === 3 ? "minuty" : "minut"} čtení`;
+            storyText.replaceChildren(...story.paragraphs.map((paragraph) => {
+                const element = document.createElement("p");
+                element.textContent = paragraph;
+                return element;
+            }));
+            currentStoryData = { title: story.title, paragraphs: [...story.paragraphs], readingMinutes };
+            currentStory = `${story.title}\n\n${story.paragraphs.join("\n\n")}`;
+            storyCard.hidden = false;
+            storyStatus.textContent = "";
+            updateSaveButton();
+            storyCard.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function renderFavorites() {
+            favoritesCount.textContent = String(favorites.length);
+            favoritesCount.setAttribute("aria-label", `Počet oblíbených pohádek: ${favorites.length}`);
+            favoritesEmpty.hidden = favorites.length > 0;
+            favoriteList.replaceChildren();
+
+            favorites.forEach((favorite) => {
+                const card = document.createElement("article");
+                card.className = "favorite-item";
+
+                const copy = document.createElement("div");
+                copy.className = "favorite-copy";
+                const title = document.createElement("h3");
+                title.textContent = favorite.title;
+                const summary = document.createElement("p");
+                summary.textContent = favorite.paragraphs[0];
+                copy.append(title, summary);
+
+                const actions = document.createElement("div");
+                actions.className = "favorite-actions";
+                const openButton = document.createElement("button");
+                openButton.className = "secondary-button";
+                openButton.type = "button";
+                openButton.textContent = "Otevřít";
+                openButton.addEventListener("click", () => showStory(favorite));
+
+                const removeButton = document.createElement("button");
+                removeButton.className = "secondary-button";
+                removeButton.type = "button";
+                removeButton.textContent = "Odebrat";
+                removeButton.addEventListener("click", async () => {
+                    await favoritesReady;
+                    const nextFavorites = favorites.filter((item) => item.id !== favorite.id);
+                    if (await persistFavorites(nextFavorites)) {
+                        renderFavorites();
+                        updateSaveButton();
+                        favoritesStatus.textContent = "Pohádka byla odebrána z oblíbených.";
+                    }
+                });
+
+                actions.append(openButton, removeButton);
+                card.append(copy, actions);
+                favoriteList.append(card);
+            });
+        }
+
+        function updateSaveButton() {
+            const alreadySaved = currentStoryData && favorites.some((favorite) =>
+                favorite.title === currentStoryData.title
+                && favorite.paragraphs.join("\n") === currentStoryData.paragraphs.join("\n")
+            );
+            saveButton.disabled = Boolean(alreadySaved);
+            saveButton.setAttribute("aria-pressed", String(Boolean(alreadySaved)));
+            saveButton.textContent = alreadySaved ? "Uloženo v oblíbených" : "Uložit do oblíbených";
+        }
+
+        async function saveCurrentStory() {
+            await favoritesReady;
+            if (!currentStoryData) return;
+
+            const alreadySaved = favorites.some((favorite) =>
+                favorite.title === currentStoryData.title
+                && favorite.paragraphs.join("\n") === currentStoryData.paragraphs.join("\n")
+            );
+            if (alreadySaved) {
+                favoritesStatus.textContent = "Tato pohádka už je v oblíbených.";
+                return;
+            }
+
+            const favorite = {
+                ...currentStoryData,
+                id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                createdAt: new Date().toISOString()
+            };
+            if (await persistFavorites([favorite, ...favorites])) {
+                renderFavorites();
+                updateSaveButton();
+                favoritesStatus.textContent = "Pohádka byla uložená do oblíbených.";
+            }
+        }
+
+        async function downloadFavoritesBackup() {
+            await favoritesReady;
+            try {
+                const file = new Blob([JSON.stringify(favorites, null, 2)], { type: "application/json" });
+                const url = URL.createObjectURL(file);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "oblibene-pohadky.json";
+                document.body.append(link);
+                link.click();
+                link.remove();
+                window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+                favoritesStatus.textContent = "Záloha oblíbených pohádek se stahuje.";
+            } catch (error) {
+                console.error("Zálohu oblíbených pohádek se nepodařilo vytvořit.", error);
+                favoritesStatus.textContent = "Zálohu se nepodařilo stáhnout.";
+            }
+        }
+
+        async function importFavoritesBackup(event) {
+            await favoritesReady;
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const imported = JSON.parse(await file.text());
+                if (!Array.isArray(imported) || imported.length > 100 || !imported.every(isFavorite)) {
+                    throw new Error("The selected backup has an invalid format.");
+                }
+
+                const merged = mergeFavorites(favorites, imported);
+                if (merged.length === favorites.length) {
+                    favoritesStatus.textContent = "V této záloze nejsou žádné nové pohádky.";
+                } else if (await persistFavorites(merged)) {
+                    renderFavorites();
+                    updateSaveButton();
+                    favoritesStatus.textContent = "Oblíbené pohádky byly přidány ze zálohy.";
+                }
+            } catch (error) {
+                console.error("Zálohu oblíbených pohádek se nepodařilo načíst.", error);
+                favoritesStatus.textContent = "Zálohu se nepodařilo načíst. Vyberte platný soubor JSON s oblíbenými pohádkami.";
+            } finally {
+                event.target.value = "";
+            }
+        }
+
+        function renderStory() {
+            showStory(makeStory(new FormData(form)));
+        }
+
+        function updateCustomField(select, field, input, customOption) {
+            const isCustom = select.value === customOption;
+            field.hidden = !isCustom;
+            input.required = isCustom;
+            select.setAttribute("aria-expanded", String(isCustom));
+        }
+
+        themeSelect.addEventListener("change", () => {
+            updateCustomField(themeSelect, customThemeField, customThemeInput, "custom");
+        });
+        companionSelect.addEventListener("change", () => {
+            updateCustomField(companionSelect, customCompanionField, customCompanionInput, "custom");
+        });
+        updateCustomField(themeSelect, customThemeField, customThemeInput, "custom");
+        updateCustomField(companionSelect, customCompanionField, customCompanionInput, "custom");
+
+        favoritesReady = initializeFavorites();
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            renderStory();
+        });
+
+        saveButton.addEventListener("click", saveCurrentStory);
+        exportFavoritesButton.addEventListener("click", downloadFavoritesBackup);
+        importFavoritesButton.addEventListener("click", () => importFavoritesInput.click());
+        importFavoritesInput.addEventListener("change", importFavoritesBackup);
+        readButton.addEventListener("click", readStoryAloud);
+        window.addEventListener("beforeunload", () => {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        });
+        document.querySelector("#new-story").addEventListener("click", renderStory);
+        document.querySelector("#print-story").addEventListener("click", () => window.print());
+        document.querySelector("#copy-story").addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(currentStory);
+                storyStatus.textContent = "Pohádka je zkopírovaná.";
+            } catch {
+                storyStatus.textContent = "Kopírování není dostupné. Zkuste pohádku vytisknout.";
+            }
+        });
+    </script>
+</body>
+</html>

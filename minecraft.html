@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f3f7ed">
+    <meta name="description" content="Minecraftové dobrodružství s počítáním, čtením a psaním pro prvňáčky.">
+    <title>Minecraft dobrodružství — Svět malé hvězdičky</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #29402f;
+            --muted: #657064;
+            --paper: #fffef8;
+            --accent: #397b48;
+            --accent-dark: #275b35;
+            --grass: #79a84d;
+            --gold: #f1c75b;
+            --soil: #9a7044;
+            --line: #dbe2cf;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f4f8ed 0%, #edf7ed 55%, #f8f1dc 100%);
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        button, input { font: inherit; }
+        button, a, input { -webkit-tap-highlight-color: transparent; }
+        button:focus-visible, a:focus-visible, input:focus-visible {
+            outline: 3px solid #9fc283;
+            outline-offset: 3px;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 22px 32px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 50%;
+            background: #dfeacb;
+            font-family: sans-serif;
+            font-size: 19px;
+        }
+        .topbar-actions { display: flex; align-items: center; gap: 20px; }
+        .top-link { color: var(--accent-dark); font-size: 13px; font-weight: 650; text-decoration: none; }
+        .top-link:hover { text-decoration: underline; }
+        .top-link[aria-current="page"] { color: var(--muted); }
+        main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 24px 0 70px; }
+        .page-heading { max-width: 660px; margin: 0 auto 24px; text-align: center; }
+        .eyebrow {
+            margin: 0 0 8px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        h1, h2, h3, p { margin-top: 0; }
+        .page-heading h1 {
+            margin: 0 0 8px;
+            font-family: var(--serif);
+            font-size: clamp(30px, 5vw, 43px);
+            font-weight: 500;
+            line-height: 1.15;
+        }
+        .page-heading p:last-child { margin-bottom: 0; color: var(--muted); }
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: fit-content;
+            margin: 0 auto 18px;
+            padding: 8px 13px;
+            border: 1px solid #d4dfc3;
+            border-radius: 999px;
+            background: rgba(255, 255, 248, .85);
+            color: var(--accent-dark);
+            font-size: 13px;
+            font-weight: 750;
+        }
+        .level-picker {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto 12px;
+        }
+        .level-button {
+            min-height: 40px;
+            padding: 0 14px;
+            border: 1px solid #ccdcb2;
+            border-radius: 999px;
+            background: var(--paper);
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 750;
+        }
+        .level-button[aria-pressed="true"] { border-color: var(--accent); background: #e6f0da; }
+        .level-button:disabled { color: var(--muted); cursor: not-allowed; opacity: .7; }
+        .progress-message {
+            margin: -4px 0 14px;
+            color: #8a3c2e;
+            font-size: 12px;
+            text-align: center;
+        }
+        .level-celebration {
+            margin-top: 16px;
+            padding: 14px;
+            border: 2px solid var(--gold);
+            border-radius: 14px;
+            background: linear-gradient(135deg, #fff8dc, #eaf5dd);
+            color: var(--accent-dark);
+            text-align: center;
+        }
+        .level-celebration[hidden] { display: none; }
+        .level-celebration.is-celebrating { animation: level-celebration-pop .7s ease-out; }
+        .celebration-sparkles { margin: 0 0 5px; font-size: 30px; letter-spacing: 5px; }
+        .celebration-message { margin: 0; font-size: 15px; font-weight: 800; }
+        @keyframes level-celebration-pop {
+            0% { opacity: 0; transform: scale(.78); }
+            70% { opacity: 1; transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .level-celebration.is-celebrating { animation: none; }
+        }
+        .world-layout {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr);
+            gap: 18px;
+        }
+        .world-map {
+            align-self: start;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(66, 92, 54, .07);
+        }
+        .world-map h2 { margin: 0 0 12px; font-family: var(--serif); font-size: 19px; }
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            aspect-ratio: 1;
+            padding: 5px;
+            border-radius: 10px;
+            background: #b1c98d;
+        }
+        .map-tile {
+            display: grid;
+            place-items: center;
+            border: 0;
+            border-radius: 5px;
+            background: #8db261;
+            color: #fafff3;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .map-tile:nth-child(2n) { background: #78a052; }
+        .map-tile.is-active { box-shadow: inset 0 0 0 3px var(--gold); background: var(--soil); }
+        .map-tile.is-done { background: var(--accent); }
+        .mission-card {
+            position: relative;
+            min-height: 330px;
+            padding: 25px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(66, 92, 54, .07);
+        }
+        .speech-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 7px;
+            margin-bottom: 14px;
+        }
+        .speech-button {
+            min-height: 38px;
+            padding: 0 12px;
+            border: 1px solid #cbd9b5;
+            border-radius: 999px;
+            background: #f7faef;
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 750;
+        }
+        .speech-button:hover { background: #eaf2dc; }
+        .mission-card h2 { margin: 0 0 5px; font-family: var(--serif); font-size: 25px; }
+        .mission-lead { margin-bottom: 18px; color: var(--muted); font-size: 13px; }
+        .mission { display: none; }
+        .mission.is-active { display: block; }
+        .tile-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .letter-tile {
+            display: grid;
+            min-width: 52px;
+            height: 52px;
+            place-items: center;
+            border: 1px solid #ccdcb2;
+            border-radius: 9px;
+            background: #f7faef;
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 19px;
+            font-weight: 800;
+        }
+        .letter-tile.is-selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+        .answer-word {
+            min-height: 66px;
+            margin: 14px 0;
+            padding: 11px;
+            border: 1px dashed #b7c89e;
+            border-radius: 10px;
+            color: var(--accent-dark);
+            font-family: var(--serif);
+            font-size: 29px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-align: center;
+        }
+        .mission-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .primary-button, .secondary-button {
+            min-height: 42px;
+            padding: 0 14px;
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 750;
+        }
+        .primary-button { background: var(--accent); color: #fff; }
+        .primary-button:hover { background: var(--accent-dark); }
+        .secondary-button { background: #fff; color: var(--accent-dark); border-color: #ccdcb2; }
+        .mission-status { min-height: 24px; margin: 12px 0 0; color: var(--accent-dark); font-size: 13px; font-weight: 650; }
+        .count-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .count-choice {
+            min-height: 58px;
+            border: 1px solid #ccdcb2;
+            border-radius: 10px;
+            background: #f7faef;
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .count-choice.is-selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+        .craft-grid { display: grid; grid-template-columns: repeat(3, 52px); gap: 6px; margin: 12px 0 16px; }
+        .craft-cell {
+            display: grid;
+            height: 52px;
+            place-items: center;
+            border: 1px solid #ccdcb2;
+            border-radius: 8px;
+            background: #f7faef;
+            cursor: pointer;
+            font-size: 22px;
+        }
+        .craft-cell.is-selected { border-color: var(--accent); background: #dfedcf; }
+        .story-text {
+            padding: 14px;
+            border-left: 4px solid var(--gold);
+            border-radius: 4px 10px 10px 4px;
+            background: #fff9e8;
+        }
+        .story-options { display: grid; gap: 7px; margin-top: 12px; }
+        .story-option {
+            min-height: 44px;
+            padding: 8px 12px;
+            border: 1px solid #ccdcb2;
+            border-radius: 9px;
+            background: #fff;
+            color: var(--ink);
+            cursor: pointer;
+            text-align: left;
+        }
+        .story-option.is-selected { border-color: var(--accent); background: #e6f0da; box-shadow: inset 0 0 0 1px var(--accent); }
+        .letter-tile.is-wrong,
+        .count-choice.is-wrong,
+        .craft-cell.is-wrong,
+        .story-option.is-wrong {
+            border-color: #bf3636;
+            background: #fde1e1;
+            color: #861f1f;
+            box-shadow: inset 0 0 0 1px #bf3636;
+        }
+        footer { padding: 0 20px 24px; color: #7b8076; font-size: 12px; text-align: center; }
+        @media (max-width: 700px) {
+            .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
+            .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 12px; }
+            main { width: min(100% - 28px, 560px); }
+            .world-layout { grid-template-columns: 1fr; }
+            .world-map { width: 100%; }
+            .map-grid { max-width: 220px; margin: 0 auto; }
+            .mission-card { min-height: 0; padding: 21px; }
+        }
+        @media (max-width: 390px) {
+            .brand { gap: 7px; font-size: 16px; }
+            .topbar-actions { gap: 9px; }
+            .top-link { font-size: 12px; }
+            .mission h2 { font-size: 21px; }
+            .speech-button { padding: 0 9px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
+            <span class="brand-mark" aria-hidden="true">☾</span>
+            <span>Svět malé hvězdičky</span>
+        </a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="minecraft.html" aria-current="page">Minecraft</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">Nová Minecraftová výprava</p>
+            <h1>Postav svět malými kroky</h1>
+            <p>Vydej se na Minecraftovou výpravu. Každý level má devět školních úkolů.</p>
+        </header>
+        <div class="level-picker" role="group" aria-label="Vyber level">
+            <button class="level-button" type="button" data-level="1" aria-pressed="false">Level 1</button>
+            <button class="level-button" type="button" data-level="2" aria-pressed="false">Level 2</button>
+            <button class="level-button" type="button" data-level="3" aria-pressed="false" disabled>🔒 Level 3</button>
+        </div>
+        <div class="progress-bar" aria-live="polite">
+            <span aria-hidden="true">💎</span>
+            <span id="progress-text">Level 2 · 0 z 9 úkolů hotovo</span>
+        </div>
+        <p class="progress-message" id="progress-message" role="alert" hidden></p>
+        <div class="world-layout">
+            <aside class="world-map" aria-label="Mapa výpravy">
+                <h2>Mapa světa</h2>
+                <div class="map-grid" id="map-grid">
+                    <button class="map-tile" type="button" data-mission="0" aria-label="Úkol 1: Slova">🌲</button>
+                    <button class="map-tile" type="button" data-mission="1" aria-label="Úkol 2: Počítání">🪨</button>
+                    <button class="map-tile" type="button" data-mission="2" aria-label="Úkol 3: Crafting">🧱</button>
+                    <button class="map-tile" type="button" data-mission="3" aria-label="Úkol 4: Příběh">🏠</button>
+                    <button class="map-tile" type="button" data-mission="4" aria-label="Úkol 5: Počítání bloků">⛏️</button>
+                    <button class="map-tile" type="button" data-mission="5" aria-label="Úkol 6: Písmena">🌿</button>
+                    <button class="map-tile" type="button" data-mission="6" aria-label="Úkol 7: Zvířata">💧</button>
+                    <button class="map-tile" type="button" data-mission="7" aria-label="Úkol 8: Budování">🌻</button>
+                    <button class="map-tile" type="button" data-mission="8" aria-label="Úkol 9: Deník dobrodruha">⭐</button>
+                </div>
+            </aside>
+            <section class="mission-card" aria-live="polite">
+                <div class="speech-controls" aria-label="Ovládání hlasitého čtení">
+                    <button class="speech-button" id="play-mission" type="button">▶ Přehrát</button>
+                    <button class="speech-button" id="pause-mission" type="button" aria-pressed="false">⏸ Pauznout</button>
+                    <button class="speech-button" id="stop-mission" type="button">⏹ Zastavit</button>
+                </div>
+                <article class="mission is-active" data-level="1" data-mission-panel="0">
+                    <h2>1. Lesní slova</h2>
+                    <p class="mission-lead">Vyber písmena ve správném pořadí a slož slovo MEČ.</p>
+                    <div class="tile-row" id="word-tiles">
+                        <button class="letter-tile" type="button" data-letter="Č">Č</button>
+                        <button class="letter-tile" type="button" data-letter="M">M</button>
+                        <button class="letter-tile" type="button" data-letter="E">E</button>
+                        <button class="letter-tile" type="button" data-letter="A">A</button>
+                    </div>
+                    <div class="answer-word" id="answer-word" aria-label="Složené slovo">&nbsp;</div>
+                    <div class="mission-actions">
+                        <button class="secondary-button" id="clear-word" type="button">Smazat</button>
+                        <button class="primary-button" id="check-word" type="button">Zkontrolovat</button>
+                    </div>
+                    <p class="mission-status" id="word-status" role="status"></p>
+                </article>
+                <article class="mission" data-level="1" data-mission-panel="1">
+                    <h2>2. Dolová hádanka</h2>
+                    <p class="mission-lead" id="count-question">Na cestě leží 2 rudý a 3 modré bloky. Kolik jich je dohromady?</p>
+                    <div class="count-grid" id="count-choices">
+                        <button class="count-choice" type="button" data-answer="4">4</button>
+                        <button class="count-choice" type="button" data-answer="5">5</button>
+                        <button class="count-choice" type="button" data-answer="6">6</button>
+                        <button class="count-choice" type="button" data-answer="7">7</button>
+                    </div>
+                    <div class="mission-actions" style="margin-top:14px">
+                        <button class="primary-button" id="check-count" type="button">Zkontrolovat</button>
+                    </div>
+                    <p class="mission-status" id="count-status" role="status"></p>
+                </article>
+                <article class="mission" data-level="1" data-mission-panel="2">
+                    <h2>3. Crafting stůl</h2>
+                    <p class="mission-lead">Klikni na 3 bloky trávy. Po dokončení se otevře poklad.</p>
+                    <div class="craft-grid" id="craft-grid">
+                        <button class="craft-cell" type="button" aria-label="Blok">🌿</button>
+                        <button class="craft-cell" type="button" aria-label="Blok">🌿</button>
+                        <button class="craft-cell" type="button" aria-label="Blok">🌿</button>
+                        <button class="craft-cell" type="button" aria-label="Blok">🪨</button>
+                        <button class="craft-cell" type="button" aria-label="Blok">🌿</button>
+                        <button class="craft-cell" type="button" aria-label="Blok">🪨</button>
+                    </div>
+                    <button class="primary-button" id="check-craft" type="button">Zkontrolovat crafting</button>
+                    <p class="mission-status" id="craft-status" role="status"></p>
+                </article>
+                <article class="mission" data-level="1" data-mission-panel="3">
+                    <h2>4. Bezpečný dům</h2>
+                    <p class="mission-lead">Steve vidí v dálce blížit se Creepera. Co má udělat?</p>
+                    <div class="story-text">„Je večer a Steve ještě nemá zavřené dveře domku.“</div>
+                    <div class="story-options">
+                        <button class="story-option" type="button" data-story="bad">A) Příjde za Creeperem blíž.</button>
+                        <button class="story-option" type="button" data-story="good">B) Přispěchá domů, zavře dveře a zapálí lampu.</button>
+                        <button class="story-option" type="button" data-story="bad">C) Nechá domek otevřený.</button>
+                    </div>
+                    <p class="mission-status" id="story-status" role="status"></p>
+                </article>
+                <article class="mission" data-level="1" data-mission-panel="4">
+                    <h2>5. Počítání bloků</h2>
+                    <p class="mission-lead">Steve má 4 bloky hlíny. Přidal ještě 2. Kolik má celkem?</p>
+                    <div class="count-grid">
+                        <button class="count-choice extra-count-choice" type="button" data-answer="5">5</button>
+                        <button class="count-choice extra-count-choice" type="button" data-answer="6">6</button>
+                        <button class="count-choice extra-count-choice" type="button" data-answer="7">7</button>
+                        <button class="count-choice extra-count-choice" type="button" data-answer="8">8</button>
+                    </div>
+                    <div class="mission-actions" style="margin-top:14px">
+                        <button class="primary-button" id="check-extra-count" type="button">Zkontrolovat</button>
+                    </div>
+                    <p class="mission-status" id="extra-count-status" role="status"></p>
+                </article>
+                <article class="mission" data-level="1" data-mission-panel="5">
+                    <h2>6. První písmeno</h2>
+                    <p class="mission-lead">Jakým písmenem začíná slovo KOZA?</p>
+                    <div class="tile-row">
+                        <button class="story-option extra-letter-choice" type="button" data-answer="bad">A) M</button>
+                        <button class="story-option extra-letter-choice" type="button" data-answer="good">B) K</button>
+                        <button class="story-option extra-letter-choice" type="button" data-answer="bad">C) S</button>
+                    </div>
+                    <p class="mission-status" id="letter-status" role="status"></p>
+                </article>
+                <article class="mission" data-level="1" data-mission-panel="6">
+                    <h2>7. Zvířata na farmě</h2>
+                    <p class="mission-lead">Které zvíře se ve Minecraftu nenachází na farmě?</p>
+                    <div class="story-options">
+                        <button class="story-option extra-animal-choice" type="button" data-answer="bad">A) Prase</button>
+                        <button class="story-option extra-animal-choice" type="button" data-answer="bad">B) Ovce</button>
+                        <button class="story-option extra-animal-choice" type="button" data-answer="good">C) Delfín</button>
+                    </div>
+                    <p class="mission-status" id="animal-status" role="status"></p>
+                </article>
+                <article class="mission" data-level="1" data-mission-panel="7">
+                    <h2>8. Stavba věže</h2>
+                    <p class="mission-lead">Vyber, co potřebuješ nejdřív, abys postavil věž?</p>
+                    <div class="story-options">
+                        <button class="story-option build-choice" type="button" data-answer="good">A) Kameny nebo bloky</button>
+                        <button class="story-option build-choice" type="button" data-answer="bad">B) Rybářský prut</button>
+                        <button class="story-option build-choice" type="button" data-answer="bad">C) Lodní veslo</button>
+                    </div>
+                    <p class="mission-status" id="build-status" role="status"></p>
+                </article>
+                <article class="mission" data-level="1" data-mission-panel="8">
+                    <h2>9. Deník dobrodruha</h2>
+                    <p class="mission-lead">Doplň větu: Dnes jsem při dobrodružství našel...</p>
+                    <div class="story-options">
+                        <button class="story-option diary-choice" type="button" data-answer="good">A) diamant</button>
+                        <button class="story-option diary-choice" type="button" data-answer="bad">B) sněhuláka</button>
+                        <button class="story-option diary-choice" type="button" data-answer="bad">C) oběd z úterý</button>
+                    </div>
+                    <p class="mission-status" id="diary-status" role="status"></p>
+                </article>
+                <div id="additional-level-missions"></div>
+                <div class="level-celebration" id="level-celebration" role="status" aria-live="polite" hidden>
+                    <p class="celebration-sparkles" aria-hidden="true">🎉 💎 ✨</p>
+                    <p class="celebration-message" id="celebration-message"></p>
+                </div>
+                <div class="mission-actions">
+                    <button class="primary-button" id="next-mission" type="button" hidden>Pokračovat na další úkol</button>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer>Každý malý krok se počítá. V Minecraftu i ve škole se učíme bezpečně a hravě.</footer>
+    <script>
+        const missionCount = 9;
+        const progressStorageKey = "minecraft-adventure-progress-v1";
+        const progressText = document.getElementById("progress-text");
+        const progressMessage = document.getElementById("progress-message");
+        const levelCelebration = document.getElementById("level-celebration");
+        const celebrationMessage = document.getElementById("celebration-message");
+        const levelMissions = {
+            2: [
+                { title: "Počet bloků", question: "Steve má 5 bloků a najde ještě 3. Kolik jich má?", icon: "🧱", choices: ["7", "8", "9"], correct: 1, success: "Pět a tři je osm." },
+                { title: "Písmeno v mapě", question: "Jakým písmenem začíná slovo MAPA?", icon: "🗺️", choices: ["M", "P", "S"], correct: 0, success: "MAPA začíná písmenem M." },
+                { title: "Zvíře ve vodě", question: "Které zvíře žije ve vodě?", icon: "🐬", choices: ["Prase", "Delfín", "Ovce"], correct: 1, success: "Delfín žije ve vodě." },
+                { title: "Pochodeň", question: "Co potřebuješ na výrobu pochodně?", icon: "🔥", choices: ["Uhlí a klacík", "Vodu a písek", "Květinu a kámen"], correct: 0, success: "Uhlí a klacík pomohou vyrobit pochodeň." },
+                { title: "Slož slovo", question: "Která písmena složí slovo PES?", icon: "🐕", choices: ["PES", "SEP", "EPS"], correct: 0, success: "Písmena P, E, S tvoří slovo PES." },
+                { title: "Diamanty v truhle", question: "V truhle jsou 4 diamanty. Steve přidá ještě 2. Kolik jich je?", icon: "💎", choices: ["5", "6", "7"], correct: 1, success: "Čtyři a dva je šest diamantů." },
+                { title: "Bezpečná cesta", question: "Creeper se blíží k otevřenému domu. Co uděláš?", icon: "🏠", choices: ["Vejdu dovnitř a zavřu dveře", "Půjdu za Creeperem", "Nechám dveře otevřené"], correct: 0, success: "Zavřené dveře pomohou zůstat v bezpečí." },
+                { title: "Čtvercový blok", question: "Kolik stran má čtverec?", icon: "⬜", choices: ["3", "4", "5"], correct: 1, success: "Čtverec má čtyři strany." },
+                { title: "Jablka pro kamaráda", question: "Máš 8 jablek a 3 dáš kamarádovi. Kolik ti zůstane?", icon: "🍎", choices: ["5", "6", "7"], correct: 0, success: "Osm bez tří je pět jablek." }
+            ],
+            3: [
+                { title: "Zlaté bloky", question: "Steve má 9 zlatých bloků a najde ještě 4. Kolik jich má?", icon: "🪙", choices: ["12", "13", "14"], correct: 1, success: "Devět a čtyři je třináct." },
+                { title: "Těžba v dole", question: "V dole bylo 14 uhlíků. Steve 6 vytěžil. Kolik jich zbylo?", icon: "⛏️", choices: ["7", "8", "9"], correct: 1, success: "Čtrnáct bez šesti je osm." },
+                { title: "Slabiky v domečku", question: "Kolikrát tleskneš při slově DOMEČEK po slabikách DO-ME-ČEK?", icon: "🏡", choices: ["2", "3", "4"], correct: 1, success: "Domeček má tři slabiky." },
+                { title: "Písmeno K", question: "Které slovo začíná stejně jako KOZA?", icon: "🌾", choices: ["KÁMEN", "PES", "LES"], correct: 0, success: "Koza i kámen začínají písmenem K." },
+                { title: "Pokračuj v řadě", question: "Co následuje? 2, 4, 6...", icon: "🔢", choices: ["7", "8", "9"], correct: 1, success: "Po šesti následuje v řadě osmička." },
+                { title: "Zvířata na louce", question: "Na louce jsou 3 ovce a 5 krav. Kolik zvířat je dohromady?", icon: "🐑", choices: ["7", "8", "9"], correct: 1, success: "Tři ovce a pět krav je osm zvířat." },
+                { title: "Přes lávu", question: "Jak bezpečně přejdeš přes lávu?", icon: "🌋", choices: ["Postavím pevný most", "Skočím do lávy", "Zavřu oči a běžím"], correct: 0, success: "Pevný most je bezpečná cesta." },
+                { title: "Těžký kámen", question: "Který nástroj se hodí na kopání kamene?", icon: "🪓", choices: ["Krumpáč", "Lopata", "Rybářský prut"], correct: 0, success: "Kámen se těží krumpáčem." },
+                { title: "Zbytky dřeva", question: "Steve má 10 dřevěných bloků. Použije 4. Kolik mu zbyde?", icon: "🪵", choices: ["5", "6", "7"], correct: 1, success: "Deset bez čtyř je šest." }
+            ]
+        };
+        const initialCompletedMissions = new Set(
+            Array.from({ length: missionCount }, (_, index) => `1:${index}`)
+        );
+        function loadAdventureProgress() {
+            try {
+                const saved = window.localStorage.getItem(progressStorageKey);
+                if (!saved) return { completed: initialCompletedMissions, currentLevel: 2 };
+                const parsed = JSON.parse(saved);
+                if (!parsed || !Array.isArray(parsed.completed)) {
+                    throw new Error("Uložený postup nemá očekávaný formát.");
+                }
+                const completed = new Set(parsed.completed.filter((key) =>
+                    typeof key === "string" && /^[123]:[0-8]$/.test(key)
+                ));
+                const currentLevel = [1, 2, 3].includes(Number(parsed.currentLevel))
+                    ? Number(parsed.currentLevel)
+                    : 2;
+                return { completed, currentLevel };
+            } catch (error) {
+                console.error("Minecraftový postup se nepodařilo načíst.", error);
+                progressMessage.textContent = "Postup se nepodařilo načíst. Level 2 je odemčený a nový postup se uloží při hraní.";
+                progressMessage.hidden = false;
+                return { completed: initialCompletedMissions, currentLevel: 2 };
+            }
+        }
+        const savedProgress = loadAdventureProgress();
+        const completedMissions = savedProgress.completed;
+        const nextMissionButton = document.getElementById("next-mission");
+        const mapGrid = document.getElementById("map-grid");
+        const additionalMissions = document.getElementById("additional-level-missions");
+        let currentLevel = savedProgress.currentLevel;
+        let activeMissionIndex = 0;
+        let missionPanels = [...document.querySelectorAll(".mission")];
+        let selectedWord = "";
+        let countAnswer = "";
+        let extraCountAnswer = "";
+        let activeUtterance = null;
+
+        const speechSynthesis = window.speechSynthesis;
+        const pauseButton = document.getElementById("pause-mission");
+
+        function missionKey(level, index) {
+            return `${level}:${index}`;
+        }
+
+        function isMissionComplete(level, index) {
+            return completedMissions.has(missionKey(level, index));
+        }
+
+        function getCompletedMissionCount(level) {
+            return Array.from({ length: missionCount }, (_, index) =>
+                isMissionComplete(level, index)
+            ).filter(Boolean).length;
+        }
+
+        function isLevelComplete(level) {
+            return getCompletedMissionCount(level) === missionCount;
+        }
+
+        function isLevelUnlocked(level) {
+            return level === 1 || level === 2 || (level === 3 && isLevelComplete(2));
+        }
+
+        function saveAdventureProgress() {
+            try {
+                window.localStorage.setItem(progressStorageKey, JSON.stringify({
+                    completed: [...completedMissions],
+                    currentLevel
+                }));
+                progressMessage.hidden = true;
+                progressMessage.textContent = "";
+            } catch (error) {
+                console.error("Minecraftový postup se nepodařilo uložit.", error);
+                progressMessage.textContent = "Postup se nepodařilo uložit. Zkontroluj nastavení úložiště prohlížeče.";
+                progressMessage.hidden = false;
+            }
+        }
+
+        if (!isLevelUnlocked(currentLevel)) currentLevel = 2;
+
+        function setPausedState(paused) {
+            pauseButton.textContent = paused ? "▶ Pokračovat" : "⏸ Pauznout";
+            pauseButton.setAttribute("aria-pressed", String(paused));
+        }
+
+        function stopReading() {
+            if (!speechSynthesis) return;
+            activeUtterance = null;
+            speechSynthesis.cancel();
+            setPausedState(false);
+        }
+
+        function speak(text) {
+            if (!speechSynthesis) return;
+            activeUtterance = null;
+            speechSynthesis.cancel();
+            setPausedState(false);
+            const spokenText = numbersToWords(text)
+                .replace(/\bCreeperem\b/gi, "kríperem")
+                .replace(/\bCreepera\b/gi, "krípera")
+                .replace(/\bCreeper\b/gi, "krípr")
+                .replace(/\bMinecraft\b/gi, "Majnkraft")
+                .replace(/\bSteve\b/gi, "Stýv");
+            const utterance = new SpeechSynthesisUtterance(spokenText);
+            utterance.lang = "cs-CZ";
+            utterance.rate = 0.82;
+            utterance.pitch = 1.05;
+            activeUtterance = utterance;
+            utterance.onend = () => {
+                if (activeUtterance === utterance) {
+                    activeUtterance = null;
+                    setPausedState(false);
+                }
+            };
+            utterance.onerror = () => {
+                if (activeUtterance === utterance) {
+                    activeUtterance = null;
+                    setPausedState(false);
+                }
+            };
+            speechSynthesis.speak(utterance);
+        }
+
+        function numbersToWords(text) {
+            const numbers = {
+                "0": "nula",
+                "1": "jedna",
+                "2": "dvě",
+                "3": "tři",
+                "4": "čtyři",
+                "5": "pět",
+                "6": "šest",
+                "7": "sedm",
+                "8": "osm",
+                "9": "devět"
+            };
+            return text.replace(/\b([0-9])\b/g, (match, digit) => numbers[digit]);
+        }
+
+        function readActiveMission() {
+            const active = document.querySelector(".mission.is-active");
+            if (!active) return;
+            const heading = active.querySelector("h2")?.textContent || "";
+            const lead = active.querySelector(".mission-lead")?.textContent || "";
+            const story = active.querySelector(".story-text")?.textContent || "";
+            const options = [...active.querySelectorAll(".story-option")]
+                .map((option) => option.textContent.trim().replace(/^([ABC])\)\s*/, (_, letter) => {
+                    const spokenLetters = { A: "á", B: "bé", C: "cé" };
+                    return `Za ${spokenLetters[letter]}: `;
+                }));
+            const extra = options.length ? ` Možnosti: ${options.join(". ")}` : "";
+            speak(numbersToWords(`${heading}. ${lead}${story ? ` ${story}` : ""}${extra}`));
+        }
+
+        document.getElementById("play-mission").addEventListener("click", readActiveMission);
+        pauseButton.addEventListener("click", () => {
+            if (!speechSynthesis || !activeUtterance) return;
+            if (speechSynthesis.paused) {
+                speechSynthesis.resume();
+                setPausedState(false);
+            } else {
+                speechSynthesis.pause();
+                setPausedState(true);
+            }
+        });
+        document.getElementById("stop-mission").addEventListener("click", stopReading);
+
+        const levelOneMap = [
+            { icon: "🌲", title: "Lesní slova" },
+            { icon: "🪨", title: "Dolová hádanka" },
+            { icon: "🧱", title: "Crafting stůl" },
+            { icon: "🏠", title: "Bezpečný dům" },
+            { icon: "⛏️", title: "Počítání bloků" },
+            { icon: "🌿", title: "První písmeno" },
+            { icon: "💧", title: "Zvířata na farmě" },
+            { icon: "🌻", title: "Stavba věže" },
+            { icon: "⭐", title: "Deník dobrodruha" }
+        ];
+
+        function renderAdditionalMissionPanels() {
+            Object.entries(levelMissions).forEach(([levelValue, missions]) => {
+                const level = Number(levelValue);
+                missions.forEach((mission, index) => {
+                    const panel = document.createElement("article");
+                    panel.className = "mission";
+                    panel.dataset.level = String(level);
+                    panel.dataset.missionPanel = String(index);
+
+                    const heading = document.createElement("h2");
+                    heading.textContent = `${index + 1}. ${mission.title}`;
+                    const lead = document.createElement("p");
+                    lead.className = "mission-lead";
+                    lead.textContent = mission.question;
+                    const choices = document.createElement("div");
+                    choices.className = "story-options";
+                    const status = document.createElement("p");
+                    status.className = "mission-status";
+                    status.setAttribute("role", "status");
+
+                    mission.choices.forEach((choice, choiceIndex) => {
+                        const button = document.createElement("button");
+                        const letter = String.fromCharCode(65 + choiceIndex);
+                        button.className = "story-option";
+                        button.type = "button";
+                        button.textContent = `${letter}) ${choice}`;
+                        button.dataset.answer = choiceIndex === mission.correct ? "good" : "bad";
+                        button.setAttribute("aria-pressed", "false");
+                        if (isMissionComplete(level, index)) {
+                            button.disabled = true;
+                            if (choiceIndex === mission.correct) button.classList.add("is-selected");
+                        }
+                        button.addEventListener("click", () => {
+                            if (isMissionComplete(level, index)) return;
+                            if (choiceIndex === mission.correct) {
+                                status.textContent = `Správně! ${mission.success}`;
+                                choices.querySelectorAll("button").forEach((option) => {
+                                    option.disabled = true;
+                                });
+                                speak(`Správně! ${mission.success}`);
+                                completeMission(index, level);
+                            } else {
+                                status.textContent = "To není ono. Zkus to ještě jednou.";
+                                speak("To není ono. Zkus to ještě jednou.");
+                            }
+                        });
+                        choices.append(button);
+                    });
+
+                    if (isMissionComplete(level, index)) {
+                        status.textContent = `Správně! ${mission.success}`;
+                    }
+                    panel.append(heading, lead, choices, status);
+                    additionalMissions.append(panel);
+                });
+            });
+            missionPanels = [...document.querySelectorAll(".mission")];
+        }
+
+        function renderLevelMap(level) {
+            const mapItems = level === 1
+                ? levelOneMap
+                : levelMissions[level].map((mission) => ({ icon: mission.icon, title: mission.title }));
+            mapGrid.replaceChildren(...mapItems.map((mission, index) => {
+                const tile = document.createElement("button");
+                tile.className = "map-tile";
+                tile.type = "button";
+                tile.dataset.mission = String(index);
+                tile.textContent = mission.icon;
+                tile.setAttribute("aria-label", `Úkol ${index + 1}: ${mission.title}`);
+                tile.classList.toggle("is-done", isMissionComplete(level, index));
+                tile.classList.toggle("is-active", index === activeMissionIndex);
+                return tile;
+            }));
+        }
+
+        function updateLevelButtons() {
+            document.querySelectorAll(".level-button").forEach((button) => {
+                const level = Number(button.dataset.level);
+                const unlocked = isLevelUnlocked(level);
+                button.disabled = !unlocked;
+                button.setAttribute("aria-pressed", String(level === currentLevel));
+                button.textContent = unlocked
+                    ? `Level ${level}${isLevelComplete(level) ? " ✓" : ""}`
+                    : `🔒 Level ${level}`;
+                button.title = `Level ${level}: ${getCompletedMissionCount(level)} z ${missionCount} úkolů`;
+            });
+        }
+
+        function updateProgressDisplay() {
+            const completedCount = getCompletedMissionCount(currentLevel);
+            progressText.textContent = isLevelComplete(currentLevel)
+                ? `Level ${currentLevel} dokončen — ${completedCount} z ${missionCount} úkolů hotovo! 💎`
+                : `Level ${currentLevel} · ${completedCount} z ${missionCount} úkolů hotovo`;
+        }
+
+        function hideLevelCelebration() {
+            levelCelebration.hidden = true;
+            levelCelebration.classList.remove("is-celebrating");
+        }
+
+        function celebrateLevel(level) {
+            const nextLevel = level + 1;
+            const message = nextLevel <= 3
+                ? `Skvěle! Dokončila jsi Level ${level} a odemkla Level ${nextLevel}. Klikni na tlačítko Pokračovat na Level ${nextLevel} a vydej se dál.`
+                : "Fantastická práce! Dokončila jsi Level 3. Celá výprava je hotová!";
+            celebrationMessage.textContent = message;
+            levelCelebration.hidden = false;
+            levelCelebration.classList.remove("is-celebrating");
+            void levelCelebration.offsetWidth;
+            levelCelebration.classList.add("is-celebrating");
+            speak(message);
+        }
+
+        function findNextMissionIndex(level) {
+            for (let index = 0; index < missionCount; index += 1) {
+                if (!isMissionComplete(level, index)) return index;
+            }
+            return missionCount - 1;
+        }
+
+        function showMission(index, level = currentLevel) {
+            if (!isLevelUnlocked(level) || index < 0 || index >= missionCount) return;
+            hideLevelCelebration();
+            currentLevel = level;
+            activeMissionIndex = index;
+            missionPanels.forEach((panel) => {
+                const isActive = Number(panel.dataset.level) === level
+                    && Number(panel.dataset.missionPanel) === index;
+                panel.classList.toggle("is-active", isActive);
+            });
+            mapGrid.querySelectorAll(".map-tile[data-mission]").forEach((tile, tileIndex) => {
+                tile.classList.toggle("is-active", tileIndex === index);
+            });
+            updateLevelButtons();
+            updateProgressDisplay();
+            updateNextMissionButton();
+            window.setTimeout(readActiveMission, 150);
+        }
+
+        function selectLevel(level) {
+            if (!isLevelUnlocked(level)) return;
+            currentLevel = level;
+            renderLevelMap(level);
+            saveAdventureProgress();
+            updateLevelButtons();
+            showMission(findNextMissionIndex(level), level);
+        }
+
+        function updateNextMissionButton() {
+            if (!isMissionComplete(currentLevel, activeMissionIndex)) {
+                nextMissionButton.hidden = true;
+                return;
+            }
+
+            if (activeMissionIndex < missionCount - 1) {
+                nextMissionButton.textContent = "Pokračovat na další úkol";
+                nextMissionButton.setAttribute("aria-label", `Pokračovat na úkol ${activeMissionIndex + 2}`);
+                nextMissionButton.hidden = false;
+                return;
+            }
+
+            const nextLevel = currentLevel + 1;
+            if (nextLevel <= 3 && isLevelUnlocked(nextLevel)) {
+                nextMissionButton.textContent = `Pokračovat na Level ${nextLevel}`;
+                nextMissionButton.setAttribute("aria-label", `Pokračovat na Level ${nextLevel}`);
+                nextMissionButton.hidden = false;
+                return;
+            }
+
+            nextMissionButton.hidden = true;
+        }
+
+        function completeMission(index, level = currentLevel) {
+            const wasLevelComplete = isLevelComplete(level);
+            if (!isMissionComplete(level, index)) {
+                completedMissions.add(missionKey(level, index));
+                saveAdventureProgress();
+            }
+            const tile = mapGrid.querySelector(`[data-mission="${index}"]`);
+            if (tile) tile.classList.add("is-done");
+            updateLevelButtons();
+            updateProgressDisplay();
+            updateNextMissionButton();
+            if (!wasLevelComplete && isLevelComplete(level)) celebrateLevel(level);
+        }
+
+        document.querySelectorAll(".level-button").forEach((button) => {
+            button.addEventListener("click", () => selectLevel(Number(button.dataset.level)));
+        });
+        mapGrid.addEventListener("click", (event) => {
+            const tile = event.target.closest(".map-tile[data-mission]");
+            if (tile) showMission(Number(tile.dataset.mission));
+        });
+        nextMissionButton.addEventListener("click", () => {
+            if (!isMissionComplete(currentLevel, activeMissionIndex)) return;
+            if (activeMissionIndex < missionCount - 1) {
+                showMission(activeMissionIndex + 1);
+            } else if (currentLevel < 3 && isLevelUnlocked(currentLevel + 1)) {
+                selectLevel(currentLevel + 1);
+            }
+        });
+
+        renderAdditionalMissionPanels();
+        document.querySelectorAll(".story-option").forEach((option) => {
+            option.setAttribute("aria-pressed", "false");
+            option.addEventListener("click", () => {
+                const group = option.closest(".story-options, .tile-row");
+                group.querySelectorAll(".story-option").forEach((item) => {
+                    const isSelected = item === option;
+                    item.classList.toggle("is-selected", isSelected);
+                    item.classList.toggle("is-wrong", isSelected
+                        && (item.dataset.answer === "bad" || item.dataset.story === "bad"));
+                    item.setAttribute("aria-pressed", String(isSelected));
+                });
+            });
+        });
+
+        document.querySelectorAll(".letter-tile").forEach((tile) => {
+            tile.addEventListener("click", () => {
+                if (selectedWord.length >= 3) return;
+                tile.classList.add("is-selected");
+                selectedWord += tile.dataset.letter;
+                document.getElementById("answer-word").textContent = selectedWord;
+                speak(tile.dataset.letter);
+            });
+        });
+
+        document.getElementById("clear-word").addEventListener("click", () => {
+            selectedWord = "";
+            document.querySelectorAll(".letter-tile").forEach((tile) => {
+                tile.classList.remove("is-selected", "is-wrong");
+            });
+            document.getElementById("answer-word").innerHTML = "&nbsp;";
+            document.getElementById("word-status").textContent = "";
+        });
+
+        document.getElementById("check-word").addEventListener("click", () => {
+            if (selectedWord === "MEČ") {
+                document.getElementById("word-status").textContent = "Správně! Meč je připravený.";
+                speak("Správně! Meč je připravený.");
+                completeMission(0);
+            } else {
+                document.getElementById("word-status").textContent = "Zkus to ještě jednou.";
+                document.querySelectorAll(".letter-tile.is-selected").forEach((tile) => {
+                    tile.classList.add("is-wrong");
+                });
+                speak("Zkus to ještě jednou.");
+            }
+        });
+
+        document.querySelectorAll(".count-choice").forEach((choice) => {
+            choice.setAttribute("aria-pressed", "false");
+            choice.addEventListener("click", () => {
+                countAnswer = choice.dataset.answer;
+                choice.closest(".count-grid").querySelectorAll(".count-choice").forEach((item) => {
+                    const isSelected = item === choice;
+                    const correctAnswer = item.classList.contains("extra-count-choice") ? "6" : "5";
+                    item.classList.toggle("is-selected", isSelected);
+                    item.classList.toggle("is-wrong", isSelected && item.dataset.answer !== correctAnswer);
+                    item.setAttribute("aria-pressed", String(isSelected));
+                });
+            });
+        });
+
+        document.getElementById("check-count").addEventListener("click", () => {
+            if (countAnswer === "5") {
+                document.getElementById("count-status").textContent = "Výborně! 2 + 3 = 5.";
+                speak("Výborně! Dvě plus tři se rovná pět.");
+                completeMission(1);
+            } else {
+                document.getElementById("count-status").textContent = "Spočítej rudé i modré bloky dohromady.";
+                speak("Spočítej rudé i modré bloky dohromady.");
+            }
+        });
+
+        document.querySelectorAll(".craft-cell").forEach((cell) => {
+            cell.addEventListener("click", () => {
+                const isSelected = !cell.classList.contains("is-selected");
+                cell.closest(".craft-grid").querySelectorAll(".craft-cell.is-wrong").forEach((wrongCell) => {
+                    wrongCell.classList.remove("is-wrong");
+                });
+                cell.classList.toggle("is-selected", isSelected);
+                cell.classList.toggle("is-wrong", isSelected && cell.textContent !== "🌿");
+            });
+        });
+
+        document.getElementById("check-craft").addEventListener("click", () => {
+            const grassSelected = [...document.querySelectorAll(".craft-cell")]
+                .filter((cell) => cell.textContent === "🌿" && cell.classList.contains("is-selected")).length;
+            if (grassSelected === 3) {
+                document.getElementById("craft-status").textContent = "Úspěch! Crafting dal hráči diamant.";
+                speak("Úspěch! Crafting dal hráči diamant.");
+                completeMission(2);
+            } else {
+                document.getElementById("craft-status").textContent = "Vyber přesně 3 bloky trávy.";
+                document.querySelectorAll(".craft-cell.is-selected").forEach((cell) => {
+                    cell.classList.add("is-wrong");
+                });
+                speak("Vyber přesně 3 bloky trávy.");
+            }
+        });
+
+        document.querySelectorAll(".story-option[data-story]").forEach((option) => {
+            option.addEventListener("click", () => {
+                if (option.dataset.story === "good") {
+                    document.getElementById("story-status").textContent = "Správně — bezpečí je na prvním místě!";
+                    speak("Správně. Bezpečí je na prvním místě!");
+                    completeMission(3);
+                } else {
+                    document.getElementById("story-status").textContent = "Takhle by to mohlo skončit s otřesem. Zkus bezpečnější řešení.";
+                    speak("Takhle by to mohlo skončit s otřesem. Zkus bezpečnější řešení.");
+                }
+            });
+        });
+
+        document.querySelectorAll(".extra-count-choice").forEach((choice) => {
+            choice.addEventListener("click", () => {
+                extraCountAnswer = choice.dataset.answer;
+            });
+        });
+
+        document.getElementById("check-extra-count").addEventListener("click", () => {
+            if (extraCountAnswer === "6") {
+                document.getElementById("extra-count-status").textContent = "Správně! 4 + 2 = 6.";
+                speak("Správně! Čtyři plus dvě se rovná šest.");
+                completeMission(4);
+            } else {
+                document.getElementById("extra-count-status").textContent = "Zkus sečíst 4 a 2.";
+                speak("Zkus sečíst čtyři a dvě.");
+            }
+        });
+
+        document.querySelectorAll(".extra-letter-choice").forEach((choice) => {
+            choice.addEventListener("click", () => {
+                if (choice.dataset.answer === "good") {
+                    document.getElementById("letter-status").textContent = "Správně! Koza začíná písmenem K.";
+                    speak("Správně! Koza začíná písmenem ká.");
+                    completeMission(5);
+                } else {
+                    document.getElementById("letter-status").textContent = "Zkus písmeno u začátku slova KOZA.";
+                    speak("Zkus písmeno u začátku slova koza.");
+                }
+            });
+        });
+
+        document.querySelectorAll(".extra-animal-choice").forEach((choice) => {
+            choice.addEventListener("click", () => {
+                if (choice.dataset.answer === "good") {
+                    document.getElementById("animal-status").textContent = "Správně! Delfín není hospodářské zvíře.";
+                    speak("Správně! Delfín není hospodářské zvíře.");
+                    completeMission(6);
+                } else {
+                    document.getElementById("animal-status").textContent = "Tohle zvíře může žít na farmě.";
+                    speak("Tohle zvíře může žít na farmě.");
+                }
+            });
+        });
+
+        document.querySelectorAll(".build-choice").forEach((choice) => {
+            choice.addEventListener("click", () => {
+                if (choice.dataset.answer === "good") {
+                    document.getElementById("build-status").textContent = "Správně! Bez bloků věž nevytvoříš.";
+                    speak("Správně! Bez bloků věž nevytvoříš.");
+                    completeMission(7);
+                } else {
+                    document.getElementById("build-status").textContent = "To k stavbě věže nepotřebuješ.";
+                    speak("To k stavbě věže nepotřebuješ.");
+                }
+            });
+        });
+
+        document.querySelectorAll(".diary-choice").forEach((choice) => {
+            choice.addEventListener("click", () => {
+                if (choice.dataset.answer === "good") {
+                    document.getElementById("diary-status").textContent = "Správně! Přidal jsem diamant do deníku.";
+                    speak("Správně! Přidal jsem diamant do deníku.");
+                    completeMission(8);
+                } else {
+                    document.getElementById("diary-status").textContent = "Zkus něco, co se v Minecraftu hledá.";
+                    speak("Zkus něco, co se v Minecraftu hledá.");
+                }
+            });
+        });
+
+        updateLevelButtons();
+        renderLevelMap(currentLevel);
+        showMission(findNextMissionIndex(currentLevel), currentLevel);
+    </script>
+</body>
+</html>

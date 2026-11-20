@@ -1,0 +1,10 @@
+{
+  "name": "svet-male-hvezdicky",
+  "version": "1.0.0",
+  "description": "Český web s pohádkami, čtením a hravým procvičováním pro děti.",
+  "scripts": {
+    "story:serve": "node scripts/serve-story.mjs"
+  },
+  "license": "ISC",
+  "type": "commonjs"
+}

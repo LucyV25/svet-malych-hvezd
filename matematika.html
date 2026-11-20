@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f2fb">
+    <meta name="description" content="Hravé procvičování počítání, sčítání, odčítání a porovnávání čísel.">
+    <title>Matematika — Svět malé hvězdičky</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #352844;
+            --muted: #756a80;
+            --paper: #fffdfd;
+            --accent: #8052b8;
+            --accent-dark: #62398f;
+            --lavender: #eee5f7;
+            --line: #e9e0ed;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        button, input, select { font: inherit; }
+        button, a, input, select { -webkit-tap-highlight-color: transparent; }
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid #b99adb;
+            outline-offset: 3px;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 22px 32px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--lavender);
+            font-family: sans-serif;
+            font-size: 19px;
+        }
+        .topbar-actions { display: flex; align-items: center; gap: 20px; }
+        .top-link { color: var(--accent-dark); font-size: 13px; font-weight: 650; text-decoration: none; }
+        .top-link:hover { text-decoration: underline; }
+        .top-link[aria-current="page"] { color: var(--muted); }
+        main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 26px 0 70px; }
+        .page-heading { max-width: 640px; margin: 0 auto 28px; text-align: center; }
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        h1, h2, p { margin-top: 0; }
+        .page-heading h1 {
+            margin: 0 0 8px;
+            font-family: var(--serif);
+            font-size: clamp(30px, 5vw, 42px);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+        .page-heading p:last-child { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+        .math-card {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 25px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+        }
+        .math-card h2 {
+            margin: 0 0 5px;
+            font-family: var(--serif);
+            font-size: 23px;
+            font-weight: 500;
+        }
+        .card-intro { margin: 0 0 17px; color: var(--muted); font-size: 12px; }
+        .range-control {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin: -5px 0 15px;
+            color: #49365b;
+            font-size: 12px;
+            font-weight: 650;
+        }
+        .range-control input {
+            width: 76px;
+            min-height: 38px;
+            padding: 0 6px;
+            border: 1px solid #d9c9e6;
+            border-radius: 9px;
+            background: #fcf9fe;
+            color: var(--accent-dark);
+            font-weight: 700;
+            text-align: center;
+        }
+        .exercise-list { display: grid; gap: 9px; }
+        .exercise-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 8px 12px;
+            padding: 12px 13px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: #fff;
+        }
+        .exercise-item.is-comparison { grid-template-columns: minmax(0, 1fr); }
+        .exercise-prompt {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            color: #49365b;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .exercise-number {
+            display: grid;
+            width: 23px;
+            height: 23px;
+            flex: 0 0 auto;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--lavender);
+            color: var(--accent-dark);
+            font-size: 11px;
+        }
+        .counting-items { flex-basis: 100%; padding-left: 29px; font-size: 19px; letter-spacing: 3px; }
+        .exercise-input {
+            width: 66px;
+            min-height: 40px;
+            padding: 0 8px;
+            border: 1px solid #d9c9e6;
+            border-radius: 9px;
+            background: #fcf9fe;
+            color: var(--ink);
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .comparison-expression, .comparison-options { display: inline-flex; align-items: center; }
+        .comparison-expression { gap: 7px; }
+        .comparison-options { gap: 4px; }
+        .comparison-number { min-width: 18px; color: var(--ink); font-size: 17px; text-align: center; }
+        .comparison-option {
+            display: grid;
+            width: 38px;
+            min-height: 38px;
+            place-items: center;
+            border: 1px solid #d9c9e6;
+            border-radius: 8px;
+            background: #fcf9fe;
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .comparison-option:hover { background: #f3eafa; }
+        .comparison-option[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; }
+        .comparison-option:focus-visible { outline: 3px solid #d7b6ef; outline-offset: 2px; }
+        .exercise-item.is-correct { border-color: #b7dcc5; background: #f5fbf7; }
+        .exercise-item.is-incorrect { border-color: #edbfd7; background: #fff7fb; }
+        .bond-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+        .bond-item {
+            min-width: 0;
+            padding: 14px 10px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            text-align: center;
+        }
+        .bond-item.is-correct { border-color: #b7dcc5; background: #f5fbf7; }
+        .bond-item.is-incorrect { border-color: #edbfd7; background: #fff7fb; }
+        .bond-instruction { margin: 0 0 8px; color: var(--muted); font-size: 12px; }
+        .bond-diagram {
+            display: grid;
+            grid-template-rows: 54px 42px 50px;
+            justify-items: center;
+            width: 180px;
+            margin: 0 auto;
+        }
+        .bond-whole {
+            display: grid;
+            width: 52px;
+            height: 52px;
+            place-items: center;
+            border: 2px solid #d9c9e6;
+            border-radius: 50%;
+            background: var(--lavender);
+            color: var(--accent-dark);
+            font-size: 24px;
+            font-weight: 750;
+        }
+        .bond-branches { position: relative; width: 180px; height: 42px; }
+        .bond-branches::before, .bond-branches::after {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 72px;
+            background: #c9b8d7;
+            content: "";
+            transform-origin: top center;
+        }
+        .bond-branches::before { transform: rotate(48deg); }
+        .bond-branches::after { transform: rotate(-48deg); }
+        .bond-parts { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+        .bond-part {
+            display: grid;
+            width: 58px;
+            height: 48px;
+            place-items: center;
+            border: 2px solid #d9c9e6;
+            border-radius: 9px;
+            background: #fff;
+            color: var(--ink);
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .bond-answer {
+            width: 58px;
+            min-height: 48px;
+            padding: 0 4px;
+            border: 2px dashed #bda9ce;
+            border-radius: 9px;
+            background: #fcf9fe;
+            color: var(--accent-dark);
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .bond-answer.is-correct { border-style: solid; border-color: #63a67a; background: #edf8ef; color: #317349; }
+        .bond-answer.is-incorrect { border-style: solid; border-color: #c87878; background: #fff1f1; color: #9a4141; }
+        .exercise-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+        .submit-button, .secondary-button {
+            min-height: 42px;
+            padding: 0 14px;
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 650;
+        }
+        .submit-button { background: var(--accent); color: #fff; }
+        .submit-button:hover { background: var(--accent-dark); }
+        .secondary-button { border-color: #e1d5e9; background: #fff; color: var(--accent-dark); }
+        .secondary-button:hover { background: #f7effa; }
+        .toast { min-height: 22px; margin: 12px 0 0; color: var(--accent-dark); font-size: 12px; text-align: center; }
+        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        @media (max-width: 700px) {
+            .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
+            .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 12px; }
+            main { width: min(100% - 28px, 560px); padding-top: 22px; }
+            .math-card { padding: 22px; }
+        }
+        @media (max-width: 390px) {
+            .brand { gap: 7px; font-size: 16px; }
+            .topbar-actions { gap: 9px; }
+            .top-link { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
+            <span class="brand-mark" aria-hidden="true">☾</span>
+            <span>Svět malé hvězdičky</span>
+        </a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html" aria-current="page">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="minecraft.html">Minecraft</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">Krátce a hravě</p>
+            <h1>Matematika</h1>
+            <p>Počítání, sčítání, odčítání a porovnávání. Zvolte rozsah podle toho, co už zrovna procvičujete.</p>
+        </header>
+        <section class="math-card" aria-labelledby="math-title">
+            <h2 id="math-title">Počítáme do <span id="math-range-label">5</span></h2>
+            <p class="card-intro">Příklady se obnoví při změně rozsahu nebo po stisknutí tlačítka.</p>
+            <div class="range-control">
+                <label for="number-limit">Dítě počítá do</label>
+                <input id="number-limit" type="number" min="2" max="20" step="1" value="5" inputmode="numeric" aria-describedby="number-limit-hint">
+                <span id="number-limit-hint">Zadej celé číslo od 2 do 20.</span>
+            </div>
+            <div class="exercise-list" id="math-exercises" aria-live="polite"></div>
+            <div class="exercise-controls">
+                <button class="submit-button" id="check-math" type="button">Zkontrolovat</button>
+                <button class="secondary-button" id="new-math" type="button">Nové příklady</button>
+            </div>
+            <p class="toast" id="math-status" role="status" aria-live="polite"></p>
+        </section>
+        <section class="math-card" aria-labelledby="number-bonds-title" style="margin-top: 20px;">
+            <h2 id="number-bonds-title">Doplň do čísla</h2>
+            <p class="card-intro">Nahoře je celé číslo. Doplň do prázdného okénka druhou část, která chybí.</p>
+            <div class="bond-list" id="number-bond-exercises" aria-live="polite"></div>
+            <div class="exercise-controls">
+                <button class="submit-button" id="check-number-bonds" type="button">Zkontrolovat</button>
+                <button class="secondary-button" id="new-number-bonds" type="button">Nová cvičení</button>
+                <button class="secondary-button" id="read-number-bond-instructions" type="button">🔊 Přehrát zadání</button>
+                <button class="secondary-button" id="stop-number-bond-speech" type="button" hidden>⏹ Zastavit</button>
+            </div>
+            <p class="toast" id="number-bond-status" role="status" aria-live="polite"></p>
+            <p class="toast" id="number-bond-speech-status" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+
+    <footer>Každý malý krok se počítá. Cvičte jen tak dlouho, jak je vám příjemné.</footer>
+
+    <script>
+        const numberLimitKey = "dobrouNocHvezdicko:number-limit:v1";
+        const mathExercises = document.querySelector("#math-exercises");
+        const mathStatus = document.querySelector("#math-status");
+        const numberLimitSelect = document.querySelector("#number-limit");
+        const mathRangeLabel = document.querySelector("#math-range-label");
+        const numberBondExercises = document.querySelector("#number-bond-exercises");
+        const numberBondStatus = document.querySelector("#number-bond-status");
+        const numberBondSpeechStatus = document.querySelector("#number-bond-speech-status");
+        const stopNumberBondSpeechButton = document.querySelector("#stop-number-bond-speech");
+        let generatedMathQuestions = [];
+        let generatedNumberBonds = [];
+        let maxNumber = 5;
+        let activeMathUtterance = null;
+
+        function initializeNumberLimit() {
+            try {
+                const saved = window.localStorage.getItem(numberLimitKey);
+                const value = saved === null ? 5 : Number(saved);
+                if (!Number.isInteger(value) || value < 2 || value > 20) {
+                    throw new Error("The saved number limit is invalid.");
+                }
+                maxNumber = value;
+            } catch (error) {
+                console.error("Rozsah počítání se nepodařilo načíst.", error);
+                mathStatus.textContent = "Uložený rozsah se nepodařilo načíst. Používáme počítání do 5.";
+            }
+            numberLimitSelect.value = String(maxNumber);
+            mathRangeLabel.textContent = String(maxNumber);
+        }
+
+        function randomInteger(minimum, maximum) {
+            return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+        }
+
+        function shuffled(items) {
+            const result = [...items];
+            for (let index = result.length - 1; index > 0; index -= 1) {
+                const swapIndex = randomInteger(0, index);
+                [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+            }
+            return result;
+        }
+
+        function makeMathQuestion(type) {
+            if (type === "count") {
+                const answer = randomInteger(1, maxNumber);
+                return { type, prompt: "Kolik je puntíků?", answer, image: "● ".repeat(answer).trim() };
+            }
+            if (type === "compare") {
+                const left = randomInteger(0, maxNumber);
+                const right = randomInteger(0, maxNumber);
+                const answer = left < right ? "<" : left > right ? ">" : "=";
+                return { type, left, right, answer, selectedAnswer: "" };
+            }
+            const left = randomInteger(0, maxNumber);
+            const right = type === "add" ? randomInteger(0, maxNumber - left) : randomInteger(0, left);
+            const answer = type === "add" ? left + right : left - right;
+            return { type, prompt: `${left} ${type === "add" ? "+" : "−"} ${right} =`, answer };
+        }
+
+        function renderMathExercises(clearStatus = true) {
+            const types = shuffled(["count", "compare", "add", "subtract", "compare"]);
+            generatedMathQuestions = types.map(makeMathQuestion);
+            mathExercises.replaceChildren();
+            generatedMathQuestions.forEach((question, index) => {
+                const row = document.createElement("div");
+                row.className = "exercise-item";
+                const prompt = document.createElement("div");
+                prompt.className = "exercise-prompt";
+                const number = document.createElement("span");
+                number.className = "exercise-number";
+                number.textContent = String(index + 1);
+                prompt.append(number);
+                if (question.type === "compare") {
+                    row.classList.add("is-comparison");
+                    const expression = document.createElement("div");
+                    expression.className = "comparison-expression";
+                    const left = document.createElement("span");
+                    left.className = "comparison-number";
+                    left.textContent = String(question.left);
+                    const right = document.createElement("span");
+                    right.className = "comparison-number";
+                    right.textContent = String(question.right);
+                    const options = document.createElement("div");
+                    options.className = "comparison-options";
+                    options.setAttribute("role", "group");
+                    options.setAttribute("aria-label", `Vyberte znaménko mezi čísly ${question.left} a ${question.right}`);
+                    question.optionButtons = ["<", "=", ">"].map((symbol) => {
+                        const button = document.createElement("button");
+                        button.type = "button";
+                        button.className = "comparison-option";
+                        button.textContent = symbol;
+                        button.setAttribute("aria-label", symbol === "<" ? "Menší než" : symbol === ">" ? "Větší než" : "Rovná se");
+                        button.setAttribute("aria-pressed", "false");
+                        button.addEventListener("click", () => {
+                            question.selectedAnswer = symbol;
+                            question.optionButtons.forEach((option) => option.setAttribute("aria-pressed", String(option === button)));
+                            row.classList.remove("is-correct", "is-incorrect");
+                            mathStatus.textContent = "";
+                        });
+                        options.append(button);
+                        return button;
+                    });
+                    expression.append(left, options, right);
+                    prompt.append(expression);
+                    row.append(prompt);
+                } else {
+                    const text = document.createElement("span");
+                    text.textContent = question.prompt;
+                    prompt.append(text);
+                    if (question.type === "count") {
+                        const image = document.createElement("span");
+                        image.className = "counting-items";
+                        image.textContent = question.image;
+                        image.setAttribute("aria-hidden", "true");
+                        prompt.append(image);
+                    }
+                    const input = document.createElement("input");
+                    input.className = "exercise-input";
+                    input.setAttribute("aria-label", `Odpověď k příkladu ${index + 1}`);
+                    input.type = "number";
+                    input.min = "0";
+                    input.max = String(maxNumber);
+                    input.step = "1";
+                    input.inputMode = "numeric";
+                    row.append(prompt, input);
+                    question.input = input;
+                }
+                question.row = row;
+                mathExercises.append(row);
+            });
+            if (clearStatus) mathStatus.textContent = "";
+        }
+
+        function makeNumberBond() {
+            const whole = randomInteger(2, maxNumber);
+            const given = randomInteger(1, whole - 1);
+            return { whole, given, missing: whole - given, input: null, row: null };
+        }
+
+        function renderNumberBondExercises(clearStatus = true) {
+            if (activeMathUtterance) stopNumberBondSpeech(false);
+            numberBondSpeechStatus.textContent = "";
+            generatedNumberBonds = Array.from({ length: 5 }, makeNumberBond);
+            numberBondExercises.replaceChildren();
+            generatedNumberBonds.forEach((bond, index) => {
+                const row = document.createElement("article");
+                row.className = "bond-item";
+                const instruction = document.createElement("p");
+                instruction.className = "bond-instruction";
+                instruction.textContent = `Příklad ${index + 1}`;
+                const diagram = document.createElement("div");
+                diagram.className = "bond-diagram";
+                const whole = document.createElement("div");
+                whole.className = "bond-whole";
+                whole.textContent = String(bond.whole);
+                whole.setAttribute("aria-label", `Celé číslo ${bond.whole}`);
+                const branches = document.createElement("div");
+                branches.className = "bond-branches";
+                branches.setAttribute("aria-hidden", "true");
+                const parts = document.createElement("div");
+                parts.className = "bond-parts";
+                const given = document.createElement("div");
+                given.className = "bond-part";
+                given.textContent = String(bond.given);
+                given.setAttribute("aria-label", `Známá část ${bond.given}`);
+                const answer = document.createElement("input");
+                answer.className = "bond-answer";
+                answer.type = "number";
+                answer.min = "1";
+                answer.max = String(bond.whole - 1);
+                answer.step = "1";
+                answer.inputMode = "numeric";
+                answer.setAttribute("aria-label", `Příklad ${index + 1}: doplň druhou část do čísla ${bond.whole}`);
+                answer.addEventListener("input", () => {
+                    row.classList.remove("is-correct", "is-incorrect");
+                    answer.classList.remove("is-correct", "is-incorrect");
+                    numberBondStatus.textContent = "";
+                });
+                parts.append(given, answer);
+                diagram.append(whole, branches, parts);
+                row.append(instruction, diagram);
+                numberBondExercises.append(row);
+                bond.input = answer;
+                bond.row = row;
+            });
+            if (clearStatus) numberBondStatus.textContent = "";
+        }
+
+        function numberInCzech(number) {
+            const names = [
+                "nula", "jedna", "dvě", "tři", "čtyři", "pět", "šest", "sedm", "osm", "devět",
+                "deset", "jedenáct", "dvanáct", "třináct", "čtrnáct", "patnáct", "šestnáct",
+                "sedmnáct", "osmnáct", "devatenáct", "dvacet"
+            ];
+            return names[number] ?? String(number);
+        }
+
+        function speakNumberBondText(text) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                numberBondSpeechStatus.textContent = "Tento prohlížeč nepodporuje čtení nahlas.";
+                return;
+            }
+            stopNumberBondSpeech(false);
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voice = window.speechSynthesis.getVoices()
+                .find((item) => item.lang?.toLowerCase().startsWith("cs"));
+            if (voice) utterance.voice = voice;
+            utterance.lang = "cs-CZ";
+            utterance.rate = 0.88;
+            activeMathUtterance = utterance;
+            stopNumberBondSpeechButton.hidden = false;
+            utterance.onend = () => {
+                if (activeMathUtterance !== utterance) return;
+                activeMathUtterance = null;
+                stopNumberBondSpeechButton.hidden = true;
+                numberBondSpeechStatus.textContent = "";
+            };
+            utterance.onerror = (event) => {
+                if (event.error === "canceled" || event.error === "interrupted" || activeMathUtterance !== utterance) return;
+                activeMathUtterance = null;
+                stopNumberBondSpeechButton.hidden = true;
+                numberBondSpeechStatus.textContent = "Přehrávání se nepovedlo. Zkontroluj zvuk a hlasové nastavení zařízení.";
+            };
+            window.speechSynthesis.speak(utterance);
+            numberBondSpeechStatus.textContent = "Přehrávám zadání.";
+        }
+
+        function stopNumberBondSpeech(updateStatus = true) {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            activeMathUtterance = null;
+            stopNumberBondSpeechButton.hidden = true;
+            numberBondSpeechStatus.textContent = updateStatus ? "Přehrávání bylo zastaveno." : "";
+        }
+
+        function checkNumberBondAnswers() {
+            let correct = 0;
+            generatedNumberBonds.forEach((bond) => {
+                const value = bond.input.value;
+                const isCorrect = value !== "" && Number.isInteger(Number(value)) && Number(value) === bond.missing;
+                bond.row.classList.toggle("is-correct", isCorrect);
+                bond.row.classList.toggle("is-incorrect", !isCorrect);
+                bond.input.classList.toggle("is-correct", isCorrect);
+                bond.input.classList.toggle("is-incorrect", value !== "" && !isCorrect);
+                if (isCorrect) correct += 1;
+            });
+            numberBondStatus.textContent = `Správně: ${correct} z ${generatedNumberBonds.length}.`;
+            const score = correct === 0 ? "Nemáš zatím žádný správný příklad z pěti."
+                : correct === 1 ? "Máš jeden správný příklad z pěti."
+                    : correct === 2 ? "Máš dva správné příklady z pěti."
+                        : correct === 3 ? "Máš tři správné příklady z pěti."
+                            : correct === 4 ? "Máš čtyři správné příklady z pěti."
+                                : "Máš všech pět příkladů správně.";
+            const answers = generatedNumberBonds.map((bond, index) => (
+                `Příklad ${numberInCzech(index + 1)}. V jednom okénku je číslo ${numberInCzech(bond.given)}. Aby bylo dohromady ${numberInCzech(bond.whole)}, doplň ${numberInCzech(bond.missing)}.`
+            )).join(" ");
+            speakNumberBondText(`${score} ${answers}`);
+        }
+
+        function checkMathAnswers() {
+            let correct = 0;
+            let unanswered = 0;
+            generatedMathQuestions.forEach((question) => {
+                const value = question.type === "compare" ? question.selectedAnswer : question.input.value;
+                const isAnswered = value !== "";
+                const isCorrect = isAnswered && String(question.answer) === value;
+                question.row.classList.toggle("is-correct", isCorrect);
+                question.row.classList.toggle("is-incorrect", isAnswered && !isCorrect);
+                if (!isAnswered) unanswered += 1;
+                if (isCorrect) correct += 1;
+            });
+            const detail = unanswered ? ` Ještě zbývá ${unanswered} ${unanswered === 1 ? "odpověď" : "odpovědí"}.` : "";
+            mathStatus.textContent = `Správně: ${correct} z ${generatedMathQuestions.length}.${detail}`;
+        }
+
+        function updateNumberLimit() {
+            const selectedLimit = Number(numberLimitSelect.value);
+            if (!Number.isInteger(selectedLimit) || selectedLimit < 2 || selectedLimit > 20) {
+                numberLimitSelect.value = String(maxNumber);
+                mathStatus.textContent = "Zadejte celé číslo od 2 do 20.";
+                return;
+            }
+            maxNumber = selectedLimit;
+            mathRangeLabel.textContent = String(maxNumber);
+            renderMathExercises();
+            renderNumberBondExercises();
+            try {
+                window.localStorage.setItem(numberLimitKey, String(maxNumber));
+                mathStatus.textContent = `Nové příklady jsou teď do ${maxNumber}.`;
+            } catch (error) {
+                console.error("Rozsah počítání se nepodařilo uložit.", error);
+                mathStatus.textContent = "Rozsah se nepodařilo uložit. Zkontrolujte nastavení úložiště prohlížeče.";
+            }
+        }
+
+        initializeNumberLimit();
+        renderMathExercises(false);
+        renderNumberBondExercises(false);
+        numberLimitSelect.addEventListener("change", updateNumberLimit);
+        document.querySelector("#check-math").addEventListener("click", checkMathAnswers);
+        document.querySelector("#new-math").addEventListener("click", () => renderMathExercises());
+        document.querySelector("#check-number-bonds").addEventListener("click", checkNumberBondAnswers);
+        document.querySelector("#new-number-bonds").addEventListener("click", () => renderNumberBondExercises());
+        document.querySelector("#read-number-bond-instructions").addEventListener("click", () => {
+            speakNumberBondText("Doplň číslo, které chybí. Nahoře vidíš celé číslo. Dole jsou jeho dvě části. V jednom okénku je číslo napsané. Do druhého okénka doplň, kolik ještě chybí.");
+        });
+        stopNumberBondSpeechButton.addEventListener("click", () => stopNumberBondSpeech());
+        window.addEventListener("beforeunload", () => {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        });
+    </script>
+</body>
+</html>

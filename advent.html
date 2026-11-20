@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f2fb">
+    <meta name="description" content="Adventní kalendář s pohádkami, hádankami, laskavými úkoly a malými překvapeními.">
+    <title>Adventní kalendář — Svět malé hvězdičky</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #352844;
+            --muted: #756a80;
+            --paper: #fffdfd;
+            --accent: #8052b8;
+            --accent-dark: #62398f;
+            --lavender: #eee5f7;
+            --line: #e9e0ed;
+            --gold: #f1c96b;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: linear-gradient(145deg, #f8f2fb 0%, #fff5fa 52%, #f0f7fc 100%);
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        button { font: inherit; }
+        button:focus-visible, a:focus-visible {
+            outline: 3px solid #b99adb;
+            outline-offset: 3px;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 22px 32px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--lavender);
+            font-family: sans-serif;
+            font-size: 19px;
+        }
+        .topbar-actions { display: flex; align-items: center; gap: 18px; }
+        .top-link { color: var(--accent-dark); font-size: 13px; font-weight: 650; text-decoration: none; }
+        .top-link:hover { text-decoration: underline; }
+        .top-link[aria-current="page"] { color: var(--muted); }
+        main { width: min(100% - 40px, 960px); margin: 0 auto; padding: 28px 0 70px; }
+        .page-heading { max-width: 650px; margin: 0 auto 24px; text-align: center; }
+        .eyebrow {
+            margin: 0 0 8px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        h1, h2, h3, p { margin-top: 0; }
+        .page-heading h1 {
+            margin: 0 0 9px;
+            font-family: var(--serif);
+            font-size: clamp(32px, 5vw, 46px);
+            font-weight: 500;
+            line-height: 1.15;
+        }
+        .page-heading p:last-child { margin-bottom: 0; color: var(--muted); }
+        .calendar-card, .surprise-card {
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 20px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+        }
+        .calendar-card { padding: 22px; }
+        .calendar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 13px;
+        }
+        .calendar-top h2 { margin: 0; font-family: var(--serif); font-size: 21px; font-weight: 500; }
+        .opened-count {
+            flex: 0 0 auto;
+            padding: 6px 11px;
+            border: 1px solid #eadcae;
+            border-radius: 999px;
+            background: #fff9e8;
+            color: #705522;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .calendar-note {
+            margin: 0 0 17px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: #f7f2fb;
+            color: #5e4d6d;
+            font-size: 12px;
+        }
+        .day-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+        .day-door {
+            position: relative;
+            display: grid;
+            min-height: 98px;
+            align-content: center;
+            justify-items: center;
+            gap: 2px;
+            padding: 8px;
+            border: 1px solid #e6d9ed;
+            border-radius: 13px;
+            background: linear-gradient(145deg, #fff, #f6effa);
+            color: var(--accent-dark);
+            cursor: pointer;
+            transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+        .day-door:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(97, 63, 117, .12); }
+        .day-door.is-opened { border-color: #e8d18c; background: linear-gradient(145deg, #fffaf0, #fff1cd); }
+        .day-door.is-active { outline: 3px solid #d5b9e8; outline-offset: 1px; }
+        .day-door:disabled { border-color: #e7e4e9; background: #f4f2f5; color: #938b99; cursor: not-allowed; }
+        .door-number { font-family: var(--serif); font-size: 25px; font-weight: 700; line-height: 1.1; }
+        .door-icon { font-size: 21px; line-height: 1.2; }
+        .door-opened-mark { position: absolute; top: 5px; right: 7px; color: #7a9e49; font-size: 12px; }
+        .surprise-card { margin-top: 18px; padding: 25px; scroll-margin-top: 20px; }
+        .surprise-card[hidden] { display: none; }
+        .surprise-label {
+            display: inline-block;
+            margin-bottom: 7px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: var(--lavender);
+            color: var(--accent-dark);
+            font-size: 11px;
+            font-weight: 750;
+        }
+        .surprise-card h2 { margin: 0 0 12px; font-family: var(--serif); font-size: 26px; font-weight: 500; }
+        .surprise-copy { margin-bottom: 15px; font-size: 16px; }
+        .answer-button, .speech-button {
+            min-height: 40px;
+            padding: 0 13px;
+            border: 1px solid #d9c9e6;
+            border-radius: 10px;
+            background: #fff;
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .answer-button:hover, .speech-button:hover { background: #f7effa; }
+        .answer-copy {
+            margin: 11px 0 0;
+            padding: 10px 12px;
+            border-left: 4px solid var(--gold);
+            border-radius: 4px 9px 9px 4px;
+            background: #fff9e8;
+            font-weight: 650;
+        }
+        .answer-copy[hidden] { display: none; }
+        .surprise-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .surprise-status { min-height: 20px; margin: 12px 0 0; color: var(--accent-dark); font-size: 12px; }
+        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        @media (max-width: 700px) {
+            .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
+            .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 11px; }
+            main { width: min(100% - 28px, 560px); padding-top: 22px; }
+            .day-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+            .day-door { min-height: 82px; }
+            .calendar-card, .surprise-card { padding: 19px; border-radius: 16px; }
+            .surprise-card h2 { font-size: 23px; }
+            .surprise-copy { font-size: 15px; }
+        }
+        @media (max-width: 390px) {
+            .brand { gap: 7px; font-size: 16px; }
+            .topbar-actions { gap: 8px; }
+            .top-link { font-size: 12px; }
+            .day-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .calendar-top { align-items: flex-start; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
+            <span class="brand-mark" aria-hidden="true">☾</span>
+            <span>Svět malé hvězdičky</span>
+        </a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="minecraft.html">Minecraft</a>
+            <a class="top-link" href="advent.html" aria-current="page">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">Každý den malé překvapení</p>
+            <h1>Adventní kalendář</h1>
+            <p>Za okénky čekají delší pohádky, hádanky, laskavé úkoly a nápady na společné chvíle.</p>
+        </header>
+        <section class="calendar-card" aria-labelledby="calendar-title">
+            <div class="calendar-top">
+                <h2 id="calendar-title">Prosinec <span id="calendar-year"></span></h2>
+                <span class="opened-count" id="opened-count" aria-live="polite">Objeveno 0 z 24</span>
+            </div>
+            <p class="calendar-note" id="calendar-note" role="status"></p>
+            <div class="day-grid" id="day-grid" aria-label="Adventní okénka"></div>
+        </section>
+        <section class="surprise-card" id="surprise-card" aria-labelledby="surprise-title" hidden>
+            <span class="surprise-label" id="surprise-type"></span>
+            <h2 id="surprise-title"></h2>
+            <p class="surprise-copy" id="surprise-copy"></p>
+            <div class="surprise-actions">
+                <button class="answer-button" id="show-answer" type="button" hidden>Ukázat odpověď</button>
+                <button class="speech-button" id="read-surprise" type="button">🔊 Přečíst nahlas</button>
+                <button class="speech-button" id="stop-reading" type="button" hidden>⏹ Zastavit čtení</button>
+            </div>
+            <p class="answer-copy" id="answer-copy" hidden></p>
+            <p class="surprise-status" id="surprise-status" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+    <footer>Nemusíme spěchat. Stačí si každý den užít jednu malou chvilku.</footer>
+    <script>
+        const surprises = [
+            { type: "Pohádka", icon: "⭐", title: "Hvězdička u okna", text: "Když se venku setmělo, všimla si Anička u okna maličkého světýlka. Nebyla to lampička ani odraz z ulice. Světýlko sedělo na parapetu a třpytilo se jako drobná hvězda. Anička zavolala maminku, ale než přišla, světýlko zmizelo. Celý další den přemýšlela, kdo to mohl být. V měkkém sněhu našla drobné stopy, které vedly od keře k verandě a zase zpátky. Maminka jí vysvětlila, že ježci si na zimu hledají bezpečný úkryt. Anička proto s tatínkem uklidila tichý kout pod hustým keřem a nechali tam suché listí. Večer seděla u okna a naslouchala, jestli se něco neozve. Ráno našla na parapetu malou stopu od tlapky. Večer proto položila k oknu teplou šálu a vedle ní kousek jablíčka. „Třeba má někdo cestou zimu,“ zašeptala. Sotva se setmělo, ozvalo se zvenku tiché ťuk, ťuk. Pod oknem stál ježek. Na bodlinkách měl sněhové vločky a čumáček schovaný pod tlapkou. Anička otevřela dveře na verandu a přisunula mu šálu. Ježek se do ní zachumlal. Jablíčko si odnesl do svého pelíšku a světýlko nechal na parapetu. Od té chvíle tam každou noc svítilo. Anička věděla, že ježek našel cestu domů. A ježek věděl, že u okna bydlí někdo, kdo si všimne, když je druhému zima." },
+            { type: "Laskavý úkol", icon: "💌", title: "Milé slovo", text: "Dnes někomu řekni jednu konkrétní hezkou věc. Třeba: „Líbilo se mi, jak jsi mi pomohl.“ Milé slovo může být malý dárek." },
+            { type: "Hádanka", icon: "❄️", title: "Bílá peřina", text: "Bílá peřina přikryje zahradu. Když vykoukne sluníčko, pomalu zmizí. Co je to?", answer: "Sníh." },
+            { type: "Malá chvilka", icon: "🧤", title: "Ruce jako vločky", text: "Zkus pomalu rozevřít prsty jako sněhovou vločku a zase je schovat do dlaní. Třikrát se zhluboka nadechni a vydechni." },
+            { type: "Pohádka", icon: "🧸", title: "Kakao pro medvídka", text: "Medvídek měl pro svého kamaráda jezevce připravenou novou hru. Chtěli venku stavět sněhové město. Medvídek si už od rána chystal malé větvičky na plot a kamínky na cestu. Nakreslil také plánek, kde bude náměstí a kde domeček pro sněhuláka. Jenže právě když vyšel před doupě, začaly padat velké vločky. Za chvíli byla cesta zavátá a jezevec nikde. Medvídek chvíli čekal, potom si povzdechl. Už už chtěl hru uklidit, když zaslechl zaklepání. U dveří stála promrzlá veverka. Ztratila se cestou ke svému stromu a sníh jí zakryl známou pěšinku. Medvídek ji pozval dovnitř a postavil na kamna hrnec s mlékem. Veverka si ohřála tlapky a vyprávěla, jak se jí vítr snažil odnést čepici. Medvídek přidal kakao a dvě lžičky medu. Zatímco nápoj chladl, nakreslili společně mapu lesa. Veverka poznala podle obrázku cestu domů a medvídek jí slíbil, že ji doprovodí. Právě když si oblékali šály, objevil se u dveří jezevec. Také ho sníh zdržel. Místo sněhového města postavili všichni tři město z kostek přímo v doupěti. Nejdřív postavili most, potom vysokou věž a nakonec malou pekárnu, kde se z kostek staly voňavé koláče. Kakao zahřálo jejich tlapky a smích rozehřál celý pokoj. Venku padal sníh dál, ale nikdo už nemusel čekat sám." },
+            { type: "Tvoření", icon: "🎨", title: "Nejbarevnější rukavice", text: "Nakresli rukavice, které by zahřály i sněhuláka. Můžeš na ně přidat puntíky, proužky nebo vlastní vzor." },
+            { type: "Hádanka", icon: "⛄", title: "Nos z mrkve", text: "Mám nos z mrkve, na hlavě hrnec a místo vlasů sníh. Kdo jsem?", answer: "Sněhulák." },
+            { type: "Laskavý úkol", icon: "🪑", title: "Místo vedle sebe", text: "Všimni si, jestli někdo potřebuje místo u hry nebo u stolu. Můžeš se zeptat: „Chceš si přisednout?“" },
+            { type: "Pohádka", icon: "🔔", title: "Ztracená rolnička", text: "Zajíček dostal od babičky malou rolničku. Přivázal si ji na šálu, aby mu při běhání tiše cinkala. Jenže cestou lesem se ozývalo cinknutí pořád méně a méně. Zajíček zrychlil, poskakoval přes kořeny a prohledal každou hromádku listí. Rolnička nikde. „Musím ji najít, než přijdu domů,“ řekl si. Zajíček se vrátil na začátek cesty a zkoušel si vzpomenout, kde ji slyšel naposledy. Prohlédl závěj u pařezu i nízké větve, ale místo rolničky našel jen pár drobných stop. Vítr mu profoukl kožíšek a zajíček začal mít strach, že se setmí dřív, než ji objeví. Vtom uviděl sovu na větvi. Poradila mu, aby se na chvíli posadil a poslouchal místo běhání. Zajíček zavřel oči. Nejprve slyšel jen vítr. Potom zapraskala větvička a někde poblíž cinklo úplně potichu. Zajíček otevřel oči a podíval se pod veliký list. Tam ležela rolnička, kterou mu vítr odnesl ze šály. Zajíček ji zvedl a pevněji přivázal. Pak poděkoval sově za radu. „A taky svým uším,“ dodal. Sova mu ukázala bezpečnou cestu mezi stromy a chvíli letěla nad ním. Cestou domů už zajíček nespěchal. Všímal si stop ve sněhu, kapek na větvích i tichého cinkání. Když rolničku ukázal babičce, ta se usmála. „Našel jsi nejen rolničku, ale i chvilku klidu.“" },
+            { type: "Hledací hra", icon: "🔴", title: "Najdi barvu", text: "Rozhlédni se a najdi doma tři červené věci. Potom si vyber, která se ti líbí nejvíc, a řekni proč." },
+            { type: "Hádanka", icon: "🕰️", title: "Ručičky bez tleskání", text: "Mám dvě ručičky, ale neumím tleskat. Ukazuji, kdy je čas vstávat nebo jít spát. Co jsem?", answer: "Hodiny." },
+            { type: "Laskavý úkol", icon: "🙏", title: "Děkuji za maličkost", text: "Poděkuj dnes někomu za něco malého, co pro tebe udělal. Poděkování umí rozzářit obyčejný den." },
+            { type: "Pohádka", icon: "🌙", title: "Sněhový ostrov", text: "Ráno našla Ema na zahradě velikou závěj. Vypadala jako ostrov uprostřed bílého moře. Ema přinesla šišku a prohlásila ji za kapitána. Z klacíků udělala loď a z modré rukavice vlajku. Pak začala vymýšlet, kdo na ostrově bydlí. Pod jednou sněhovou kupkou prý spí malý drak. Za keřem má domeček lední liška. A úplně nahoře čeká na návštěvu sněhová královna. Ema si představila, že drak umí zahřívat zmrzlé tlapky, liška zná tajné cesty a královna rozdává každému návštěvníkovi lesklý kamínek. Začala pro ně stavět malé schody a kolem ostrova udělala z větviček přístav. Maminka jí z okna zamávala a Ema zamávala zpátky. Najednou zafoukal vítr a šišku odnesl až k plotu. Ema se rozběhla za ní, ale cestou uviděla sousedovic kocoura, jak sedí na studené zemi. Vzala ho opatrně do náruče a odnesla domů. Když se vrátila na zahradu, ostrov už vypadal jinak. Vločky zakryly staré stopy a slunce vytvořilo na sněhu třpytivé cestičky. Ema se usmála. „Kapitán odplul na výpravu,“ rozhodla. Tentokrát udělala z ostrova přístav pro zvířátka, která potřebují odpočívat. Přidala měkký sněhový polštářek a bezpečné místo pod větví. Když ji maminka zavolala na svačinu, Ema věděla, že zítra může být ostrov zase něčím novým." },
+            { type: "Tvoření", icon: "✂️", title: "Papírová vločka", text: "S pomocí dospělého slož papír a vystřihni z něj vločku. Když se nůžky nehodí, nakresli vločku a přidej jí vlastní jméno." },
+            { type: "Hádanka", icon: "🌊", title: "Běžím bez nohou", text: "Běžím z kopce, ale nemám nohy. Někdy jsem úzký a někdy široký. Kdo jsem?", answer: "Potok nebo řeka." },
+            { type: "Laskavý úkol", icon: "🌱", title: "Povzbuzení", text: "Když se někomu něco nedaří, můžeš mu říct: „Zkusíme to spolu.“ Nemusíš všechno vyřešit, stačí být nablízku." },
+            { type: "Pohádka", icon: "🦔", title: "Ježek a světýlka", text: "Ježek Bodlinka se jednoho večera vydal hledat nejlepší místo na zimní spánek. Připravil si malý uzlíček s jablíčkem a prošel několik koutů lesa. Pod starým pařezem bylo příliš hlučno, pod kořeny zase táhlo a hromada listí u cesty se mu zdála nebezpečná. Bodlinka chtěl najít místo, kde bude sucho, teplo a klid. Když se setmělo, zjistil, že už nepoznává cestu zpátky. Zastavil se a zavolal o pomoc. Z trávy se ozvalo drobné zablikání. Přiletěla světluška a za ní další dvě. „Půjdeme s tebou,“ řekly. Každá svítila jen maličko, proto letěly blízko sebe. Bodlinka šel pomalu za jejich světelnou cestičkou. Cestou potkali myšku, která hledala ztracené semínko. Světlušky jí také posvítily, až ho našla pod listem. Myška měla radost a nabídla Bodlinkovi, že s ním kus cesty půjde. Ukázala mu známý kámen, za kterým začínala jeho pěšina. Za chvíli už byl Bodlinka doma. Našel si suché místo pod hustým keřem, ale nejdřív zkontroloval, že tam nefouká a neteče voda. Potom si připravil měkké listí a poděkoval svým průvodkyním. „Sama bych cestu neosvítila,“ řekla nejmenší světluška. „Ale společně jsme dokázaly hodně.“ Bodlinka se zachumlal do listí. Za oknem lesa světlušky ještě chvíli svítily, aby žádný poutník nezůstal ve tmě." },
+            { type: "Stavění", icon: "🏠", title: "Útulný domeček", text: "Postav z kostek nebo polštářů malý domeček pro plyšáka. Vymysli mu jméno a jednu věc, kterou má ve svém domečku nejraději." },
+            { type: "Pohádka", icon: "🕊️", title: "Dopis pro sousedku", text: "Vrabčák Pepík si všiml, že paní Veverková už několik dní neotevřela okno. Obvykle mu na parapet sypala pár semínek, ale teď bylo ticho. Pepík se vydal zjistit, co se děje. Na zápraží našel prázdnou kartičku a barevnou pastelku. Chvíli ji obracel ze všech stran. Psaní neuměl, ale moc rád kreslil. Přemýšlel, jak by mohl potěšit sousedku, která mu tolikrát pomohla. Nakonec nakreslil velké sluníčko, tři semínka a sebe s roztaženými křídly. Přidal i malý strom, na kterém měl svůj domov. Potom kartičku opatrně posunul pod dveře. Když se odpoledne vrátil, byla pryč. Na parapetu se objevila malá miska se semínky. Vedle ní ležel kousek papíru s nakresleným srdcem. Pepík zavolal kamarádku sýkorku a společně zazpívali veselou písničku. Za oknem se pohnula záclona a paní Veverková jim zamávala. Později vyšla na zápraží. Řekla, že měla pár smutných dnů a obrázek jí pomohl. Pepíkovi poděkovala a pozvala ho dovnitř na drobeček jablíčka. Vyprávěla mu, že si prohlédla každou barvu a hned se jí zlepšila nálada. Od té chvíle jí ptáčci občas přinesli obrázek nebo zazpívali. A paní Veverková zase každý den připravila misku se semínky. Všichni věděli, že i malý vzkaz dokáže někomu připomenout, že na něj někdo myslí." },
+            { type: "Laskavý úkol", icon: "🤝", title: "Pomocná ruka", text: "Vyber si jednu drobnou pomoc doma: uklidit pastelky, podat utěrku nebo srovnat knížky. I malá pomoc se počítá." },
+            { type: "Pohádka", icon: "📚", title: "Knížka pod dekou", text: "Zajíček našel v knihovně knížku s obrázkem modrého draka. Než ji odnesl domů, prohlédl si všechny obrázky. Drak měl zelený šátek, malý batůžek a mapu, která vedla až k měsíci. Zajíček si hned vymyslel, že by na takovou výpravu chtěl jednou vyrazit také. Večer se zachumlal pod deku a poprosil maminku, aby mu četla. Na první stránce drak hledal ztracený měsíc. Na druhé potkal mluvící borovici. A na třetí našel v jeskyni dveře, za kterými možná čekal poklad. Zajíček napjatě poslouchal. Chtěl vědět, co se stane dál, ale maminka zívla a jemu se začaly zavírat oči. „Dočteme ještě jednu stránku?“ zeptal se. Maminka otočila list a našla na něm obrázek draka, který právě zaklepal na tajemné dveře. „Teď si odpočineme a zítra zjistíme, kdo otevře.“ Zajíček chvíli přemýšlel. Poklad nikam neuteče a drak může počkat. Zavřel knížku a položil ji vedle postele. Potom si představil, jaké dveře se asi skrývají v jeskyni. Možná za nimi bydlí měsíc. Možná tam čeká celý pokoj plný hvězd. Ráno se probudil plný zvědavosti. Knížka ležela přesně tam, kde ji nechal. Zajíček si ji vzal k snídani a příběh pokračoval. Od té doby věděl, že i když se čtení přeruší, dobrodružství na něj trpělivě počká." },
+            { type: "Hádanka", icon: "🧣", title: "Dlouhý teplý kamarád", text: "Omotám krk, když venku mrzne. Jsem dlouhý, měkký a někdy mám třásně. Co jsem?", answer: "Šála." },
+            { type: "Pohádka", icon: "🕯️", title: "Čekání na světlo", text: "Veverka Rozárka si chtěla splnit přání. Babička jí poradila, aby večer počkala na první hvězdu a přála si něco hezkého. Rozárka se posadila na pařez a dívala se na oblohu. Vzala si s sebou teplou deku a několik oříšků, aby jí čekání nebylo dlouhé. Chvíli si povídala s babičkou o tom, jak vypadají hvězdy zblízka. Babička říkala, že jsou to vzdálená světýlka, která umějí připomenout, že i po tmě přijde ráno. Chvíli se nedělo nic. Obloha byla šedá a mraky pomalu pluly nad lesem. Rozárka začala být netrpělivá. Zrovna když chtěla odejít, přišel kolem jezevec s košíkem. Hledal cestu k chaloupce, protože se stmívalo. Rozárka mu ukázala pěšinku mezi stromy a šla kus cesty s ním. Jezevec jí cestou vyprávěl o voňavém čaji, který na něj doma čeká. Když se vrátila na pařez, obloha už byla tmavší. Vtom se mezi mraky objevila maličká světelná tečka. Byla to první hvězda. Rozárka zavřela oči a přála si, aby se všichni v lese cítili bezpečně a měli kamaráda. Potom zahlédla další hvězdu, pak třetí a čtvrtou. Vypadalo to, jako by se na obloze rozsvěcela světýlka jedno po druhém. Ráno se Rozárka probudila s pocitem, že se její přání začalo plnit. Jezevec jí nechal u stromu malý žalud jako poděkování. Rozárka si ho schovala a večer znovu čekala na hvězdu. Už věděla, že někdy je potřeba chvíli počkat a přitom si všímat všeho hezkého kolem." },
+            { type: "Přání", icon: "🎁", title: "Malé přání", text: "Zavři na chvilku oči a v duchu si něco hezkého přej. Může to být společná hra, klidný večer nebo radost pro někoho, koho máš ráda." }
+        ];
+
+        const dayGrid = document.querySelector("#day-grid");
+        const calendarNote = document.querySelector("#calendar-note");
+        const openedCount = document.querySelector("#opened-count");
+        const surpriseCard = document.querySelector("#surprise-card");
+        const surpriseType = document.querySelector("#surprise-type");
+        const surpriseTitle = document.querySelector("#surprise-title");
+        const surpriseCopy = document.querySelector("#surprise-copy");
+        const answerButton = document.querySelector("#show-answer");
+        const answerCopy = document.querySelector("#answer-copy");
+        const readButton = document.querySelector("#read-surprise");
+        const stopButton = document.querySelector("#stop-reading");
+        const surpriseStatus = document.querySelector("#surprise-status");
+        const now = new Date();
+        const isAdventMonth = now.getMonth() === 11;
+        const unlockedThrough = isAdventMonth
+            ? Math.min(now.getDate(), 24)
+            : 24;
+        const openedStorageKey = `dobrouNocHvezdicko:advent-opened:${now.getFullYear()}`;
+        let openedDays = [];
+        let currentSurprise = null;
+        let readingActive = false;
+
+        function loadOpenedDays() {
+            try {
+                const saved = window.localStorage.getItem(openedStorageKey);
+                if (saved === null) return [];
+                const parsed = JSON.parse(saved);
+                if (!Array.isArray(parsed) || !parsed.every((day) => Number.isInteger(day) && day >= 1 && day <= 24)) {
+                    throw new Error("The saved advent progress has an invalid format.");
+                }
+                return [...new Set(parsed)];
+            } catch (error) {
+                console.error("Postup adventním kalendářem se nepodařilo načíst.", error);
+                calendarNote.textContent = "Postup se nepodařilo načíst. Okénka jsou dostupná, ale objevené dny se nemusí uložit.";
+                return [];
+            }
+        }
+
+        function saveOpenedDays() {
+            try {
+                window.localStorage.setItem(openedStorageKey, JSON.stringify(openedDays));
+                return true;
+            } catch (error) {
+                console.error("Postup adventním kalendářem se nepodařilo uložit.", error);
+                return false;
+            }
+        }
+
+        function renderOpenedCount() {
+            openedCount.textContent = isAdventMonth
+                ? `Objeveno ${openedDays.length} z 24`
+                : "Náhled kalendáře";
+        }
+
+        function renderDoors() {
+            dayGrid.replaceChildren(...surprises.map((surprise, index) => {
+                const day = index + 1;
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "day-door";
+                button.disabled = day > unlockedThrough;
+                button.setAttribute("aria-label", button.disabled
+                    ? `Okénko ${day} je zamčené do ${day}. prosince`
+                    : `Otevřít okénko ${day}: ${surprise.type}`);
+                if (openedDays.includes(day)) button.classList.add("is-opened");
+                if (currentSurprise === day) button.classList.add("is-active");
+
+                const number = document.createElement("span");
+                number.className = "door-number";
+                number.textContent = String(day);
+                const icon = document.createElement("span");
+                icon.className = "door-icon";
+                icon.setAttribute("aria-hidden", "true");
+                icon.textContent = surprise.icon;
+                button.append(number, icon);
+
+                if (openedDays.includes(day)) {
+                    const mark = document.createElement("span");
+                    mark.className = "door-opened-mark";
+                    mark.setAttribute("aria-hidden", "true");
+                    mark.textContent = "✓";
+                    button.append(mark);
+                }
+                if (!button.disabled) button.addEventListener("click", () => openDay(day));
+                return button;
+            }));
+        }
+
+        function openDay(day) {
+            const surprise = surprises[day - 1];
+            if (!surprise || day > unlockedThrough) return;
+            stopReading(false);
+            currentSurprise = day;
+            surpriseCard.hidden = false;
+            surpriseType.textContent = `${surprise.icon} ${surprise.type} · ${day}. prosince`;
+            surpriseTitle.textContent = surprise.title;
+            surpriseCopy.textContent = surprise.text;
+            answerCopy.textContent = surprise.answer || "";
+            answerCopy.hidden = true;
+            answerButton.hidden = !surprise.answer;
+            answerButton.textContent = "Ukázat odpověď";
+            surpriseStatus.textContent = "";
+
+            if (isAdventMonth && !openedDays.includes(day)) {
+                openedDays = [...openedDays, day].sort((first, second) => first - second);
+                renderOpenedCount();
+                if (!saveOpenedDays()) {
+                    surpriseStatus.textContent = "Okénko se otevřelo, ale postup se nepodařilo uložit v tomto prohlížeči.";
+                }
+            }
+            renderDoors();
+            surpriseCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        function stopReading(updateStatus = true) {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            readingActive = false;
+            readButton.hidden = false;
+            stopButton.hidden = true;
+            if (updateStatus) surpriseStatus.textContent = "Čtení bylo zastaveno.";
+        }
+
+        function readSurpriseAloud() {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                surpriseStatus.textContent = "Tento prohlížeč nepodporuje čtení nahlas.";
+                return;
+            }
+            if (!currentSurprise) return;
+            const surprise = surprises[currentSurprise - 1];
+            const text = answerCopy.hidden
+                ? `${surprise.title}. ${surprise.text}`
+                : `${surprise.title}. ${surprise.text} Odpověď: ${surprise.answer}`;
+            const utterance = new SpeechSynthesisUtterance(text);
+            const czechVoice = window.speechSynthesis.getVoices()
+                .find((voice) => voice.lang?.toLowerCase().startsWith("cs"));
+            if (czechVoice) utterance.voice = czechVoice;
+            utterance.lang = "cs-CZ";
+            utterance.rate = 0.88;
+            utterance.onstart = () => {
+                readingActive = true;
+                readButton.hidden = true;
+                stopButton.hidden = false;
+                surpriseStatus.textContent = "Překvapení se čte nahlas.";
+            };
+            utterance.onend = () => stopReading(false);
+            utterance.onerror = (event) => {
+                if (event.error === "canceled" || event.error === "interrupted") return;
+                stopReading(false);
+                surpriseStatus.textContent = "Čtení nahlas se nepovedlo.";
+            };
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+
+        document.querySelector("#calendar-year").textContent = String(new Date().getFullYear());
+        calendarNote.textContent = unlockedThrough < 1
+            ? "První okénko se otevře 1. prosince. Každý další den přibude jedno."
+            : unlockedThrough < 24
+                ? `Otevřít můžeš okénka do ${unlockedThrough}. prosince. Zítřejší překvapení se odemkne další den.`
+                : "Mimo prosinec si můžeš prohlédnout všechna okénka. V prosinci se budoucí překvapení odemykají postupně.";
+        openedDays = isAdventMonth
+            ? loadOpenedDays().filter((day) => day <= unlockedThrough)
+            : [];
+        renderOpenedCount();
+        renderDoors();
+
+        answerButton.addEventListener("click", () => {
+            answerCopy.hidden = !answerCopy.hidden;
+            answerButton.textContent = answerCopy.hidden ? "Ukázat odpověď" : "Schovat odpověď";
+        });
+        readButton.addEventListener("click", readSurpriseAloud);
+        stopButton.addEventListener("click", () => stopReading());
+        window.addEventListener("beforeunload", () => {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        });
+    </script>
+</body>
+</html>

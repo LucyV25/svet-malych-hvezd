@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f2fb">
+    <meta name="description" content="První anglická slovíčka, obrázkové hry a poslech pro malé začátečníky.">
+    <title>Angličtina — Svět malé hvězdičky</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #352844;
+            --muted: #756a80;
+            --paper: #fffdfd;
+            --accent: #8052b8;
+            --accent-dark: #62398f;
+            --lavender: #eee5f7;
+            --line: #e9e0ed;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        button { font: inherit; }
+        button:focus-visible, a:focus-visible {
+            outline: 3px solid #b99adb;
+            outline-offset: 3px;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 22px 32px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--lavender);
+            font-family: sans-serif;
+            font-size: 19px;
+        }
+        .topbar-actions { display: flex; align-items: center; gap: 18px; }
+        .top-link { color: var(--accent-dark); font-size: 13px; font-weight: 650; text-decoration: none; }
+        .top-link:hover { text-decoration: underline; }
+        .top-link[aria-current="page"] { color: var(--muted); }
+        main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 30px 0 70px; }
+        .page-heading { max-width: 650px; margin: 0 auto 28px; text-align: center; }
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        h1, h2, h3, p { margin-top: 0; }
+        .page-heading h1 {
+            margin: 0 0 8px;
+            font-family: var(--serif);
+            font-size: clamp(30px, 5vw, 42px);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+        .page-heading p:last-child { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+        .lesson-card, .game-card {
+            padding: 24px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+        }
+        .game-card { margin-top: 20px; text-align: center; }
+        .lesson-card h2, .game-card h2 {
+            margin: 0 0 5px;
+            font-family: var(--serif);
+            font-size: 23px;
+            font-weight: 500;
+        }
+        .card-intro { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
+        .category-picker {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .category-button, .action-button {
+            min-height: 42px;
+            padding: 0 14px;
+            border: 1px solid #e1d5e9;
+            border-radius: 10px;
+            background: #fff;
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 650;
+        }
+        .category-button[aria-pressed="true"], .action-button.primary {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #fff;
+        }
+        .word-grid, .game-choices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        .word-card {
+            display: grid;
+            min-height: 190px;
+            align-content: start;
+            justify-items: center;
+            padding: 14px 10px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: linear-gradient(145deg, #fff, #fcf9fe);
+            text-align: center;
+        }
+        .word-symbol { min-height: 62px; font-size: 48px; line-height: 1.2; }
+        .color-swatch {
+            display: block;
+            width: 56px;
+            height: 56px;
+            min-height: 56px;
+            margin: 3px;
+            border: 2px solid rgba(53, 40, 68, .25);
+            border-radius: 50%;
+        }
+        .pencil-case-illustration {
+            display: inline-grid;
+            width: 76px;
+            height: 62px;
+            place-items: center;
+            vertical-align: middle;
+        }
+        .pencil-case-svg { display: block; width: 72px; height: 60px; overflow: visible; }
+        .choice-symbol.pencil-case-illustration { font-size: 0; line-height: normal; }
+        .word-symbol.pencil-case-illustration { font-size: 0; line-height: normal; }
+        .english-word {
+            margin: 4px 0 0;
+            color: var(--accent-dark);
+            font-family: var(--serif);
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .czech-word { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+        .listen-word { min-height: 36px; padding: 0 10px; font-size: 12px; }
+        .game-prompt {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        .game-choices { max-width: 640px; margin: 0 auto 16px; }
+        .game-choice {
+            display: grid;
+            min-height: 145px;
+            align-content: center;
+            justify-items: center;
+            gap: 5px;
+            padding: 12px;
+            border: 1px solid #e1d5e9;
+            border-radius: 14px;
+            background: #fff;
+            color: var(--accent-dark);
+            cursor: pointer;
+        }
+        .game-choice:hover { background: #f7effa; }
+        .game-choice.correct { border-color: #63a67a; background: #edf8ef; color: #317349; }
+        .game-choice.wrong { border-color: #c87878; background: #fff1f1; color: #9a4141; }
+        .choice-symbol { font-size: 48px; line-height: 1.2; }
+        .choice-word { font-family: var(--serif); font-size: 19px; font-weight: 700; }
+        .game-status, .speech-status { min-height: 22px; margin: 9px 0 0; color: var(--accent-dark); font-size: 13px; }
+        .speech-status { text-align: center; }
+        .game-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        @media (max-width: 760px) {
+            .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
+            .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 10px 14px; }
+            main { width: min(100% - 28px, 560px); padding-top: 22px; }
+            .lesson-card, .game-card { padding: 20px; }
+            .word-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .game-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .game-choice { min-height: 125px; padding: 8px 4px; }
+            .choice-symbol { font-size: 38px; }
+            .choice-word { font-size: 16px; }
+        }
+        @media (max-width: 390px) {
+            .brand { gap: 7px; font-size: 16px; }
+            .top-link { font-size: 12px; }
+            .game-choices { gap: 7px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
+            <span class="brand-mark" aria-hidden="true">☾</span>
+            <span>Svět malé hvězdičky</span>
+        </a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html" aria-current="page">Angličtina</a>
+            <a class="top-link" href="minecraft.html">Minecraft</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">První anglická slovíčka</p>
+            <h1>Angličtina</h1>
+            <p>Uč se slovíčka pomocí obrázků a poslechu. Nemusíš umět číst — každé slovo si můžeš nechat přehrát.</p>
+        </header>
+        <section class="lesson-card" aria-labelledby="vocabulary-title">
+            <h2 id="vocabulary-title">Slovíčka</h2>
+            <p class="card-intro">Vyber si téma a klepnutím na tlačítko si poslechni anglické slovo.</p>
+            <div class="category-picker" id="category-picker" role="group" aria-label="Témata slovíček"></div>
+            <div class="word-grid" id="word-grid" aria-live="polite"></div>
+        </section>
+        <section class="game-card" aria-labelledby="game-title">
+            <h2 id="game-title">Poslechni a najdi</h2>
+            <p class="card-intro">Nejdřív si poslechni anglické slovo. Potom klepni na správný obrázek.</p>
+            <div class="game-prompt">
+                <button class="action-button primary" id="play-word" type="button">🔊 Přehrát slovo</button>
+                <button class="action-button" id="stop-speech" type="button" hidden>⏹ Zastavit</button>
+            </div>
+            <div class="game-choices" id="game-choices" role="group" aria-label="Vyber správný obrázek"></div>
+            <div class="game-actions">
+                <button class="action-button" id="new-round" type="button">Nové slovo</button>
+                <button class="action-button" id="read-instructions" type="button">🔊 Přehrát zadání</button>
+            </div>
+            <p class="game-status" id="game-status" role="status" aria-live="polite">Stiskni „Přehrát slovo“ a vyber obrázek.</p>
+            <p class="speech-status" id="speech-status" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+    <footer>Chyba nevadí. Každé nové slovíčko je malé dobrodružství.</footer>
+    <script>
+        const categories = [
+            {
+                id: "animals",
+                title: "Zvířátka",
+                items: [
+                    { english: "cat", czech: "kočka", symbol: "🐱" },
+                    { english: "dog", czech: "pes", symbol: "🐶" },
+                    { english: "fish", czech: "ryba", symbol: "🐟" },
+                    { english: "bird", czech: "ptáček", symbol: "🐦" },
+                    { english: "bear", czech: "medvěd", symbol: "🐻" }
+                ]
+            },
+            {
+                id: "colors",
+                title: "Barvy",
+                items: [
+                    { english: "red", czech: "červená", color: "#ed5252" },
+                    { english: "blue", czech: "modrá", color: "#438be0" },
+                    { english: "yellow", czech: "žlutá", color: "#f4c542" },
+                    { english: "green", czech: "zelená", color: "#49a65c" },
+                    { english: "purple", czech: "fialová", color: "#8d5bc4" },
+                    { english: "orange", czech: "oranžová", color: "#f18a31" },
+                    { english: "pink", czech: "růžová", color: "#e96ca4" },
+                    { english: "brown", czech: "hnědá", color: "#8d5b3e" },
+                    { english: "black", czech: "černá", color: "#25232a" },
+                    { english: "white", czech: "bílá", color: "#ffffff" },
+                    { english: "gray", czech: "šedá", color: "#969696" }
+                ]
+            },
+            {
+                id: "numbers",
+                title: "Čísla",
+                items: [
+                    { english: "one", czech: "jedna", symbol: "1️⃣" },
+                    { english: "two", czech: "dvě", symbol: "2️⃣" },
+                    { english: "three", czech: "tři", symbol: "3️⃣" },
+                    { english: "four", czech: "čtyři", symbol: "4️⃣" },
+                    { english: "five", czech: "pět", symbol: "5️⃣" },
+                    { english: "six", czech: "šest", symbol: "6️⃣" },
+                    { english: "seven", czech: "sedm", symbol: "7️⃣" },
+                    { english: "eight", czech: "osm", symbol: "8️⃣" },
+                    { english: "nine", czech: "devět", symbol: "9️⃣" },
+                    { english: "ten", czech: "deset", symbol: "🔟" }
+                ]
+            },
+            {
+                id: "greetings",
+                title: "Pozdravy",
+                items: [
+                    { english: "hello", czech: "ahoj", symbol: "👋" },
+                    { english: "goodbye", czech: "na shledanou", symbol: "👋" },
+                    { english: "please", czech: "prosím", symbol: "🙏" },
+                    { english: "thank you", czech: "děkuji", symbol: "💛" }
+                ]
+            },
+            {
+                id: "food",
+                title: "Jídlo",
+                items: [
+                    { english: "apple", czech: "jablko", symbol: "🍎" },
+                    { english: "banana", czech: "banán", symbol: "🍌" },
+                    { english: "bread", czech: "chléb", symbol: "🍞" },
+                    { english: "milk", czech: "mléko", symbol: "🥛" },
+                    { english: "water", czech: "voda", symbol: "💧" },
+                    { english: "cake", czech: "dort", symbol: "🍰" }
+                ]
+            },
+            {
+                id: "toys",
+                title: "Hračky",
+                items: [
+                    { english: "ball", czech: "míč", symbol: "⚽" },
+                    { english: "teddy bear", czech: "plyšový medvídek", symbol: "🧸" },
+                    { english: "car", czech: "autíčko", symbol: "🚗" },
+                    { english: "blocks", czech: "kostky", symbol: "🧱" },
+                    { english: "kite", czech: "drak", symbol: "🪁" },
+                    { english: "robot", czech: "robot", symbol: "🤖" }
+                ]
+            },
+            {
+                id: "body",
+                title: "Části těla",
+                items: [
+                    { english: "head", czech: "hlava", symbol: "👤" },
+                    { english: "hand", czech: "ruka", symbol: "✋" },
+                    { english: "foot", czech: "chodidlo", symbol: "🦶" },
+                    { english: "leg", czech: "noha", symbol: "🦵" },
+                    { english: "eye", czech: "oko", symbol: "👁️" },
+                    { english: "ears", czech: "uši", symbol: "👂" },
+                    { english: "nose", czech: "nos", symbol: "👃" },
+                    { english: "mouth", czech: "ústa", symbol: "👄" },
+                    { english: "fingers", czech: "prsty", symbol: "🖐️" }
+                ]
+            },
+            {
+                id: "minecraft",
+                title: "Minecraft",
+                items: [
+                    { english: "block", czech: "kostka", symbol: "🧱" },
+                    { english: "dirt", czech: "hlína", symbol: "🟫" },
+                    { english: "grass", czech: "tráva", symbol: "🌱" },
+                    { english: "diamond", czech: "diamant", symbol: "💎" },
+                    { english: "sword", czech: "meč", symbol: "⚔️" },
+                    { english: "pickaxe", czech: "krumpáč", symbol: "⛏️" },
+                    { english: "chest", czech: "truhla", symbol: "📦" },
+                    { english: "zombie", czech: "zombie", symbol: "🧟" }
+                ]
+            },
+            {
+                id: "family",
+                title: "Rodina",
+                items: [
+                    { english: "mom", czech: "maminka", symbol: "👩" },
+                    { english: "dad", czech: "tatínek", symbol: "👨" },
+                    { english: "sister", czech: "sestra", symbol: "👧" },
+                    { english: "brother", czech: "bratr", symbol: "👦" },
+                    { english: "grandma", czech: "babička", symbol: "👵" },
+                    { english: "grandpa", czech: "dědeček", symbol: "👴" }
+                ]
+            },
+            {
+                id: "pencil-case",
+                title: "V penále",
+                items: [
+                    { english: "pencil", czech: "tužka", symbol: "✏️" },
+                    { english: "pen", czech: "pero", symbol: "🖊️" },
+                    { english: "eraser", czech: "guma", symbol: "🧽" },
+                    { english: "ruler", czech: "pravítko", symbol: "📏" },
+                    { english: "pencil case", czech: "penál", illustration: "pencil-case" },
+                    { english: "colored pencil", czech: "pastelka", symbol: "🖍️" }
+                ]
+            }
+        ];
+
+        const categoryPicker = document.querySelector("#category-picker");
+        const wordGrid = document.querySelector("#word-grid");
+        const gameChoices = document.querySelector("#game-choices");
+        const gameStatus = document.querySelector("#game-status");
+        const speechStatus = document.querySelector("#speech-status");
+        const playWordButton = document.querySelector("#play-word");
+        const stopSpeechButton = document.querySelector("#stop-speech");
+        let activeCategory = categories[0];
+        let activeAnswer = null;
+        let answered = false;
+        let activeUtterance = null;
+
+        function speak(text, language) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                speechStatus.textContent = "Tento prohlížeč nepodporuje čtení nahlas.";
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            const languagePrefix = language === "en" ? "en" : "cs";
+            const voice = window.speechSynthesis.getVoices()
+                .find((item) => item.lang.toLowerCase().startsWith(languagePrefix));
+            if (voice) utterance.voice = voice;
+            utterance.lang = language === "en" ? "en-US" : "cs-CZ";
+            utterance.rate = language === "en" ? 0.82 : 0.9;
+            activeUtterance = utterance;
+            stopSpeechButton.hidden = false;
+            utterance.onend = () => {
+                if (activeUtterance !== utterance) return;
+                activeUtterance = null;
+                stopSpeechButton.hidden = true;
+                speechStatus.textContent = "";
+            };
+            utterance.onerror = (event) => {
+                if (event.error === "canceled" || event.error === "interrupted") return;
+                if (activeUtterance !== utterance) return;
+                activeUtterance = null;
+                stopSpeechButton.hidden = true;
+                speechStatus.textContent = "Přehrávání se nepovedlo. Zkontroluj zvuk a hlasové nastavení zařízení.";
+            };
+            window.speechSynthesis.speak(utterance);
+            speechStatus.textContent = language === "en"
+                ? `Přehrávám anglicky: ${text}.`
+                : "Přehrávám zadání.";
+        }
+
+        function renderCategories() {
+            categoryPicker.replaceChildren(...categories.map((category) => {
+                const button = document.createElement("button");
+                button.className = "category-button";
+                button.type = "button";
+                button.textContent = category.title;
+                button.setAttribute("aria-pressed", String(category === activeCategory));
+                button.addEventListener("click", () => {
+                    activeCategory = category;
+                    renderCategories();
+                    renderVocabulary();
+                    startRound();
+                });
+                return button;
+            }));
+        }
+
+        function createPencilCaseIllustration() {
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("class", "pencil-case-svg");
+            svg.setAttribute("viewBox", "0 0 120 96");
+            svg.setAttribute("aria-hidden", "true");
+
+            const createShape = (tagName, attributes) => {
+                const shape = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+                Object.entries(attributes).forEach(([name, value]) => shape.setAttribute(name, value));
+                return shape;
+            };
+
+            [
+                { x: 25, color: "#f16d75" },
+                { x: 45, color: "#55a9dc" },
+                { x: 65, color: "#71b881" }
+            ].forEach(({ x, color }) => {
+                svg.append(
+                    createShape("path", {
+                        d: `M${x} 49 L${x} 17 L${x + 8} 5 L${x + 16} 17 L${x + 16} 49 Z`,
+                        fill: color,
+                        stroke: "#49365b",
+                        "stroke-linejoin": "round",
+                        "stroke-width": "3"
+                    }),
+                    createShape("path", {
+                        d: `M${x} 17 L${x + 8} 5 L${x + 16} 17 Z`,
+                        fill: "#f8e1bb",
+                        stroke: "#49365b",
+                        "stroke-linejoin": "round",
+                        "stroke-width": "2"
+                    })
+                );
+            });
+
+            svg.append(
+                createShape("path", {
+                    d: "M14 43 Q15 37 23 37 H97 Q105 37 107 45 L102 78 Q101 86 92 86 H28 Q19 86 18 78 Z",
+                    fill: "#ffd875",
+                    stroke: "#62398f",
+                    "stroke-linejoin": "round",
+                    "stroke-width": "4"
+                }),
+                createShape("path", {
+                    d: "M18 45 H103",
+                    fill: "none",
+                    stroke: "#8052b8",
+                    "stroke-dasharray": "2 4",
+                    "stroke-linecap": "round",
+                    "stroke-width": "3"
+                }),
+                createShape("rect", {
+                    x: "36",
+                    y: "58",
+                    width: "48",
+                    height: "18",
+                    rx: "6",
+                    fill: "#f3a8ca",
+                    stroke: "#8052b8",
+                    "stroke-width": "3"
+                }),
+                createShape("circle", {
+                    cx: "96",
+                    cy: "46",
+                    r: "4",
+                    fill: "#fff",
+                    stroke: "#62398f",
+                    "stroke-width": "2"
+                })
+            );
+            return svg;
+        }
+
+        function setItemIllustration(element, item) {
+            if (item.color) {
+                element.classList.add("color-swatch");
+                element.style.backgroundColor = item.color;
+            } else if (item.illustration === "pencil-case") {
+                element.classList.add("pencil-case-illustration");
+                element.append(createPencilCaseIllustration());
+            } else {
+                element.textContent = item.symbol;
+            }
+        }
+
+        function renderVocabulary() {
+            wordGrid.replaceChildren(...activeCategory.items.map((item) => {
+                const card = document.createElement("article");
+                card.className = "word-card";
+                const symbol = document.createElement("span");
+                symbol.className = "word-symbol";
+                symbol.setAttribute("role", "img");
+                symbol.setAttribute("aria-label", item.czech);
+                setItemIllustration(symbol, item);
+                const english = document.createElement("p");
+                english.className = "english-word";
+                english.lang = "en";
+                english.textContent = item.english;
+                const czech = document.createElement("p");
+                czech.className = "czech-word";
+                czech.textContent = item.czech;
+                const button = document.createElement("button");
+                button.className = "action-button listen-word";
+                button.type = "button";
+                button.textContent = "🔊 Poslechnout";
+                button.setAttribute("aria-label", `Poslechnout anglicky: ${item.english}`);
+                button.addEventListener("click", () => speak(item.english, "en"));
+                card.append(symbol, english, czech, button);
+                return card;
+            }));
+        }
+
+        function shuffled(items) {
+            const result = [...items];
+            for (let index = result.length - 1; index > 0; index -= 1) {
+                const other = Math.floor(Math.random() * (index + 1));
+                [result[index], result[other]] = [result[other], result[index]];
+            }
+            return result;
+        }
+
+        function startRound() {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            activeUtterance = null;
+            stopSpeechButton.hidden = true;
+            speechStatus.textContent = "";
+            answered = false;
+            activeAnswer = activeCategory.items[Math.floor(Math.random() * activeCategory.items.length)];
+            const distractors = shuffled(activeCategory.items.filter((item) => item !== activeAnswer)).slice(0, 2);
+            const choices = shuffled([activeAnswer, ...distractors]);
+            gameChoices.replaceChildren(...choices.map((item) => {
+                const button = document.createElement("button");
+                button.className = "game-choice";
+                button.type = "button";
+                button.setAttribute("aria-label", `Obrázek: ${item.czech}`);
+                const symbol = document.createElement("span");
+                symbol.className = "choice-symbol";
+                symbol.setAttribute("aria-hidden", "true");
+                setItemIllustration(symbol, item);
+                const word = document.createElement("span");
+                word.className = "choice-word";
+                word.lang = "en";
+                word.textContent = item.english;
+                button.append(symbol, word);
+                button.addEventListener("click", () => chooseAnswer(item, button));
+                return button;
+            }));
+            gameStatus.textContent = "Stiskni „Přehrát slovo“ a vyber obrázek.";
+        }
+
+        function chooseAnswer(item, button) {
+            if (!activeAnswer || answered) return;
+            gameChoices.querySelectorAll(".game-choice").forEach((choice) => {
+                choice.classList.remove("wrong");
+            });
+            if (item !== activeAnswer) {
+                button.classList.add("wrong");
+                gameStatus.textContent = "To nebylo ono. Poslechni si slovo znovu nebo zkus jiný obrázek.";
+                speak("Zkus to ještě jednou.", "cs");
+                return;
+            }
+
+            answered = true;
+            button.classList.add("correct");
+            gameChoices.querySelectorAll(".game-choice").forEach((choice) => {
+                choice.disabled = true;
+            });
+            gameStatus.textContent = `Správně! ${activeAnswer.czech} se řekne ${activeAnswer.english}.`;
+            speak(`${activeAnswer.english}. Great job!`, "en");
+        }
+
+        playWordButton.addEventListener("click", () => {
+            if (activeAnswer) speak(activeAnswer.english, "en");
+        });
+        stopSpeechButton.addEventListener("click", () => {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            activeUtterance = null;
+            stopSpeechButton.hidden = true;
+            speechStatus.textContent = "Přehrávání bylo zastaveno.";
+        });
+        document.querySelector("#new-round").addEventListener("click", startRound);
+        document.querySelector("#read-instructions").addEventListener("click", () => {
+            speak("Nejdřív stiskni tlačítko Přehrát slovo. Poslechni si anglické slovo a potom klepni na obrázek, který se k němu hodí.", "cs");
+        });
+        window.addEventListener("beforeunload", () => {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        });
+
+        renderCategories();
+        renderVocabulary();
+        startRound();
+    </script>
+</body>
+</html>

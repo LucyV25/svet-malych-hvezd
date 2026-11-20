@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f2fb">
+    <meta name="description" content="Čtecí dobrodružství pro děti. Vyberte úroveň, čtěte krátké příběhy a sbírejte hvězdičky.">
+    <title>Čtecí dobrodružství — Svět malé hvězdičky</title>
+    <style>
+        :root { color-scheme: light; --ink:#352844; --muted:#756a80; --paper:#fffdfd; --accent:#8052b8; --deep:#62398f; --lav:#eee5f7; --line:#e9e0ed; --green:#e9f5e9; --serif:Georgia,"Times New Roman",serif; }
+        * { box-sizing:border-box; }
+        body { margin:0; color:var(--ink); background:linear-gradient(135deg,#f8f2fb 0%,#fff5fa 54%,#f0f7fc 100%); font:15px/1.6 "Segoe UI",Arial,sans-serif; }
+        button,select,input { font:inherit; } button,a,select,input { -webkit-tap-highlight-color:transparent; }
+        button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible { outline:3px solid #b99adb; outline-offset:3px; }
+        .topbar { display:flex; align-items:center; justify-content:space-between; gap:20px; max-width:1160px; margin:auto; padding:20px 30px; }
+        .brand { display:flex; align-items:center; gap:10px; color:var(--ink); font:700 19px var(--serif); text-decoration:none; }
+        .brand-mark { display:grid; width:36px; height:36px; place-items:center; border-radius:50%; background:var(--lav); font:19px sans-serif; }
+        .top-link { color:var(--deep); font-size:13px; font-weight:650; text-decoration:none; }
+        main { width:min(100% - 32px,900px); margin:auto; padding:28px 0 64px; }
+        .heading { max-width:650px; margin:0 auto 24px; text-align:center; }
+        .eyebrow { margin:0 0 8px; color:var(--accent); font-size:11px; font-weight:750; letter-spacing:.15em; text-transform:uppercase; }
+        h1,h2,h3,p { margin-top:0; } h1 { margin-bottom:8px; font:500 clamp(32px,6vw,46px)/1.15 var(--serif); }
+        .heading p:last-child { margin-bottom:0; color:var(--muted); }
+        .panel { margin:16px 0; padding:22px; border:1px solid rgba(97,63,117,.1); border-radius:18px; background:var(--paper); box-shadow:0 10px 28px rgba(97,63,117,.06); }
+        .panel h2 { margin-bottom:6px; color:var(--deep); font:500 23px var(--serif); }
+        .subtle { color:var(--muted); font-size:13px; }
+        .setup-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        label.field-label { display:block; margin-bottom:7px; font-weight:700; }
+        select { width:100%; min-height:44px; padding:8px 12px; border:1px solid #d9cde2; border-radius:10px; color:var(--ink); background:white; }
+        details { margin-top:16px; border-top:1px solid var(--line); padding-top:13px; }
+        summary { color:var(--deep); font-weight:700; cursor:pointer; }
+        .letter-tools { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+        .small-button,.button { border:1px solid #ddcfe9; border-radius:10px; padding:8px 12px; color:var(--deep); background:#fff; font-weight:650; cursor:pointer; }
+        .small-button:hover,.button:hover { background:#f7f1fb; }
+        .letters { display:grid; grid-template-columns:repeat(11,minmax(30px,1fr)); gap:6px; }
+        .letter { display:flex; align-items:center; justify-content:center; min-height:38px; border:1px solid var(--line); border-radius:9px; cursor:pointer; font-weight:650; }
+        .letter:has(input:checked) { border-color:#a987c9; background:var(--lav); color:var(--deep); }
+        .letter input { position:absolute; opacity:0; pointer-events:none; }
+        .journey { display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px; }
+        .meter { height:11px; overflow:hidden; border-radius:99px; background:#eee8f1; }
+        .meter span { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#bd9be0,#8052b8); transition:width .2s; }
+        .star-count { color:var(--deep); font-weight:750; white-space:nowrap; }
+        .story-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:15px; }
+        .story-pick { width:100%; min-height:94px; padding:15px; border:1px solid var(--line); border-radius:13px; color:var(--ink); background:white; text-align:left; cursor:pointer; }
+        .story-pick:hover,.story-pick[aria-pressed="true"] { border-color:#a987c9; background:#faf7fc; }
+        .story-pick strong { display:block; margin-bottom:3px; color:var(--deep); font:600 18px var(--serif); }
+        .story-pick span { color:var(--muted); font-size:12px; }
+        .empty { grid-column:1/-1; padding:16px; border-radius:12px; background:#fff8e9; }
+        #reader[hidden],#question-box[hidden],#completion[hidden] { display:none; }
+        .reader-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+        .reader-head h2 { font-size:27px; }
+        .reader-tools { display:flex; gap:8px; flex-wrap:wrap; }
+        .reading-text { margin:12px 0 18px; padding:clamp(18px,4vw,32px); border-radius:14px; background:#fffaf1; font:clamp(22px,3.5vw,29px)/1.85 Georgia,serif; letter-spacing:.015em; }
+        .reading-text p { margin:0 0 12px; } .reading-text p:last-child { margin-bottom:0; }
+        .question { margin:14px 0 8px; font-weight:750; font-size:17px; }
+        .idea-buttons { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+        .creation-card { margin-top:9px; padding:12px 14px; border-radius:11px; background:#fffaf1; }
+        .creation-card strong { display:block; color:var(--deep); }
+        .answers { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+        .answer { min-height:46px; border:1px solid var(--line); border-radius:10px; color:var(--ink); background:white; cursor:pointer; }
+        .answer:disabled { cursor:default; } .answer.correct { border-color:#86b98b; background:var(--green); } .answer.wrong { border-color:#d7a0a0; background:#fff0f0; }
+        .feedback { min-height:26px; margin:10px 0 0; color:var(--deep); font-weight:700; }
+        .finish-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; }
+        .primary { border:0; color:white; background:var(--accent); } .primary:hover { background:var(--deep); }
+        .status { min-height:22px; margin:8px 0 0; color:var(--muted); font-size:13px; }
+        footer { padding:0 20px 25px; color:#81758b; font-size:12px; text-align:center; }
+        @media(max-width:650px) { .topbar { padding:15px 18px; } .setup-grid,.story-list { grid-template-columns:1fr; } .letters { grid-template-columns:repeat(7,minmax(30px,1fr)); } .panel { padding:18px; } .reader-head { display:block; } .reader-tools { margin:10px 0; } .answers { grid-template-columns:1fr; } }
+        @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html"><span class="brand-mark" aria-hidden="true">☾</span><span>Svět malé hvězdičky</span></a>
+        <a class="top-link" href="rozcestnik.html">← Zpět do rozcestníku</a>
+    </header>
+    <main>
+        <header class="heading">
+            <p class="eyebrow">Malý kousek čtení každý den</p>
+            <h1>Čtecí dobrodružství</h1>
+            <p>Vyber si příběh podle toho, co už umíš přečíst. Za každý dokončený příběh získáš hvězdičku.</p>
+        </header>
+
+        <section class="panel" aria-labelledby="setup-title">
+            <h2 id="setup-title">Moje čtecí výprava</h2>
+            <p class="subtle">Rodič může nastavit úroveň. Postup a hvězdičky zůstávají uložené v tomto prohlížeči.</p>
+            <div class="setup-grid">
+                <div><label class="field-label" for="level">Co si chceš číst?</label><select id="level"><option value="0">Začínám číst — krátká slova a věty</option><option value="1">První třída — krátké příběhy</option><option value="2">Druhá třída — delší příběhy</option></select></div>
+            </div>
+            <details id="letter-settings">
+                <summary>Nastavit písmena, která už známe</summary>
+                <p class="subtle">Příběhy se ukážou jen tehdy, když jsou jejich písmena vybraná. Zaškrtnutí upravuje dospělý.</p>
+                <div class="letter-tools"><button class="small-button" id="select-common" type="button">Vybrat písmena příběhu</button><button class="small-button" id="select-all" type="button">Vybrat všechna</button><button class="small-button" id="clear-letters" type="button">Zrušit výběr</button></div>
+                <div class="letters" id="letters"></div>
+            </details>
+            <p class="status" id="setup-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel" aria-labelledby="progress-title">
+            <div class="journey"><div><h2 id="progress-title">Hvězdná stezka</h2><div class="meter" role="progressbar" aria-label="Postup na hvězdné stezce" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><span id="progress-bar"></span></div></div><div class="star-count" id="star-count">⭐ 0</div></div>
+            <p class="subtle" id="rank-label">Začni prvním příběhem a otevři si cestu dál.</p>
+            <button class="small-button" id="reset-journey" type="button">Začít od začátku ↺</button>
+            <div class="story-list" id="story-list" aria-label="Dostupné příběhy"></div>
+            <div id="creations-panel" hidden><h3>Moje vymyšlená pokračování</h3><div id="creations-list"></div></div>
+        </section>
+
+        <section class="panel" id="reader" aria-labelledby="story-title" hidden>
+            <div class="reader-head"><div><p class="eyebrow" id="story-level"></p><h2 id="story-title"></h2></div><div class="reader-tools"><button class="small-button" id="speak" type="button">🔊 Přečíst nahlas</button><button class="small-button" id="font-size" type="button" aria-label="Zvětšit písmo">A+</button></div></div>
+            <div class="reading-text" id="story-text"></div>
+            <div id="question-box" hidden><p class="question" id="question-text"></p><div class="answers" id="answers"></div><p class="feedback" id="feedback" role="status" aria-live="polite"></p></div>
+            <section id="create-box" hidden aria-labelledby="create-title"><p class="question" id="create-title">Co se bude dít dál?</p><p class="subtle">Vyber jednu možnost. Podle ní se příběh rozvine a nabídne ti další rozhodnutí.</p><p class="subtle">V pokračování se mohou objevit i nová písmena — zkus je přečíst s někým dospělým.</p><p class="question" id="branch-prompt" aria-live="polite"></p><div class="idea-buttons" id="branch-options"></div></section>
+            <div id="completion" hidden><p class="question">Příběh dokončen! ⭐</p><p class="subtle">Vymyslel/a jsi vlastní pokračování. Hvězdička je za čtení i nápady!</p><button class="button" id="speak-complete" type="button">🔊 Přehrát celý příběh</button><p class="status" id="speech-status" role="status" aria-live="polite"></p></div>
+            <div class="finish-row"><button class="button" id="back-to-map" type="button">← Zpět na stezku</button><button class="button" id="retry" type="button" hidden>Přečíst znovu ↻</button><button class="button primary" id="continue" type="button" hidden>Další příběh →</button></div>
+        </section>
+    </main>
+    <footer>Čteme vlastním tempem. Hvězdička je za snahu, ne za rychlost.</footer>
+    <script>
+        const alphabet = [..."AÁBCČDĎEÉĚFGHIÍJKLMNŇOÓPQRŘSŠTŤUÚŮVWXYÝZŽ"];
+        const stories = [
+            { id:"misa", level:0, title:"Míč pro Míšu", text:["MÁMA MÁ MÍČ.","MÍČ MÁ MÍŠA.","MÍŠA MÁ MÁMU."], question:"Kdo má míč?", answers:["Míša", "Ema"], correct:0 },
+            { id:"ema", level:0, title:"Ema a máma", text:["EMA MÁ MÍSU.","MÁMA MÁ MÍSU.","EMA MÁ MÁMU."], question:"Co má Ema?", answers:["Mísu", "Míč"], correct:0 },
+            { id:"kocka", level:1, title:"Kočka u okna", text:["Míša sedí u okna.","U domu se ukáže malá kočka.","Míša jí dá misku s vodou. Kočka pomalu pije."], question:"Co dala Míša kočce?", answers:["Misku s vodou", "Modrou mašli"], correct:0 },
+            { id:"drak", level:1, title:"Drak na louce", text:["Ema našla na louce červený drak.","Vítr ho zvedl vysoko nad stromy.","Ema držela provázek a smála se. Drak jí zamával dlouhým ocasem."], question:"Kde Ema našla draka?", answers:["Na louce", "U řeky"], correct:0 },
+            { id:"klic", level:2, title:"Ztracený klíč", text:["Cestou ze školy našel Matěj na chodníku malý stříbrný klíč. Zrovna spěchal domů, protože se těšil na novou knížku, ale zastavil se.","Zvedl klíč a rozhlédl se, jestli ho někdo nehledá. U blízké lavičky stála paní a prohledávala si kapsy.","Matěj k ní opatrně přišel. „Neztratila jste něco?“ zeptal se a ukázal jí klíč.","Paní si úlevně oddechla. Byl to klíč od jejího domu a bez něj by se nedostala dovnitř.","Poděkovala Matějovi a nabídla mu jablko. Matěj ho přijal a domů už šel pomaleji, aby si cestou mohl prohlédnout novou knížku."], question:"Proč Matěj klíč zvedl?", answers:["Chtěl zjistit, komu patří", "Chtěl si ho nechat"], correct:0 },
+            { id:"zahrada", level:2, title:"Zahrada po dešti", text:["Po nočním dešti se zahrada třpytila kapkami. Anička si vzala holínky a šla zkontrolovat, jestli bouřka nepolámala květiny.","Uprostřed cesty si všimla malého šneka. Pomalu se sunul přes mokré dlaždice a pokaždé se schoval, když někde zašustil list.","Anička věděla, že by na něj někdo mohl omylem šlápnout. Rozhlédla se a našla pod keřem měkkou trávu.","Opatrně šneka přenesla k širokému listu. Na jeho okraji se držela velká kapka vody.","Šnek pomalu vylezl z ulity a zamířil do trávy. Anička počkala, až bude v bezpečí, a pak pokračovala v prohlídce zahrady.","U růžového keře našla jednu ohnutou větvičku. Zavolala tatínka a společně ji přivázali k opoře."], question:"Proč Anička šneka přenesla?", answers:["Aby byl v bezpečí", "Aby si ho odnesla domů"], correct:0 },
+        ];
+        const storyBranches = {
+            misa:{prompt:"Co Míša udělá s míčem?",choices:[
+                {label:"Zahraje si s mámou",text:"Míša hodí míč mámě. Máma ho chytí.",nextPrompt:"Kam míč doletí příště?",next:[{label:"K míse na stole",text:"Míč ťukne do mísy. Uvnitř se něco zaleskne. Je tam malý oříšek!"},{label:"Pod starou židli",text:"Míč se skutálí pod židli. Míša ho najde a s mámou se tomu zasmějí."}]},
+                {label:"Prohlédne si míč",text:"Míša si všimne malé značky na míči. Vypadá jako tajná mapa.",nextPrompt:"Co udělá s mapou?",next:[{label:"Vydá se za značkou",text:"Značka vede k jabloni. Pod ní čeká překvapení: barevný míč pro mámu."},{label:"Nakreslí další značku",text:"Míša přidá na mapu cestu domů. Teď může mapu použít celá rodina."}]}
+            ]},
+            ema:{prompt:"Co Ema udělá s mísou?",choices:[
+                {label:"Připraví překvapení pro mámu",text:"Ema dá do mísy jablko a položí ji na stůl.",nextPrompt:"Kdo si překvapení všimne?",next:[{label:"Máma po návratu",text:"Máma přijde domů a překvapení ji potěší. Ema dostane velké objetí."},{label:"Malý návštěvník",text:"Do okna přiletí ptáček. Ema mu nabídne drobeček jablka."}]},
+                {label:"Vezme mísu na piknik",text:"Ema uloží do mísy malé ovoce a vydá se s mámou ven.",nextPrompt:"Kde si udělají piknik?",next:[{label:"Pod velkým stromem",text:"Pod stromem najdou stín. Z mísy si dají svačinu a poslouchají ptáky."},{label:"U potoka",text:"U potoka najdou hladký kamínek. Ema si ho schová na památku."}]}
+            ]},
+            kocka:{prompt:"Jak Míša kočce pomůže?",choices:[
+                {label:"Zkusí najít její domov",text:"Míša se rozhlédne po okolí. Na obojku zahlédne telefonní číslo.",nextPrompt:"Co udělá potom?",next:[{label:"Požádá dospělého o pomoc",text:"Dospělý zavolá majitelce. Za chvíli si pro kočku přijde její rodina."},{label:"Zeptá se sousedů",text:"Sousedka kočku pozná. Bydlí o dům dál a už ji hledá."}]},
+                {label:"Připraví jí bezpečné místo",text:"Míša dá misku s vodou do stínu a zavolá maminku.",nextPrompt:"Co kočka udělá?",next:[{label:"Odpočine si",text:"Kočka se napije, schoulí se do trávy a spokojeně odpočívá."},{label:"Ukáže cestu",text:"Kočka se vydá k zahradní brance. Míša jde pomalu za ní a najde její dům."}]}
+            ]},
+            drak:{prompt:"Kam Ema pošle draka?",choices:[
+                {label:"Až nad les",text:"Vítr zvedne draka nad les. Ema z výšky zahlédne stříbrný potok.",nextPrompt:"Co udělá Ema s provázkem?",next:[{label:"Pomalu ho navine",text:"Ema navine provázek a vydá se potok hledat. Najde u něj krásné místo na piknik."},{label:"Pustí ho kousek dál",text:"Drak ještě chvíli letí nad stromy. Pak se snese na měkkou louku."}]},
+                {label:"K oblakům",text:"Drak vystoupá k bílému oblaku. Vypadá jako velryba s dlouhým ocasem.",nextPrompt:"Jaký příběh Ema vymyslí?",next:[{label:"O létajícím ostrově",text:"Na obláčku prý leží ostrov plný květin. Ema ho nakreslí do svého sešitu."},{label:"O cestě domů",text:"Drak ukazuje cestu zpátky na louku. Ema mu zamává a bezpečně ho stáhne dolů."}]}
+            ]},
+            klic:{prompt:"Co Matěj udělá s klíčem?",choices:[
+                {label:"Zeptá se lidí v okolí",text:"Matěj ukáže klíč paní, která čeká u lavičky.",nextPrompt:"Komu klíč patří?",next:[{label:"Paní od lavičky",text:"Paní pozná svůj klíč od domu. Poděkuje Matějovi a nabídne mu jablko."},{label:"Pánovi se psem",text:"Pán si vzpomene, že klíč ztratil cestou z parku. Má velkou radost."}]},
+                {label:"Odnese ho na bezpečné místo",text:"Matěj vezme klíč do školy a řekne o něm paní učitelce.",nextPrompt:"Jak se klíč vrátí majiteli?",next:[{label:"Majitel se přihlásí",text:"Druhý den se pro klíč zastaví tatínek jednoho žáka. Matějovi poděkuje."},{label:"Pomůže cedulka",text:"Učitelka pověsí zprávu na nástěnku. Majitel si klíč brzy vyzvedne."}]}
+            ]},
+            zahrada:{prompt:"Jak Anička šnekovi pomůže dál?",choices:[
+                {label:"Najde mu list plný kapek",text:"Anička položí vedle šneka čerstvý list. Na něm se třpytí kapky.",nextPrompt:"Co šnek udělá?",next:[{label:"Vyleze na list",text:"Šnek se pomalu vydá na list a schová se pod něj. Tam si odpočine."},{label:"Ukáže jí dalšího šneka",text:"U listu se objeví druhý šnek. Anička jim najde klidné místo v trávě."}]},
+                {label:"Vyrobí malou značku",text:"Anička zapíchne vedle cesty barevnou značku, aby si lidé všimli šneka.",nextPrompt:"Kdo značku uvidí?",next:[{label:"Kamarád ze školy",text:"Kamarád značku uvidí a obejde šneka obloukem. Společně pak uklidí cestu."},{label:"Zahradník",text:"Zahradník značku najde a nechá v trávě klidný kout pro malé tvory."}]}
+            ]}
+        };
+        const extraBranches = {
+            klic:[
+                {prompt:"Kam se Matěj vydá na další výpravu?",choices:[{label:"Ke staré zahradě",text:"Druhý den se Matěj vydá ke staré zahradě. Za vysokým plotem zahlédne kamennou branku."},{label:"Ke knihovně",text:"Matěj zamíří do knihovny. V knize o městě najde obrázek tajné zahrady, kterou ještě nikdy neviděl."}]},
+                {prompt:"Koho vezme s sebou?",choices:[{label:"Kamaráda Adama",text:"Matěj pozve kamaráda Adama. Adam si vezme batoh a slíbí, že bude dávat pozor na každou stopu."},{label:"Sestru Elišku",text:"Matěj vezme s sebou sestru Elišku. Ta ráda luští hádanky a přibalí si zápisník."}]},
+                {prompt:"Co si připraví na cestu?",choices:[{label:"Zápisník a tužku",text:"Do zápisníku si Matěj nakreslí branku. Vedle ní nechá místo na nové objevy."},{label:"Svítilnu a svačinu",text:"Matěj přibalí malou svítilnu a jablko. Výprava tak může trvat celé odpoledne."}]},
+                {prompt:"Jak najdou správnou cestu?",choices:[{label:"Podle obrázku v knize",text:"Děti porovnají obrázek s okolními domy. Za rohem objeví úzkou uličku, která vede k zahradě."},{label:"Podle značek na chodníku",text:"Na chodníku si všimnou drobných křídových šipek. Vedou je kolem parku až ke kamenné zdi."}]},
+                {prompt:"Co udělají u branky?",choices:[{label:"Zaklepou",text:"Matěj třikrát zaklepe. Zpoza branky se ozve tiché zašustění a někdo odhrne závěs."},{label:"Prohlédnou klíčovou dírku",text:"Eliška si všimne, že zámek má stejný tvar jako starý klíč. Děti se nejdřív rozhlédnou, jestli mohou vejít."}]},
+                {prompt:"Co je za brankou překvapí?",choices:[{label:"Zarostlá fontána",text:"Uprostřed zahrady stojí fontána schovaná pod břečťanem. Na okraji leží další malý klíček."},{label:"Domek na stromě",text:"Mezi větvemi starého stromu zahlédnou dřevěný domek. K jeho dveřím vede úzký žebřík."}]},
+                {prompt:"Jak prozkoumají první stopu?",choices:[{label:"Porovnají ji se zápisníkem",text:"Matěj nakreslí tvar klíčku do zápisníku. Eliška si všimne, že připomíná písmeno z jejich mapy."},{label:"Zeptají se zahradníka",text:"U plotu pracuje zahradník. Prozradí jim, že v zahradě bývával ukrytý starý vzkaz."}]},
+                {prompt:"Kudy půjdou dál?",choices:[{label:"Cestičkou mezi růžemi",text:"Děti jdou opatrně po cestičce mezi růžemi. Na konci objeví lavičku s vyrytým číslem sedm."},{label:"Kolem kamenné zdi",text:"Za kamennou zdí najdou úzký průchod. Na jeho druhé straně čeká malá dřevěná truhlička."}]},
+                {prompt:"Jak si poradí s novou hádankou?",choices:[{label:"Přečtou nápis nahlas",text:"Na lavičce je napsáno: „Hledej tam, kde ptáci zpívají.“ Děti se zaposlouchají do zvuků zahrady."},{label:"Hledají obrázkovou nápovědu",text:"Na truhličce je vyrytý ptáček. Matěj zvedne oči a všimne si budky vysoko na jabloni."}]},
+                {prompt:"Jak se dostanou k jabloni?",choices:[{label:"Najdou bezpečnou cestičku",text:"Eliška objeví pevné schůdky vedle stromu. Děti po nich vylezou jen k nízké větvi."},{label:"Požádají zahradníka",text:"Děti poprosí zahradníka o pomoc. Ten jim ukáže cestu, po které se dá dojít až k budce."}]},
+                {prompt:"Co najdou u budky?",choices:[{label:"Barevné pírko",text:"Pod budkou leží modré pírko a malý papírek. Na papírku je nakreslený měsíc."},{label:"Starou fotografii",text:"Za budkou objeví fotografii zahrady z dávných časů. Na zadní straně je další krátký vzkaz."}]},
+                {prompt:"Jak rozluští vzkaz?",choices:[{label:"Spojí obrázky dohromady",text:"Matěj položí pírko vedle obrázku měsíce. Eliška pochopí, že další stopa čeká u jezírka."},{label:"Přečtou si ho společně",text:"Zahradník jim pomůže přečíst vybledlá slova. Vzkaz ukazuje na velký kámen u jezírka."}]},
+                {prompt:"Jak překonají cestu přes potůček?",choices:[{label:"Najdou pevný můstek",text:"Mezi rákosím objeví úzký můstek. Přejdou po jednom a na druhé straně najdou suché místo na odpočinek."},{label:"Položí přes něj prkno",text:"Zahradník přinese pevné prkno a bezpečně je položí přes potůček. Děti přejdou pomalu a opatrně."}]},
+                {prompt:"Co čeká u velkého kamene?",choices:[{label:"Dutina s dopisem",text:"Za kamenem je malá dutina. Uvnitř leží dopis od člověka, který zahradu kdysi založil."},{label:"Krabička se semínky",text:"Pod kamenem najdou plechovou krabičku plnou semínek. Na víčku je napsáno, že patří celé zahradě."}]},
+                {prompt:"Co udělají s nalezeným pokladem?",choices:[{label:"Přečtou dopis zahradníkovi",text:"Dopis vypráví o přátelství a společné péči o zahradu. Zahradník se rozhodne příběh schovat v knihovně."},{label:"Zasadí semínka společně",text:"Matěj, Eliška i zahradník vyberou místo pro semínka. Každý zasadí jednu malou část budoucího květinového záhonu."}]},
+                {prompt:"Jak se o objevu dozvědí ostatní?",choices:[{label:"Matěj napíše zprávu třídě",text:"Matěj napíše spolužákům, co v zahradě objevili. Přidá obrázek mapy a pozve je na návštěvu."},{label:"Eliška připraví výstavu",text:"Eliška vystaví fotografii, dopis i mapu ve školní knihovně. Děti si je chodí prohlížet o přestávce."}]},
+                {prompt:"Co třída udělá při návštěvě?",choices:[{label:"Vytvoří nové záhonky",text:"Spolužáci sází květiny a označí záhonky barevnými cedulkami. Zahrada je zase o kousek krásnější."},{label:"Opraví starou fontánu",text:"Děti pomohou uklidit listí kolem fontány. Voda se brzy znovu třpytí na slunci."}]},
+                {prompt:"Jak výpravu oslaví?",choices:[{label:"Piknikem pod jabloní",text:"Všichni si rozloží deku pod jabloní a rozdělí se o svačinu. Zahradník jim přečte poslední stránku starého dopisu."},{label:"Společným příběhem",text:"Každé dítě přidá jednu větu do nového příběhu o klíči. Matěj ho zapíše do sešitu a nechá v knihovně."}]}
+            ],
+            zahrada:[
+                {prompt:"Jak Anička pojmenuje svůj zahradní kout?",choices:[{label:"Šnečí údolí",text:"Anička napíše na cedulku Šnečí údolí. Pod keřem nechá místo, kam mohou malá zvířata zalézt."},{label:"Zahradu plnou barev",text:"Anička nakreslí barevnou ceduli. Rozhodne se, že v zahradě vysadí květiny různých barev."}]},
+                {prompt:"Co bude v zahradě růst?",choices:[{label:"Květiny pro motýly",text:"Anička vybere květiny, na kterých motýli najdou nektar. Tatínek jí pomůže připravit půdu."},{label:"Bylinky do kuchyně",text:"Anička zasadí mátu a pažitku. Maminka slíbí, že je použijí při přípravě večeře."}]},
+                {prompt:"Jak připraví cestičku?",choices:[{label:"Z oblázků",text:"Anička poskládá oblázky do klikaté cestičky. Nechá kolem nich dost místa pro trávu i malé brouky."},{label:"Z kůry",text:"Tatínek přinese kůru a společně ji rozprostřou na zem. Cestička vede kolem záhonku až k lavičce."}]},
+                {prompt:"Kdo jí s plánem pomůže?",choices:[{label:"Kamarád ze sousedství",text:"Za Aničkou přijde kamarád. Navrhne, aby vedle květin postavili malý domeček pro hmyz."},{label:"Babička",text:"Babička přinese starý zahradnický deník. Jsou v něm tipy, jak se starat o rostliny i půdu."}]},
+                {prompt:"Co objeví pod keřem?",choices:[{label:"Pírko od ptáčka",text:"Pod keřem leží malé pírko. Anička se podívá vzhůru a uvidí hnízdo v bezpečné výšce."},{label:"Ztracený květináč",text:"V trávě najdou květináč, který odnesl vítr. Anička ho očistí a připraví pro novou rostlinku."}]},
+                {prompt:"Jak zahradě pomůže s vodou?",choices:[{label:"Připraví misku pro ptáky",text:"Anička naplní mělkou misku čistou vodou a postaví ji do stínu. Ptáci se mohou napít i v horkém dni."},{label:"Zachytí dešťovou vodu",text:"Tatínek postaví pod okap nádobu na dešťovou vodu. Anička ji později použije na zalévání."}]},
+                {prompt:"Jaké překvapení přinese vítr?",choices:[{label:"Přinese semínko",text:"Vánek přivane do záhonku malé semínko. Anička ho opatrně zasadí a označí dřevěnou tyčkou."},{label:"Rozfouká listy",text:"Vítr rozfouká suché listí po zahradě. Anička ho shrabe na jednu hromádku pro kompost."}]},
+                {prompt:"Jak ochrání nové rostlinky?",choices:[{label:"Postaví nízký plůtek",text:"Anička s tatínkem postaví kolem záhonku nízký plůtek. Nechá v něm široký otvor pro zalévání."},{label:"Označí je cedulkami",text:"Anička napíše názvy rostlin na malé cedulky. Díky nim ví, co už vyrostlo a co teprve čeká."}]},
+                {prompt:"Koho potká u záhonu?",choices:[{label:"Broučka s lesklými krovkami",text:"Na listu se objeví lesklý brouček. Anička ho pozoruje z dálky a nechá ho nerušeně pokračovat."},{label:"Hladovou housenku",text:"Na kapustě sedí malá housenka. Anička zavolá babičku, aby společně zjistily, která rostlinka jí bude chutnat."}]},
+                {prompt:"Jak vyřeší nečekaný problém?",choices:[{label:"Ohnutou větvičku podepře",text:"Jedna větvička se sklání k zemi. Anička ji s tatínkem přiváže k pevné opoře."},{label:"Suchý záhonek zalije",text:"Slunce rychle vysušilo půdu. Anička použije zachycenou dešťovou vodu a zalije květiny."}]},
+                {prompt:"Co najde mezi květinami?",choices:[{label:"Barevný kámen",text:"Mezi květinami leží hladký kámen. Anička ho omyje a namaluje na něj malou květinu."},{label:"Papírový vzkaz",text:"Pod květináčem najde Anička vzkaz od sousedky. Sousedka jí nabízí několik nových semínek."}]},
+                {prompt:"Jaký nový nápad ji napadne?",choices:[{label:"Vyrobí hotel pro hmyz",text:"Z prázdné krabičky a větviček vznikne malý hotel pro hmyz. Anička ho pověsí na klidné místo."},{label:"Přidá lavičku",text:"Tatínek přinese starou lavičku a společně ji natřou. Anička si na ní může odpočinout po práci."}]},
+                {prompt:"Jak se do zahrady zapojí sousedé?",choices:[{label:"Přinesou další květiny",text:"Sousedé přinesou sazenice, které se jim doma nevešly do truhlíku. Každý přidá rostlinu do nového záhonku."},{label:"Postaví budku pro ptáky",text:"Soused pomůže pověsit budku na vysoký strom. Ptáci si brzy začnou nosit dovnitř stébla trávy."}]},
+                {prompt:"Co se stane po první velké bouřce?",choices:[{label:"Zkontrolují všechny rostliny",text:"Po bouřce Anička obejde každý záhonek. Najde jednu spadlou cedulku a znovu ji pevně zapíchne."},{label:"Vyčistí cestičku",text:"Voda přinesla na cestičku několik větviček. Anička je odnese na kompost a cesta je zase bezpečná."}]},
+                {prompt:"Kdo přijde zahradu navštívit?",choices:[{label:"Třída ze školy",text:"Paní učitelka přivede děti ze třídy. Anička jim ukáže, jak se o rostliny stará a kde bydlí šnek."},{label:"Babička s dědečkem",text:"Na návštěvu přijdou babička s dědečkem. Přinesou starou konvičku a společně zalijí květiny."}]},
+                {prompt:"Co děti společně vytvoří?",choices:[{label:"Obrázkovou mapu zahrady",text:"Děti nakreslí mapu se záhonky, lavičkou i koutem pro šneky. Mapu pověsí u branky."},{label:"Knihu o zahradních zvířatech",text:"Každé dítě nakreslí jedno zvíře, které v zahradě vidělo. Anička obrázky sváže do malé knížky."}]},
+                {prompt:"Jak pomohou zahradě v létě?",choices:[{label:"Zalévají ji po ránu",text:"Děti se domluví, že budou zalévat brzy ráno, než začne hřát slunce. Rostlinky mají dost vody celé léto."},{label:"Vyrobí stín pro květiny",text:"Nad citlivý záhonek pověsí lehkou látku. Květiny tak mají stín během nejteplejší části dne."}]},
+                {prompt:"Jak oslaví, co všechno dokázali?",choices:[{label:"Uspořádají zahradní slavnost",text:"Všichni přinesou malé občerstvení a slavnostně otevřou zahradu. Anička dostane vlastnoručně vyrobenou medaili."},{label:"Přečtou si společný příběh",text:"Děti se posadí na novou lavičku a přečtou si knížku o zahradě. Každý si pak vybere oblíbené místo."}]}
+            ]
+        };
+        const key = "hvezdicka:reading-journey:v1";
+        const defaultLetters = new Set("AÁČÍMŠTÉUS".split(""));
+        const $ = (selector) => document.querySelector(selector);
+        let state = { level:0, letters:[...defaultLetters], completed:[], creations:[], stars:0 };
+        let activeStory = null;
+        let storyPath = [];
+        let branchStep = 0;
+        let currentFont = 29;
+        try { const stored = JSON.parse(localStorage.getItem(key)); if (stored && Array.isArray(stored.completed) && Array.isArray(stored.letters)) state = { ...state, ...stored, creations:Array.isArray(stored.creations)?stored.creations:[] }; } catch { /* Poškozený nebo vypnutý místní úložný prostor nebrání čtení. */ }
+        const letterSet = new Set(state.letters);
+        const normalizeLetters = (text) => [...text.normalize("NFC").toLocaleUpperCase("cs-CZ")].filter((char) => /\p{L}/u.test(char));
+        function save() { state.level = Number($("#level").value); state.letters = [...letterSet]; try { localStorage.setItem(key, JSON.stringify(state)); } catch { $("#setup-status").textContent = "Postup se nepodařilo uložit. Číst můžeš dál."; } }
+        function renderLetters() {
+            const holder = $("#letters"); holder.replaceChildren();
+            for (const char of alphabet) { const label = document.createElement("label"); label.className = "letter"; const input = document.createElement("input"); input.type="checkbox"; input.value=char; input.checked=letterSet.has(char); input.setAttribute("aria-label", `Písmeno ${char}`); input.addEventListener("change", () => { input.checked ? letterSet.add(char) : letterSet.delete(char); save(); renderStories(); }); label.append(input, document.createTextNode(char)); holder.append(label); }
+        }
+        function renderProgress() {
+            const stars = state.completed.length; const max = stories.length;
+            $("#star-count").textContent = `⭐ ${stars}`; $("#progress-bar").style.width = `${Math.min(stars / max * 100, 100)}%`;
+            $(".meter").setAttribute("aria-valuemax", String(max)); $(".meter").setAttribute("aria-valuenow", String(stars));
+            $("#rank-label").textContent = stars === 0 ? "Začni prvním příběhem a otevři si cestu dál." : stars < 2 ? "Skvělý začátek! Na stezce přibyla tvoje první hvězdička." : stars < 4 ? "Jsi čtecí objevitel. Každý příběh tě posouvá dál!" : "Hurá! Došel jsi až na konec hvězdné stezky.";
+        }
+        function renderCreations() {
+            const panel=$("#creations-panel"), holder=$("#creations-list"); holder.replaceChildren();
+            const creations=state.creations.slice(-8).reverse(); panel.hidden=creations.length===0;
+            for(const creation of creations) { const card=document.createElement("div"); card.className="creation-card"; const title=document.createElement("strong"); title.textContent=creation.title; const ending=document.createElement("span"); ending.textContent=creation.text; card.append(title,ending); holder.append(card); }
+        }
+        function renderStories() {
+            const holder = $("#story-list"); holder.replaceChildren();
+            const available = stories.filter((story) => story.level <= Number($("#level").value) && normalizeLetters(story.text.join(" ")).every((letter) => letterSet.has(letter)));
+            if (!available.length) { const note = document.createElement("p"); note.className="empty"; note.textContent="Zatím tu není příběh se všemi vybranými písmeny. Zkus přidat další písmena, nebo vybrat jinou úroveň."; holder.append(note); return; }
+            for (const story of available) { const button = document.createElement("button"); button.className="story-pick"; button.type="button"; button.setAttribute("aria-pressed", String(activeStory?.id === story.id)); const title=document.createElement("strong"); title.textContent=`${state.completed.includes(story.id) ? "⭐ " : "📖 "}${story.title}`; const detail=document.createElement("span"); detail.textContent=story.level===0?"Krátké věty · začínám číst":story.level===1?"První třída · krátký příběh":"Druhá třída · příběh a přemýšlení"; button.append(title,detail); button.addEventListener("click",()=>openStory(story)); holder.append(button); }
+        }
+        function openStory(story) {
+            activeStory=story; $("#reader").hidden=false; $("#story-title").textContent=story.title; $("#story-level").textContent=story.level===0?"Začínám číst":story.level===1?"První třída":"Druhá třída";
+            const text=$("#story-text"); text.replaceChildren(...story.text.map(line=>{ const p=document.createElement("p"); p.textContent=line; return p; })); text.style.fontSize=`${currentFont}px`;
+            storyPath=[]; branchStep=0; $("#question-box").hidden=true; $("#create-box").hidden=true; $("#completion").hidden=true; $("#continue").hidden=true; $("#retry").hidden=true; $("#feedback").textContent=""; $("#speech-status").textContent=""; $("#question-text").textContent=story.question;
+            const answers=$("#answers"); answers.replaceChildren(); story.answers.forEach((answer,index)=>{ const button=document.createElement("button"); button.type="button"; button.className="answer"; button.textContent=answer; button.addEventListener("click",()=>answerQuestion(index)); answers.append(button); });
+            renderStories(); showBranch(storyBranches[story.id].prompt,storyBranches[story.id].choices); $("#reader").scrollIntoView({behavior:"smooth",block:"start"});
+        }
+        function answerQuestion(index) {
+            if (!activeStory || $("#question-box").hidden) return;
+            const buttons=[...$("#answers").children]; buttons.forEach(button=>{ button.disabled=true; button.classList.remove("wrong","correct"); });
+            if(index===activeStory.correct) {
+                $("#feedback").textContent="Přesně tak! Příběh je dokončený. ⭐"; buttons[index].classList.add("correct");
+                if(!state.completed.includes(activeStory.id)) state.completed.push(activeStory.id);
+                state.creations.push({title:activeStory.title,text:storyPath.join(" ")}); state.creations=state.creations.slice(-30);
+                save(); renderProgress(); renderCreations(); renderStories(); $("#question-box").hidden=true; $("#completion").hidden=false; $("#continue").hidden=false; return;
+            }
+            else { buttons[index].classList.add("wrong"); buttons.forEach(button=>{ button.disabled=false; }); $("#feedback").textContent="To nevadí. Zkus se zamyslet a vybrat jinou odpověď."; }
+        }
+        function showBranch(prompt, choices) {
+            branchStep+=1; $("#create-box").hidden=false; $("#branch-prompt").textContent=`Rozhodnutí ${branchStep} ze ${activeStory.level===2?20:2}: ${prompt}`;
+            const holder=$("#branch-options"); holder.replaceChildren();
+            for(const choice of choices) { const button=document.createElement("button"); button.type="button"; button.className="small-button"; button.textContent=choice.label; button.addEventListener("click",()=>{
+                storyPath.push(choice.text); const paragraph=document.createElement("p"); paragraph.textContent=choice.text; $("#story-text").append(paragraph);
+                if(choice.next?.length) showBranch(choice.nextPrompt,choice.next);
+                else if(activeStory.level===2 && branchStep<20) { const nextBranch=extraBranches[activeStory.id]?.[branchStep-2]; if(nextBranch) showBranch(nextBranch.prompt,nextBranch.choices); else finishStory(); }
+                else finishStory();
+            }); holder.append(button); }
+        }
+        function finishStory() {
+            $("#create-box").hidden=true; $("#question-box").hidden=false; $("#question-text").textContent=`Na konec příběhu: ${activeStory.question}`; $("#feedback").textContent="";
+        }
+        $("#level").value=String(state.level); $("#level").addEventListener("change",()=>{ activeStory=null; save(); renderStories(); });
+        $("#select-all").addEventListener("click",()=>{ alphabet.forEach(char=>letterSet.add(char)); save(); renderLetters(); renderStories(); });
+        $("#clear-letters").addEventListener("click",()=>{ letterSet.clear(); save(); renderLetters(); renderStories(); });
+        $("#select-common").addEventListener("click",()=>{ letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char)); save(); renderLetters(); renderStories(); });
+        function speakWholeStory() {
+            if(!activeStory) return;
+            if(!("speechSynthesis" in window)) { $("#speech-status").textContent="Přehrávání nahlas tento prohlížeč nepodporuje."; return; }
+            speechSynthesis.cancel();
+            const utterance=new SpeechSynthesisUtterance(`${activeStory.title}. ${$("#story-text").innerText}`);
+            utterance.lang="cs-CZ";
+            utterance.onstart=()=>{ $("#speech-status").textContent="Přehrávám celý příběh…"; };
+            utterance.onend=()=>{ $("#speech-status").textContent="Příběh je přehrán."; };
+            utterance.onerror=()=>{ $("#speech-status").textContent="Příběh se nepodařilo přehrát."; };
+            speechSynthesis.speak(utterance);
+        }
+        $("#speak").addEventListener("click",speakWholeStory);
+        $("#speak-complete").addEventListener("click",speakWholeStory);
+        $("#font-size").addEventListener("click",()=>{ currentFont=currentFont>=37?25:currentFont+4; $("#story-text").style.fontSize=`${currentFont}px`; });
+        $("#back-to-map").addEventListener("click",()=>{ $("#reader").hidden=true; activeStory=null; renderStories(); });
+        $("#retry").addEventListener("click",()=>{ if(activeStory) openStory(activeStory); $("#retry").hidden=true; });
+        $("#continue").addEventListener("click",()=>{ $("#reader").hidden=true; activeStory=null; renderStories(); $("#story-list").scrollIntoView({behavior:"smooth",block:"center"}); });
+        $("#reset-journey").addEventListener("click",()=>{
+            if(!window.confirm("Opravdu chceš začít znovu? Smažou se hvězdičky, přečtené příběhy i vlastní pokračování.")) return;
+            state={level:0,letters:[...defaultLetters],completed:[],creations:[],stars:0};
+            letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char)); activeStory=null;
+            $("#level").value="0"; $("#reader").hidden=true; $("#setup-status").textContent="Výprava začíná znovu. Hodně štěstí!";
+            save(); renderLetters(); renderProgress(); renderStories(); renderCreations();
+        });
+        renderLetters(); renderProgress(); renderStories(); renderCreations();
+    </script>
+</body>
+</html>

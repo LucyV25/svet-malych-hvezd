@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f2fb">
+    <meta name="description" content="Procvičování známých písmen, slabik a krátkých slov pro prvňáčky.">
+    <title>Čeština — Svět malé hvězdičky</title>
+    <style>
+        @font-face {
+            font-family: "Borel";
+            src: url("assets/fonts/Borel-Regular.ttf") format("truetype");
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+        }
+        :root {
+            color-scheme: light;
+            --ink: #352844;
+            --muted: #756a80;
+            --paper: #fffdfd;
+            --accent: #8052b8;
+            --accent-dark: #62398f;
+            --lavender: #eee5f7;
+            --line: #e9e0ed;
+            --serif: Georgia, "Times New Roman", serif;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        button, input, select { font: inherit; }
+        button, a, input, select { -webkit-tap-highlight-color: transparent; }
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid #b99adb;
+            outline-offset: 3px;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 22px 32px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--lavender);
+            font-family: sans-serif;
+            font-size: 19px;
+        }
+        .topbar-actions { display: flex; align-items: center; gap: 20px; }
+        .top-link { color: var(--accent-dark); font-size: 13px; font-weight: 650; text-decoration: none; }
+        .top-link:hover { text-decoration: underline; }
+        .top-link[aria-current="page"] { color: var(--muted); }
+        main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 26px 0 70px; }
+        .page-heading { max-width: 640px; margin: 0 auto 28px; text-align: center; }
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        h1, h2, h3, p { margin-top: 0; }
+        .page-heading h1 {
+            margin: 0 0 8px;
+            font-family: var(--serif);
+            font-size: clamp(30px, 5vw, 42px);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+        .page-heading p:last-child { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+        .reading-card {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 25px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+        }
+        .writing-card {
+            max-width: 700px;
+            margin: 22px auto 0;
+            padding: 25px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+        }
+        .reading-card h2 {
+            margin: 0 0 5px;
+            font-family: var(--serif);
+            font-size: 23px;
+            font-weight: 500;
+        }
+        .card-intro { margin: 0 0 17px; color: var(--muted); font-size: 12px; }
+        .letter-fieldset { min-width: 0; margin: 0 0 15px; padding: 12px; border: 1px solid var(--line); border-radius: 11px; }
+        .letter-fieldset legend { padding: 0 5px; color: #49365b; font-size: 12px; font-weight: 650; }
+        .letter-picker { display: flex; max-height: 180px; flex-wrap: wrap; gap: 7px; overflow-y: auto; padding: 2px; }
+        .letter-chip {
+            display: inline-flex;
+            min-width: 42px;
+            min-height: 39px;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 0 8px;
+            border: 1px solid #e1d5e9;
+            border-radius: 9px;
+            background: #f8f3fb;
+            color: var(--accent-dark);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .letter-chip input { width: 14px; min-height: 14px; margin: 0; accent-color: var(--accent); }
+        .add-letter-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .add-letter-row label { display: block; margin-bottom: 5px; color: #49365b; font-size: 12px; font-weight: 650; }
+        .add-letter-row input {
+            width: 100%;
+            min-height: 41px;
+            padding: 0 10px;
+            border: 1px solid #d9c9e6;
+            border-radius: 9px;
+            background: #fcf9fe;
+        }
+        .writing-controls {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            gap: 8px;
+        }
+        .writing-controls label { display: block; margin-bottom: 5px; color: #49365b; font-size: 12px; font-weight: 650; }
+        .writing-controls select {
+            width: 100%;
+            min-height: 42px;
+            padding: 0 10px;
+            border: 1px solid #d9c9e6;
+            border-radius: 9px;
+            background: #fcf9fe;
+            color: var(--ink);
+        }
+        .writing-mode-controls {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .writing-board {
+            position: relative;
+            height: clamp(220px, 42vw, 300px);
+            margin: 14px 0 12px;
+            overflow: hidden;
+            border: 1px solid #e1d5e9;
+            border-radius: 14px;
+            background-color: #fff;
+            background-image: linear-gradient(to bottom, transparent calc(50% - 1px), #eadff0 calc(50% - 1px), #eadff0 calc(50% + 1px), transparent calc(50% + 1px));
+        }
+        .writing-guide {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            color: rgba(98, 57, 143, .2);
+            font-family: "Borel", cursive;
+            font-size: clamp(130px, 35vw, 230px);
+            font-weight: 400;
+            line-height: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+        .writing-guide[hidden] { display: none; }
+        .writing-guide[data-digraph="true"] { font-size: clamp(100px, 27vw, 175px); }
+        .writing-canvas {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .writing-actions { display: flex; justify-content: space-between; gap: 8px; }
+        .writing-status { min-height: 22px; margin: 10px 0 0; color: var(--accent-dark); font-size: 12px; text-align: center; }
+        .missing-letter-game {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+        }
+        .missing-letter-game h3 {
+            margin: 0 0 6px;
+            color: #49365b;
+            font-size: 15px;
+        }
+        .missing-letter-game .card-intro { margin-bottom: 10px; }
+        .missing-letter-symbol { margin: 10px auto; }
+        .missing-word-display {
+            display: flex;
+            min-height: 58px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px auto 14px;
+        }
+        .missing-word-letter {
+            display: grid;
+            width: 42px;
+            height: 48px;
+            place-items: center;
+            border-bottom: 3px solid #d9c9e6;
+            color: var(--accent-dark);
+            font-family: var(--serif);
+            font-size: 30px;
+            font-weight: 700;
+        }
+        .missing-word-letter.is-missing {
+            border-style: dashed;
+            border-radius: 8px 8px 0 0;
+            background: #fcf9fe;
+        }
+        .missing-word-letter.is-filled {
+            border-color: #63a67a;
+            background: #edf8ef;
+            color: #317349;
+        }
+        .missing-letter-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+        .submit-button, .secondary-button {
+            min-height: 42px;
+            padding: 0 14px;
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 650;
+        }
+        .submit-button { background: var(--accent); color: #fff; }
+        .submit-button:hover { background: var(--accent-dark); }
+        .secondary-button { border-color: #e1d5e9; background: #fff; color: var(--accent-dark); }
+        .secondary-button:hover { background: #f7effa; }
+        .field-hint { margin: -4px 0 12px; color: var(--muted); font-size: 11px; }
+        .toast { min-height: 22px; margin: 12px 0 0; color: var(--accent-dark); font-size: 12px; text-align: center; }
+        .reading-result { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+        .reading-result[hidden] { display: none; }
+        .reading-result h3 { margin: 0 0 9px; color: #49365b; font-size: 12px; font-weight: 700; }
+        .reading-items { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .reading-token {
+            display: inline-grid;
+            min-width: 48px;
+            min-height: 43px;
+            place-items: center;
+            padding: 0 9px;
+            border: 1px solid #e5d6ef;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #f8f1fc, #fff5fa);
+            color: #553674;
+            cursor: pointer;
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+        .reading-token:hover { background: #eee1f6; }
+        .reading-token[aria-pressed="true"] {
+            border-color: var(--accent);
+            background: #e9dcf4;
+        }
+        .reading-audio-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 0 0 10px;
+        }
+        .reading-audio-row h3 { margin: 0; }
+        .reading-audio-rate {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #49365b;
+            font-size: 12px;
+            font-weight: 650;
+        }
+        .reading-audio-rate select {
+            min-height: 34px;
+            padding: 0 8px;
+            border: 1px solid #d9c9e6;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+        }
+        .reading-message { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+        .picture-game {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+        }
+        .picture-game h3 {
+            margin: 0 0 10px;
+            color: #49365b;
+            font-size: 14px;
+        }
+        .picture-symbol {
+            display: grid;
+            width: min(180px, 52vw);
+            height: 150px;
+            place-items: center;
+            margin: 0 auto 12px;
+            border: 1px solid #e5d6ef;
+            border-radius: 18px;
+            background: linear-gradient(145deg, #eaf4fb, #fff3d8);
+            font-size: 76px;
+        }
+        .size-comparison-illustration { width: min(150px, 90%); height: 110px; }
+        .picture-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 9px;
+        }
+        .picture-option {
+            min-width: 78px;
+            min-height: 46px;
+            padding: 0 12px;
+            border: 1px solid #d9c9e6;
+            border-radius: 10px;
+            background: #fff;
+            color: #553674;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 700;
+        }
+        .picture-option.correct {
+            border-color: #63a67a;
+            background: #edf8ef;
+            color: #317349;
+        }
+        .picture-option.wrong {
+            border-color: #c87878;
+            background: #fff1f1;
+            color: #9a4141;
+        }
+        .picture-status {
+            min-height: 22px;
+            margin: 10px 0 0;
+            color: var(--accent-dark);
+            font-size: 12px;
+        }
+        .word-builder, .yes-no-game {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+        }
+        .sentence-generator {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+        }
+        .sentence-generator h3 {
+            margin: 0 0 6px;
+            color: #49365b;
+            font-size: 15px;
+        }
+        .sentence-generator p { color: var(--muted); font-size: 12px; }
+        .generated-sentence {
+            display: grid;
+            min-height: 78px;
+            place-items: center;
+            margin: 12px 0;
+            padding: 12px;
+            border: 1px dashed #d9c9e6;
+            border-radius: 12px;
+            background: #fcf9fe;
+            color: var(--accent-dark);
+            font-family: var(--serif);
+            font-size: clamp(22px, 5vw, 30px);
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+        .sentence-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+        .sentence-status { min-height: 20px; margin: 9px 0 0; color: var(--accent-dark); font-size: 12px; }
+        .case-matching {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+        }
+        .case-matching h3 {
+            margin: 0 0 6px;
+            color: #49365b;
+            font-size: 15px;
+        }
+        .case-matching-columns {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 14px 0;
+        }
+        .case-matching-column {
+            display: grid;
+            align-content: start;
+            gap: 8px;
+        }
+        .case-matching-column h4 {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .case-match-choice {
+            min-height: 48px;
+            padding: 6px 10px;
+            border: 1px solid #d9c9e6;
+            border-radius: 10px;
+            background: #fff;
+            color: #553674;
+            cursor: pointer;
+            font-family: var(--serif);
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .case-match-choice[aria-pressed="true"] { border-color: var(--accent); background: #f3ebfa; }
+        .case-match-choice.correct { border-color: #63a67a; background: #edf8ef; color: #317349; }
+        .case-match-choice.wrong { border-color: #c87878; background: #fff1f1; color: #9a4141; }
+        .case-match-choice:disabled { cursor: default; opacity: 1; }
+        .case-match-status { min-height: 22px; margin: 9px 0; color: var(--accent-dark); font-size: 12px; }
+        .word-builder h3, .yes-no-game h3 {
+            margin: 0 0 10px;
+            color: #49365b;
+            font-size: 14px;
+        }
+        .letter-tiles, .word-answer {
+            display: flex;
+            min-height: 52px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .word-answer {
+            align-items: center;
+            max-width: 380px;
+            min-height: 60px;
+            margin: 8px auto 12px;
+            padding: 7px;
+            border: 2px dashed #d9c9e6;
+            border-radius: 12px;
+            background: #fcf9fe;
+        }
+        .letter-tile {
+            display: inline-grid;
+            width: 48px;
+            height: 48px;
+            place-items: center;
+            border: 1px solid #d9c9e6;
+            border-radius: 10px;
+            background: #fff;
+            color: #553674;
+            cursor: grab;
+            font-size: 20px;
+            font-weight: 700;
+            touch-action: manipulation;
+        }
+        .letter-tile:active { cursor: grabbing; }
+        .letter-tile.used { opacity: .35; }
+        .game-status {
+            min-height: 22px;
+            margin: 8px 0;
+            color: var(--accent-dark);
+            font-size: 12px;
+        }
+        .yes-no-symbol {
+            display: grid;
+            width: min(150px, 44vw);
+            height: 125px;
+            place-items: center;
+            margin: 0 auto 8px;
+            border: 1px solid #e5d6ef;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #eaf4fb, #fff3d8);
+            font-size: 64px;
+        }
+        .yes-no-word {
+            margin: 4px 0 12px;
+            color: #553674;
+            font-family: var(--serif);
+            font-size: 27px;
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+        .yes-no-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .yes-no-option {
+            min-width: 92px;
+            min-height: 46px;
+            border: 1px solid #d9c9e6;
+            border-radius: 10px;
+            background: #fff;
+            color: #553674;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .progress-card {
+            max-width: 700px;
+            margin: 0 auto 22px;
+            padding: 18px 20px;
+            border: 1px solid rgba(97, 63, 117, .1);
+            border-radius: 18px;
+            background: var(--paper);
+            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+        }
+        .profile-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px 14px;
+            margin-bottom: 12px;
+        }
+        .profile-control { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .profile-control label { color: #49365b; font-size: 12px; font-weight: 650; }
+        .profile-control select {
+            min-height: 38px;
+            padding: 0 10px;
+            border: 1px solid #d9c9e6;
+            border-radius: 9px;
+            background: #fcf9fe;
+            color: var(--ink);
+            font: inherit;
+        }
+        .profile-note { margin: 0; color: var(--muted); font-size: 11px; }
+        .progress-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .star-count {
+            color: #553674;
+            font-family: var(--serif);
+            font-size: 25px;
+            font-weight: 700;
+        }
+        .badge-name {
+            color: var(--accent-dark);
+            font-size: 13px;
+            font-weight: 700;
+            text-align: right;
+        }
+        .badge-progress {
+            height: 8px;
+            margin: 10px 0 14px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: #eee7f3;
+        }
+        .badge-progress span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #8052b8, #d88eb5);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .stat-item {
+            min-width: 0;
+            padding: 9px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+            text-align: center;
+        }
+        .stat-value {
+            display: block;
+            color: #553674;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .stat-label {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+        }
+        @media (max-width: 700px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        @media (max-width: 700px) {
+            .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
+            .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 12px; }
+            main { width: min(100% - 28px, 560px); padding-top: 22px; }
+            .reading-card, .writing-card { padding: 22px; }
+        }
+        @media (max-width: 390px) {
+            .brand { gap: 7px; font-size: 16px; }
+            .topbar-actions { gap: 9px; }
+            .top-link { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
+            <span class="brand-mark" aria-hidden="true">☾</span>
+            <span>Svět malé hvězdičky</span>
+        </a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html" aria-current="page">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="minecraft.html">Minecraft</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">Krátce a hravě</p>
+            <h1>Čeština</h1>
+            <p>Vybírejte písmena, která už znáte, a skládejte z nich slabiky a krátká slova.</p>
+        </header>
+        <section class="progress-card" aria-label="Postup a statistiky">
+            <div class="profile-row">
+                <div class="profile-control">
+                    <label for="active-profile">Kdo právě cvičí?</label>
+                    <select id="active-profile">
+                        <option value="daughter">Dcera</option>
+                        <option value="testing">Rodič – testování</option>
+                    </select>
+                </div>
+                <p class="profile-note">Každý profil má vlastní hvězdičky a statistiky.</p>
+                <button class="secondary-button" id="reset-daughter-progress" type="button" hidden>Vynulovat body dcery</button>
+            </div>
+            <div class="progress-top">
+                <span class="star-count" id="star-count">⭐ 0</span>
+                <span class="badge-name" id="badge-name">Začni sbírat hvězdičky</span>
+            </div>
+            <div class="badge-progress" aria-hidden="true"><span id="badge-progress" style="width: 0%"></span></div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value" id="today-words">0</span>
+                    <span class="stat-label">Dnes přečteno slov</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="week-words">0</span>
+                    <span class="stat-label">Tento týden slov</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="most-letter">—</span>
+                    <span class="stat-label">Nejvíc cvičené písmeno</span>
+                </div>
+            </div>
+        </section>
+        <section class="reading-card" aria-labelledby="reading-title">
+            <h2 id="reading-title">Čteme známá písmena</h2>
+            <p class="card-intro">Velká a malá písmena se označují zvlášť. Výběr i nová písmena se ukládají v tomto prohlížeči.</p>
+            <fieldset class="letter-fieldset">
+                <legend>Už probraná písmena</legend>
+                <div class="letter-picker" id="letter-picker"></div>
+            </fieldset>
+            <div class="add-letter-row">
+                <div>
+                    <label for="new-letter">Přidat další písmeno</label>
+                    <input id="new-letter" type="text" maxlength="2" placeholder="např. r, R nebo ch" autocomplete="off">
+                </div>
+                <button class="secondary-button" id="add-letter" type="button">Přidat</button>
+            </div>
+            <p class="field-hint">Pro slabiky vyberte alespoň jednu samohlásku a jednu souhlásku.</p>
+            <button class="submit-button" id="new-reading" type="button">Nové slabiky a slova</button>
+            <p class="toast" id="reading-status" role="status" aria-live="polite"></p>
+            <div class="reading-result" id="reading-result" hidden>
+                <div class="reading-audio-row">
+                    <h3>Slabiky a slova ke čtení</h3>
+                    <label class="reading-audio-rate" for="reading-rate">
+                        Tempo
+                        <select id="reading-rate" aria-label="Tempo přehrávání">
+                            <option value="0.65">Pomalu</option>
+                            <option value="0.8" selected>Normálně</option>
+                            <option value="1">Běžně</option>
+                        </select>
+                    </label>
+                </div>
+                <button class="secondary-button reading-sequence-button" id="read-all-reading" data-idle-label="Přehrát vše" data-stop-label="Zastavit přehrávání" type="button" aria-pressed="false">Přehrát vše</button>
+                <h3>Slabiky ke čtení</h3>
+                <button class="secondary-button reading-sequence-button" id="read-syllables" data-idle-label="Přehrát slabiky" data-stop-label="Zastavit slabiky" type="button" aria-pressed="false">Přehrát slabiky</button>
+                <div class="reading-items" id="syllable-items"></div>
+                <h3>Krátká slova z probraných písmen</h3>
+                <button class="secondary-button reading-sequence-button" id="read-words" data-idle-label="Přehrát krátká slova" data-stop-label="Zastavit slova" type="button" aria-pressed="false">Přehrát krátká slova</button>
+                <div class="reading-items" id="word-items"></div>
+                <p class="reading-message" id="word-message"></p>
+            </div>
+            <section class="picture-game" aria-labelledby="picture-game-title" hidden>
+                <h3 id="picture-game-title">Najdi správné slovo</h3>
+                <button class="secondary-button" id="read-picture-instructions" type="button" aria-pressed="false">🔊 Přehrát zadání</button>
+                <div class="picture-symbol" id="picture-symbol" role="img" aria-label=""></div>
+                <div class="picture-options" id="picture-options"></div>
+                <p class="picture-status" id="picture-status" role="status" aria-live="polite"></p>
+                <button class="secondary-button" id="next-picture" type="button" hidden>Další obrázek</button>
+            </section>
+            <section class="word-builder" aria-labelledby="word-builder-title" hidden>
+                <h3 id="word-builder-title">Skládání slov</h3>
+                <p class="card-intro">Klikni nebo přetáhni písmena do správného pořadí.</p>
+                <button class="secondary-button" id="read-builder-instructions" type="button" aria-pressed="false">🔊 Přehrát zadání</button>
+                <div class="letter-tiles" id="letter-tiles"></div>
+                <div class="word-answer" id="word-answer" aria-label="Složené slovo"></div>
+                <p class="game-status" id="builder-status" role="status" aria-live="polite"></p>
+                <button class="secondary-button" id="check-built-word" type="button">Zkontrolovat</button>
+                <button class="secondary-button" id="clear-built-word" type="button">Vrátit písmena</button>
+                <button class="secondary-button" id="next-built-word" type="button" hidden>Další slovo</button>
+            </section>
+            <section class="yes-no-game" aria-labelledby="yes-no-title" hidden>
+                <h3 id="yes-no-title">Je to správně?</h3>
+                <button class="secondary-button" id="read-yes-no-instructions" type="button" aria-pressed="false">🔊 Přehrát zadání</button>
+                <div class="yes-no-symbol" id="yes-no-symbol" role="img" aria-label=""></div>
+                <p class="yes-no-word" id="yes-no-word"></p>
+                <div class="yes-no-options">
+                    <button class="yes-no-option" type="button" data-answer="yes">ANO</button>
+                    <button class="yes-no-option" type="button" data-answer="no">NE</button>
+                </div>
+                <p class="game-status" id="yes-no-status" role="status" aria-live="polite"></p>
+                <button class="secondary-button" id="next-yes-no" type="button" hidden>Další otázka</button>
+            </section>
+            <section class="sentence-generator" aria-labelledby="sentence-generator-title">
+                <h3 id="sentence-generator-title">Věty z probraných písmen</h3>
+                <p>Věta obsahuje jen písmena, která už máš vybraná.</p>
+                <div class="generated-sentence" id="generated-sentence" aria-live="polite">Klikni na „Nová věta“.</div>
+                <div class="sentence-actions">
+                    <button class="secondary-button" id="new-sentence" type="button">Nová věta</button>
+                    <button class="secondary-button" id="read-sentence" type="button" aria-pressed="false" disabled>🔊 Přehrát větu</button>
+                </div>
+                <p class="sentence-status" id="sentence-status" role="status" aria-live="polite"></p>
+            </section>
+            <section class="case-matching" aria-labelledby="case-matching-title">
+                <h3 id="case-matching-title">Malá, nebo VELKÁ písmena?</h3>
+                <p class="card-intro">Vlevo je slovo napsané jako v běžném textu (Míla). Vpravo najdi stejné slovo celé velkými písmeny (MÍLA).</p>
+                <button class="secondary-button" id="read-case-matching-instructions" type="button">🔊 Přehrát zadání</button>
+                <div class="case-matching-columns">
+                    <div class="case-matching-column" id="case-matching-lower" role="group" aria-label="Slova jako v běžném textu">
+                        <h4>Běžný zápis</h4>
+                    </div>
+                    <div class="case-matching-column" id="case-matching-upper" role="group" aria-label="Stejná slova velkými písmeny">
+                        <h4>VŠECHNA VELKÁ PÍSMENA</h4>
+                    </div>
+                </div>
+                <button class="secondary-button" id="new-case-matching-round" type="button">Nové dvojice</button>
+                <p class="case-match-status" id="case-matching-status" role="status" aria-live="polite"></p>
+            </section>
+        </section>
+        <section class="writing-card" aria-labelledby="writing-title">
+            <h2 id="writing-title">Zkoušíme psát</h2>
+            <p class="card-intro">Obtahuj známá písmena a doplňuj chybějící písmenka do slov.</p>
+            <div class="writing-controls">
+                <div>
+                    <label for="writing-letter">Písmeno k procvičení</label>
+                    <select id="writing-letter"></select>
+                </div>
+                <button class="secondary-button" id="next-writing-letter" type="button">Jiné písmeno</button>
+            </div>
+            <div class="writing-mode-controls">
+                <div>
+                    <label for="writing-mode">Jak procvičovat</label>
+                    <select id="writing-mode">
+                        <option value="trace">Obtahovat předlohu</option>
+                        <option value="free">Psát bez předlohy</option>
+                    </select>
+                </div>
+                <button class="secondary-button" id="toggle-writing-guide" type="button" hidden>Ukázat předlohu</button>
+            </div>
+            <div class="writing-board">
+                <span class="writing-guide" id="writing-guide" aria-hidden="true"></span>
+                <canvas class="writing-canvas" id="writing-canvas" aria-label="Plocha pro obtahování písmena. Kresli prstem nebo stylusem."></canvas>
+            </div>
+            <div class="writing-actions">
+                <button class="submit-button" id="check-writing" type="button">Zkontrolovat</button>
+                <button class="secondary-button" id="clear-writing" type="button">Vymazat</button>
+            </div>
+            <p class="writing-status" id="writing-status" role="status" aria-live="polite"></p>
+            <section class="missing-letter-game" aria-labelledby="missing-letter-title">
+                <h3 id="missing-letter-title">Doplň chybějící písmenko</h3>
+                <p class="card-intro">Podívej se na obrázek a vyber písmeno, které ve slově chybí.</p>
+                <div class="picture-symbol missing-letter-symbol" id="missing-letter-symbol" role="img" aria-label="Obrázek ke slovu"></div>
+                <div class="missing-word-display" id="missing-letter-word" aria-label="Slovo s chybějícím písmenem" aria-live="polite">
+                    Klikni na „Nové slovo“.
+                </div>
+                <div class="picture-options" id="missing-letter-options" role="group" aria-label="Možnosti písmen"></div>
+                <div class="missing-letter-actions">
+                    <button class="secondary-button" id="new-missing-letter" type="button">Nové slovo</button>
+                    <button class="secondary-button" id="read-missing-letter-instructions" type="button">🔊 Přehrát zadání</button>
+                </div>
+                <p class="picture-status" id="missing-letter-status" role="status" aria-live="polite"></p>
+            </section>
+        </section>
+    </main>
+
+    <footer>Každý malý krok se počítá. Cvičte jen tak dlouho, jak je vám příjemné.</footer>
+
+    <script>
+        const learnedLettersKey = "dobrouNocHvezdicko:learned-letters:v1";
+        const progressKey = "dobrouNocHvezdicko:czech-progress:v1";
+        const activeProfileKey = "dobrouNocHvezdicko:active-profile:v1";
+        const defaultLetters = ["A", "Á", "M", "P", "O", "I", "E", "É", "L", "S", "U", "T", "J"];
+        const vowels = new Set(["a", "á", "e", "é", "ě", "i", "í", "o", "ó", "u", "ú", "ů", "y", "ý"]);
+        const readingWords = [
+            "MÁMA", "TÁTA", "PES", "LES", "PUSA", "MÁLO", "LÉTO", "MELE",
+            "MALÉ", "TÉMA", "JEL", "TAM", "SAMA", "MÁM", "JE", "SE"
+        ];
+        const caseMatchingWords = [...readingWords, "MÍLA"];
+        const readingSentences = [
+            "MÁMA JE.",
+            "TÁTA JDE.",
+            "EMA MÁ MÍČ.",
+            "EMA JE SAMA.",
+            "MÁMA MELE.",
+            "TÁTA SE SMĚJE.",
+            "EMA MÁ LÉTO.",
+            "MÁMA JELA.",
+            "TÁTA JE TAM.",
+            "EMA MÁ PSA.",
+            "EMA JE MALÁ.",
+            "LES JE MALÝ.",
+            "PES JE MILÝ."
+        ];
+        const pictureWords = {
+            "MÁMA": { symbol: "👩", label: "máma" },
+            "TÁTA": { symbol: "👨", label: "táta" },
+            "PES": { symbol: "🐕", label: "pes" },
+            "LES": { symbol: "🌲", label: "les" },
+            "PUSA": { symbol: "👄", label: "pusa" },
+            "LÉTO": { symbol: "☀️", label: "léto" },
+            "MALÉ": { illustration: "size-comparison", label: "malý domeček je zakroužkovaný vedle velkého" }
+        };
+        const readingStatus = document.querySelector("#reading-status");
+        const letterPicker = document.querySelector("#letter-picker");
+        const newLetterInput = document.querySelector("#new-letter");
+        const readingResult = document.querySelector("#reading-result");
+        const syllableItems = document.querySelector("#syllable-items");
+        const wordItems = document.querySelector("#word-items");
+        const readAllReadingButton = document.querySelector("#read-all-reading");
+        const readSyllablesButton = document.querySelector("#read-syllables");
+        const readWordsButton = document.querySelector("#read-words");
+        const readPictureInstructionsButton = document.querySelector("#read-picture-instructions");
+        const wordMessage = document.querySelector("#word-message");
+        const pictureGame = document.querySelector(".picture-game");
+        const pictureSymbol = document.querySelector("#picture-symbol");
+        const pictureOptions = document.querySelector("#picture-options");
+        const pictureStatus = document.querySelector("#picture-status");
+        const nextPictureButton = document.querySelector("#next-picture");
+        const wordBuilder = document.querySelector(".word-builder");
+        const letterTiles = document.querySelector("#letter-tiles");
+        const wordAnswer = document.querySelector("#word-answer");
+        const builderStatus = document.querySelector("#builder-status");
+        const checkBuiltWordButton = document.querySelector("#check-built-word");
+        const clearBuiltWordButton = document.querySelector("#clear-built-word");
+        const nextBuiltWordButton = document.querySelector("#next-built-word");
+        const readBuilderInstructionsButton = document.querySelector("#read-builder-instructions");
+        const yesNoGame = document.querySelector(".yes-no-game");
+        const readYesNoInstructionsButton = document.querySelector("#read-yes-no-instructions");
+        const yesNoSymbol = document.querySelector("#yes-no-symbol");
+        const yesNoWord = document.querySelector("#yes-no-word");
+        const yesNoStatus = document.querySelector("#yes-no-status");
+        const nextYesNoButton = document.querySelector("#next-yes-no");
+        const generatedSentence = document.querySelector("#generated-sentence");
+        const newSentenceButton = document.querySelector("#new-sentence");
+        const readSentenceButton = document.querySelector("#read-sentence");
+        const sentenceStatus = document.querySelector("#sentence-status");
+        const caseMatchingLower = document.querySelector("#case-matching-lower");
+        const caseMatchingUpper = document.querySelector("#case-matching-upper");
+        const caseMatchingStatus = document.querySelector("#case-matching-status");
+        const readCaseMatchingInstructionsButton = document.querySelector("#read-case-matching-instructions");
+        const newCaseMatchingRoundButton = document.querySelector("#new-case-matching-round");
+        let activeGeneratedSentence = "";
+        let activeCaseMatchingWord = "";
+        let caseMatchingRound = [];
+        let caseMatchingUpperOrder = [];
+        let matchedCaseWords = new Set();
+        const starCount = document.querySelector("#star-count");
+        const activeProfileSelect = document.querySelector("#active-profile");
+        const resetDaughterProgressButton = document.querySelector("#reset-daughter-progress");
+        const badgeName = document.querySelector("#badge-name");
+        const badgeProgress = document.querySelector("#badge-progress");
+        const todayWords = document.querySelector("#today-words");
+        const weekWords = document.querySelector("#week-words");
+        const mostLetter = document.querySelector("#most-letter");
+        const writingLetterSelect = document.querySelector("#writing-letter");
+        const writingModeSelect = document.querySelector("#writing-mode");
+        const writingGuideToggle = document.querySelector("#toggle-writing-guide");
+        const writingGuide = document.querySelector("#writing-guide");
+        const writingCanvas = document.querySelector("#writing-canvas");
+        const writingContext = writingCanvas.getContext("2d");
+        const writingStatus = document.querySelector("#writing-status");
+        const missingLetterSymbol = document.querySelector("#missing-letter-symbol");
+        const missingLetterWord = document.querySelector("#missing-letter-word");
+        const missingLetterOptions = document.querySelector("#missing-letter-options");
+        const missingLetterStatus = document.querySelector("#missing-letter-status");
+        const newMissingLetterButton = document.querySelector("#new-missing-letter");
+        const readMissingLetterInstructionsButton = document.querySelector("#read-missing-letter-instructions");
+        const writingGridWidth = 64;
+        const writingGridHeight = 32;
+        let learnedLetters = [];
+        let selectedLetters = [];
+        let writingStrokes = [];
+        let activeWritingStroke = null;
+        let activePointerId = null;
+        let guideManuallyVisible = false;
+        let activeReadingToken = null;
+        let readingSequenceVersion = 0;
+        let activeMissingLetterRound = null;
+        let missingLetterAnswered = false;
+
+        function emptyProgress() {
+            return { stars: 0, dailyWords: {}, letterCounts: {} };
+        }
+
+        let activeProfile = "daughter";
+
+        function getActiveProgressKey() {
+            return activeProfile === "testing" ? `${progressKey}:testing` : progressKey;
+        }
+
+        function loadActiveProfile() {
+            try {
+                return window.localStorage.getItem(activeProfileKey) === "testing" ? "testing" : "daughter";
+            } catch (error) {
+                console.error("Aktivní profil se nepodařilo načíst.", error);
+                readingStatus.textContent = "Profil se nepodařilo načíst. Používáme profil Dcera.";
+                return "daughter";
+            }
+        }
+
+        function loadProgress() {
+            try {
+                const saved = window.localStorage.getItem(getActiveProgressKey());
+                if (!saved) return emptyProgress();
+                const parsed = JSON.parse(saved);
+                if (!parsed || !Number.isInteger(parsed.stars)
+                    || parsed.stars < 0
+                    || !parsed.dailyWords
+                    || typeof parsed.dailyWords !== "object"
+                    || !parsed.letterCounts
+                    || typeof parsed.letterCounts !== "object") {
+                    throw new Error("The Czech progress format is invalid.");
+                }
+                return parsed;
+            } catch (error) {
+                console.error("Statistiky češtiny se nepodařilo načíst.", error);
+                return emptyProgress();
+            }
+        }
+
+        activeProfile = loadActiveProfile();
+        activeProfileSelect.value = activeProfile;
+        resetDaughterProgressButton.hidden = activeProfile !== "daughter";
+        let czechProgress = loadProgress();
+
+        function localDateKey(date = new Date()) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
+
+        function startOfWeek(date = new Date()) {
+            const result = new Date(date);
+            const day = result.getDay();
+            const mondayOffset = day === 0 ? -6 : 1 - day;
+            result.setDate(result.getDate() + mondayOffset);
+            result.setHours(0, 0, 0, 0);
+            return result;
+        }
+
+        function saveProgress() {
+            try {
+                window.localStorage.setItem(getActiveProgressKey(), JSON.stringify(czechProgress));
+            } catch (error) {
+                console.error("Statistiky češtiny se nepodařilo uložit.", error);
+            }
+        }
+
+        function getBadge(stars) {
+            if (stars >= 50) return "🏆 Šikovný čtenář";
+            if (stars >= 20) return "🏆 Čtenář začátečník";
+            return "Začni sbírat hvězdičky";
+        }
+
+        function renderProgress() {
+            const stars = czechProgress.stars;
+            starCount.textContent = `⭐ ${stars}`;
+            badgeName.textContent = getBadge(stars);
+
+            const progressTarget = stars >= 50 ? 50 : stars >= 20 ? 50 : 20;
+            const progressStart = stars >= 20 && stars < 50 ? 20 : 0;
+            const progressPercent = stars >= 50
+                ? 100
+                : Math.max(0, Math.min(100, ((stars - progressStart) / (progressTarget - progressStart)) * 100));
+            badgeProgress.style.width = `${progressPercent}%`;
+
+            const todayKey = localDateKey();
+            todayWords.textContent = String(czechProgress.dailyWords[todayKey] ?? 0);
+
+            const monday = startOfWeek();
+            let weekTotal = 0;
+            Object.entries(czechProgress.dailyWords).forEach(([dateKey, count]) => {
+                const date = new Date(`${dateKey}T12:00:00`);
+                if (date >= monday) weekTotal += count;
+            });
+            weekWords.textContent = String(weekTotal);
+
+            const letters = Object.entries(czechProgress.letterCounts)
+                .sort((first, second) => second[1] - first[1]);
+            mostLetter.textContent = letters.length ? letters[0][0].toLocaleUpperCase("cs-CZ") : "—";
+        }
+
+        function recordExerciseSuccess(word = "", letters = []) {
+            czechProgress.stars += 1;
+
+            if (word) {
+                const todayKey = localDateKey();
+                czechProgress.dailyWords[todayKey] = (czechProgress.dailyWords[todayKey] ?? 0) + 1;
+            }
+
+            letters.forEach((letter) => {
+                const normalized = letter.toLocaleUpperCase("cs-CZ");
+                czechProgress.letterCounts[normalized] =
+                    (czechProgress.letterCounts[normalized] ?? 0) + 1;
+            });
+
+            const previousStars = czechProgress.stars - 1;
+            saveProgress();
+            renderProgress();
+
+            if (previousStars < 20 && czechProgress.stars >= 20) {
+                readingStatus.textContent = "🏆 Nový úspěch: Čtenář začátečník!";
+            } else if (previousStars < 50 && czechProgress.stars >= 50) {
+                readingStatus.textContent = "🏆 Nový úspěch: Šikovný čtenář!";
+            }
+        }
+
+        function normalizeLetter(value) {
+            const letter = value.trim();
+            const uppercase = letter.toLocaleUpperCase("cs-CZ");
+            if (!/^[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]$/.test(uppercase) && uppercase !== "CH") return "";
+            if (uppercase === "CH") return letter[0] === letter[0].toLocaleUpperCase("cs-CZ") ? "CH" : "ch";
+            return letter;
+        }
+
+        function loadLearnedLetters() {
+            try {
+                const saved = window.localStorage.getItem(learnedLettersKey);
+                if (saved === null) return { available: [...defaultLetters], selected: [...defaultLetters] };
+                const parsed = JSON.parse(saved);
+                const available = Array.isArray(parsed) ? parsed : parsed.available;
+                const selected = Array.isArray(parsed) ? parsed : parsed.selected;
+                if (!Array.isArray(available) || !Array.isArray(selected)
+                    || !available.every((letter) => typeof letter === "string" && normalizeLetter(letter) === letter)
+                    || !selected.every((letter) => typeof letter === "string" && available.includes(letter))) {
+                    throw new Error("The saved learned-letter list has an invalid format.");
+                }
+                return { available: [...new Set(available)], selected: [...new Set(selected)] };
+            } catch (error) {
+                console.error("Probraná písmena se nepodařilo načíst.", error);
+                readingStatus.textContent = "Uložená písmena se nepodařilo načíst. Používáme výchozí výběr.";
+                return { available: [...defaultLetters], selected: [...defaultLetters] };
+            }
+        }
+
+        function saveLearnedLetters() {
+            try {
+                window.localStorage.setItem(learnedLettersKey, JSON.stringify({
+                    available: learnedLetters,
+                    selected: selectedLetters
+                }));
+                readingStatus.textContent = "Výběr písmen je uložen v tomto prohlížeči.";
+            } catch (error) {
+                console.error("Probraná písmena se nepodařilo uložit.", error);
+                readingStatus.textContent = "Výběr písmen se nepodařilo uložit. Zkontrolujte nastavení úložiště prohlížeče.";
+            }
+        }
+
+        function renderLetterPicker() {
+            letterPicker.replaceChildren();
+            learnedLetters.forEach((letter) => {
+                const label = document.createElement("label");
+                label.className = "letter-chip";
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = selectedLetters.includes(letter);
+                checkbox.value = letter;
+                checkbox.setAttribute("aria-label", `Písmeno ${letter}`);
+                checkbox.addEventListener("change", () => {
+                    selectedLetters = checkbox.checked
+                        ? [...selectedLetters, letter]
+                        : selectedLetters.filter((item) => item !== letter);
+                    readingResult.hidden = true;
+                    if (activeReadingToken === readSentenceButton) stopReadingAudio(false);
+                    activeGeneratedSentence = "";
+                    generatedSentence.textContent = "Výběr písmen se změnil. Vytvoř novou větu.";
+                    readSentenceButton.disabled = true;
+                    saveLearnedLetters();
+                    renderWritingLetters();
+                    startCaseMatchingRound();
+                    if (activeMissingLetterRound) startMissingLetterRound();
+                });
+                const text = document.createElement("span");
+                text.textContent = letter;
+                label.append(checkbox, text);
+                letterPicker.append(label);
+            });
+        }
+
+        function updateWritingGuide() {
+            const selectedLetter = writingLetterSelect.value;
+            const showGuide = selectedLetter !== ""
+                && (writingModeSelect.value === "trace" || guideManuallyVisible);
+            writingGuide.textContent = selectedLetter;
+            writingGuide.dataset.digraph = String(selectedLetter.length > 1);
+            writingCanvas.setAttribute("aria-label", selectedLetter
+                ? `Plocha pro psaní písmene ${selectedLetter}. Kresli prstem nebo stylusem.`
+                : "Plocha pro kreslení. Nejdřív vyber známé písmeno.");
+            writingCanvas.hidden = selectedLetter === "";
+            writingGuide.hidden = !showGuide;
+            writingGuideToggle.hidden = writingModeSelect.value !== "free" || selectedLetter === "";
+            writingGuideToggle.textContent = guideManuallyVisible ? "Skrýt předlohu" : "Ukázat předlohu";
+            writingGuideToggle.setAttribute("aria-pressed", String(guideManuallyVisible));
+            if (!selectedLetter) {
+                writingStatus.textContent = "Nejdřív vyber některá probraná písmena nahoře.";
+            }
+        }
+
+        function renderWritingLetters() {
+            const previousLetter = writingLetterSelect.value;
+            writingLetterSelect.replaceChildren(...selectedLetters.map((letter) => {
+                const option = document.createElement("option");
+                option.value = letter;
+                option.textContent = letter;
+                return option;
+            }));
+            const selectedLetter = selectedLetters.includes(previousLetter) ? previousLetter : selectedLetters[0] ?? "";
+            writingLetterSelect.value = selectedLetter;
+            guideManuallyVisible = false;
+            updateWritingGuide();
+            clearWriting(false);
+        }
+
+        function getWritingPoint(event) {
+            const bounds = writingCanvas.getBoundingClientRect();
+            return {
+                x: Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width)),
+                y: Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height))
+            };
+        }
+
+        function renderWritingStrokes() {
+            const bounds = writingCanvas.getBoundingClientRect();
+            if (!bounds.width || !bounds.height) return;
+            writingContext.clearRect(0, 0, bounds.width, bounds.height);
+            writingContext.lineCap = "round";
+            writingContext.lineJoin = "round";
+            writingContext.lineWidth = Math.max(5, Math.min(bounds.width, bounds.height) * 0.025);
+            writingContext.strokeStyle = "#62398f";
+            writingContext.fillStyle = "#62398f";
+            writingStrokes.forEach((stroke) => {
+                if (!stroke.points.length) return;
+                const firstPoint = stroke.points[0];
+                writingContext.beginPath();
+                writingContext.arc(firstPoint.x * bounds.width, firstPoint.y * bounds.height, writingContext.lineWidth / 2, 0, Math.PI * 2);
+                writingContext.fill();
+                writingContext.beginPath();
+                stroke.points.forEach((point, index) => {
+                    const x = point.x * bounds.width;
+                    const y = point.y * bounds.height;
+                    if (index === 0) writingContext.moveTo(x, y);
+                    else writingContext.lineTo(x, y);
+                });
+                writingContext.stroke();
+            });
+        }
+
+        function resizeWritingCanvas() {
+            const bounds = writingCanvas.getBoundingClientRect();
+            if (!bounds.width || !bounds.height) return;
+            const pixelRatio = window.devicePixelRatio || 1;
+            writingCanvas.width = Math.round(bounds.width * pixelRatio);
+            writingCanvas.height = Math.round(bounds.height * pixelRatio);
+            writingContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+            renderWritingStrokes();
+        }
+
+        function clearWriting(announce = true) {
+            writingStrokes = [];
+            renderWritingStrokes();
+            if (announce) writingStatus.textContent = "Plocha je smazaná. Můžeš to zkusit znovu.";
+        }
+
+        function startWriting(event) {
+            if (activePointerId !== null || !writingLetterSelect.value) return;
+            if (event.pointerType === "mouse" && event.button !== 0) return;
+            event.preventDefault();
+            activePointerId = event.pointerId;
+            writingCanvas.setPointerCapture(event.pointerId);
+            activeWritingStroke = { points: [getWritingPoint(event)] };
+            writingStrokes.push(activeWritingStroke);
+            renderWritingStrokes();
+            writingStatus.textContent = `Zkus obtáhnout písmeno ${writingLetterSelect.value}.`;
+        }
+
+        function continueWriting(event) {
+            if (event.pointerId !== activePointerId || !activeWritingStroke) return;
+            event.preventDefault();
+            activeWritingStroke.points.push(getWritingPoint(event));
+            renderWritingStrokes();
+        }
+
+        function stopWriting(event) {
+            if (event.pointerId !== activePointerId) return;
+            activePointerId = null;
+            activeWritingStroke = null;
+        }
+
+        function createReferenceMask(letter) {
+            const bounds = writingCanvas.getBoundingClientRect();
+            const mask = new Uint8Array(writingGridWidth * writingGridHeight);
+            if (!bounds.width || !bounds.height) return mask;
+
+            const referenceCanvas = document.createElement("canvas");
+            referenceCanvas.width = writingGridWidth;
+            referenceCanvas.height = writingGridHeight;
+            const context = referenceCanvas.getContext("2d");
+            const guideStyle = window.getComputedStyle(writingGuide);
+            const fontSize = letter.length > 1
+                ? Math.min(175, Math.max(100, window.innerWidth * 0.27))
+                : Math.min(230, Math.max(130, window.innerWidth * 0.35));
+            context.setTransform(writingGridWidth / bounds.width, 0, 0, writingGridHeight / bounds.height, 0, 0);
+            context.font = `${guideStyle.fontWeight} ${fontSize}px ${guideStyle.fontFamily}`;
+            context.textAlign = "center";
+            context.textBaseline = "middle";
+            context.fillStyle = "#000";
+            context.fillText(letter, bounds.width / 2, bounds.height / 2);
+
+            const pixels = context.getImageData(0, 0, writingGridWidth, writingGridHeight).data;
+            for (let index = 0; index < mask.length; index += 1) {
+                mask[index] = pixels[index * 4 + 3] > 24 ? 1 : 0;
+            }
+            return mask;
+        }
+
+        function createDrawingMask() {
+            const mask = new Uint8Array(writingGridWidth * writingGridHeight);
+            const bounds = writingCanvas.getBoundingClientRect();
+            let pathLength = 0;
+            const markPoint = (x, y) => {
+                const centerX = Math.max(0, Math.min(writingGridWidth - 1, Math.round(x * (writingGridWidth - 1))));
+                const centerY = Math.max(0, Math.min(writingGridHeight - 1, Math.round(y * (writingGridHeight - 1))));
+                for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+                    for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+                        const gridX = centerX + offsetX;
+                        const gridY = centerY + offsetY;
+                        if (gridX >= 0 && gridX < writingGridWidth && gridY >= 0 && gridY < writingGridHeight) {
+                            mask[gridY * writingGridWidth + gridX] = 1;
+                        }
+                    }
+                }
+            };
+
+            writingStrokes.forEach((stroke) => {
+                if (!stroke.points.length) return;
+                markPoint(stroke.points[0].x, stroke.points[0].y);
+                for (let index = 1; index < stroke.points.length; index += 1) {
+                    const previous = stroke.points[index - 1];
+                    const current = stroke.points[index];
+                    const distanceX = (current.x - previous.x) * bounds.width;
+                    const distanceY = (current.y - previous.y) * bounds.height;
+                    pathLength += Math.hypot(distanceX, distanceY);
+                    const steps = Math.max(1, Math.ceil(Math.hypot(
+                        (current.x - previous.x) * writingGridWidth,
+                        (current.y - previous.y) * writingGridHeight
+                    ) * 2));
+                    for (let step = 1; step <= steps; step += 1) {
+                        const progress = step / steps;
+                        markPoint(
+                            previous.x + (current.x - previous.x) * progress,
+                            previous.y + (current.y - previous.y) * progress
+                        );
+                    }
+                }
+            });
+            return { mask, pathLength };
+        }
+
+        function countMask(mask) {
+            return mask.reduce((count, value) => count + value, 0);
+        }
+
+        function expandMask(mask, radius) {
+            const expanded = new Uint8Array(mask.length);
+            for (let y = 0; y < writingGridHeight; y += 1) {
+                for (let x = 0; x < writingGridWidth; x += 1) {
+                    if (!mask[y * writingGridWidth + x]) continue;
+                    for (let offsetY = -radius; offsetY <= radius; offsetY += 1) {
+                        for (let offsetX = -radius; offsetX <= radius; offsetX += 1) {
+                            const gridX = x + offsetX;
+                            const gridY = y + offsetY;
+                            if (gridX >= 0 && gridX < writingGridWidth && gridY >= 0 && gridY < writingGridHeight) {
+                                expanded[gridY * writingGridWidth + gridX] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            return expanded;
+        }
+
+        function referencePartsCovered(referenceMask, nearbyDrawing) {
+            const visited = new Uint8Array(referenceMask.length);
+            for (let start = 0; start < referenceMask.length; start += 1) {
+                if (!referenceMask[start] || visited[start]) continue;
+                const component = [start];
+                visited[start] = 1;
+                let touched = false;
+                for (let index = 0; index < component.length; index += 1) {
+                    const current = component[index];
+                    if (nearbyDrawing[current]) touched = true;
+                    const x = current % writingGridWidth;
+                    const y = Math.floor(current / writingGridWidth);
+                    for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+                        for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+                            const nextX = x + offsetX;
+                            const nextY = y + offsetY;
+                            if (nextX < 0 || nextX >= writingGridWidth || nextY < 0 || nextY >= writingGridHeight) continue;
+                            const next = nextY * writingGridWidth + nextX;
+                            if (referenceMask[next] && !visited[next]) {
+                                visited[next] = 1;
+                                component.push(next);
+                            }
+                        }
+                    }
+                }
+                if (component.length >= 2 && !touched) return false;
+            }
+            return true;
+        }
+
+        function compareWritingMasks(drawingMask, referenceMask) {
+            const drawingCount = countMask(drawingMask);
+            const referenceCount = countMask(referenceMask);
+            if (!drawingCount || !referenceCount) return { precision: 0, coverage: 0, score: 0, partsCovered: false };
+
+            const nearbyReference = expandMask(referenceMask, 2);
+            const nearbyDrawing = expandMask(drawingMask, 2);
+            let matchingDrawing = 0;
+            let coveredReference = 0;
+            referenceMask.forEach((value, index) => {
+                if (value && nearbyDrawing[index]) coveredReference += 1;
+            });
+            drawingMask.forEach((value, index) => {
+                if (value && nearbyReference[index]) matchingDrawing += 1;
+            });
+            const precision = matchingDrawing / drawingCount;
+            const coverage = coveredReference / referenceCount;
+            const partsCovered = referencePartsCovered(referenceMask, nearbyDrawing);
+            return {
+                precision,
+                coverage,
+                partsCovered,
+                score: (precision * 0.55 + coverage * 0.45) * (partsCovered ? 1 : 0.65)
+            };
+        }
+
+        async function checkWriting() {
+            const targetLetter = writingLetterSelect.value;
+            if (!targetLetter) {
+                writingStatus.textContent = "Nejdřív vyber některá probraná písmena nahoře.";
+                return;
+            }
+
+            const bounds = writingCanvas.getBoundingClientRect();
+            const drawing = createDrawingMask();
+            if (drawing.pathLength < Math.max(20, bounds.height * 0.12) || countMask(drawing.mask) < 3) {
+                writingStatus.textContent = "Až budeš mít písmeno celé, stiskni Zkontrolovat.";
+                return;
+            }
+
+            try {
+                await document.fonts.load('400 120px "Borel"', selectedLetters.join(""));
+            } catch (error) {
+                console.error("Školní písmo se nepodařilo načíst.", error);
+                writingStatus.textContent = "Předlohu písmen se nepodařilo načíst. Obnov stránku a zkus to znovu.";
+                return;
+            }
+
+            const candidates = selectedLetters.map((letter) => ({
+                letter,
+                ...compareWritingMasks(drawing.mask, createReferenceMask(letter))
+            })).sort((first, second) => second.score - first.score);
+            const closest = candidates[0];
+            if (!closest || closest.score < 0.35) {
+                writingStatus.textContent = "Písmenko zatím nedokážu poznat. Zkus ho napsat pomalu ještě jednou nebo si ukázat předlohu.";
+                return;
+            }
+
+            if (writingModeSelect.value === "trace") {
+                const target = candidates.find((candidate) => candidate.letter === targetLetter);
+                if (target && target.precision >= 0.5 && target.coverage >= 0.12 && target.partsCovered) {
+                    writingStatus.textContent = `Dobrá práce, tahy se přibližují předloze písmene ${targetLetter}.`;
+                    recordExerciseSuccess("", [targetLetter]);
+                } else {
+                    writingStatus.textContent = `Zkus vést tahy blíž k předloze písmene ${targetLetter}. Můžeš si ji znovu ukázat.`;
+                }
+                return;
+            }
+
+            if (closest.letter === targetLetter) {
+                writingStatus.textContent = `Myslím, že jsi napsala ${targetLetter}. Je to jen přibližná nápověda.`;
+                recordExerciseSuccess("", [targetLetter]);
+            } else {
+                writingStatus.textContent = `Tvoje písmenko mi nejvíc připomíná ${closest.letter}. Zkus ho napsat ještě jednou, nebo si ukázat předlohu ${targetLetter}.`;
+            }
+        }
+
+        function randomInteger(minimum, maximum) {
+            return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+        }
+
+        function shuffled(items) {
+            const result = [...items];
+            for (let index = result.length - 1; index > 0; index -= 1) {
+                const swapIndex = randomInteger(0, index);
+                [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+            }
+            return result;
+        }
+
+        function getCzechVoice() {
+            if (!("speechSynthesis" in window)) return null;
+            return window.speechSynthesis.getVoices()
+                .find((voice) => voice.lang?.toLocaleLowerCase("cs-CZ").startsWith("cs")) ?? null;
+        }
+
+        function clearActiveReadingToken() {
+            if (activeReadingToken) {
+                activeReadingToken.setAttribute("aria-pressed", "false");
+            }
+            activeReadingToken = null;
+        }
+
+        function prepareSpeechText(text) {
+            return text.toLocaleLowerCase("cs-CZ");
+        }
+
+        function stopReadingAudio(updateStatus = true) {
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
+            readingSequenceVersion += 1;
+            clearActiveReadingToken();
+            resetReadingSequenceButtons();
+            if (updateStatus) readingStatus.textContent = "Přehrávání bylo zastaveno.";
+        }
+
+        function resetReadingSequenceButtons() {
+            document.querySelectorAll(".reading-sequence-button").forEach((button) => {
+                button.textContent = button.dataset.idleLabel;
+                button.setAttribute("aria-pressed", "false");
+            });
+        }
+
+        function speakReadingText(text, token = null) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                readingStatus.textContent = "Tento prohlížeč nepodporuje přehrávání řeči.";
+                return;
+            }
+
+            if (activeReadingToken === token) {
+                stopReadingAudio();
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            readingSequenceVersion += 1;
+            clearActiveReadingToken();
+            resetReadingSequenceButtons();
+            activeReadingToken = token;
+            if (token) token.setAttribute("aria-pressed", "true");
+
+            const utterance = new SpeechSynthesisUtterance(prepareSpeechText(text));
+            const czechVoice = getCzechVoice();
+            if (czechVoice) utterance.voice = czechVoice;
+            utterance.lang = "cs-CZ";
+            utterance.rate = Number(document.querySelector("#reading-rate").value);
+            utterance.pitch = 1;
+            utterance.onend = () => clearActiveReadingToken();
+            utterance.onerror = (event) => {
+                if (event.error === "canceled" || event.error === "interrupted") return;
+                clearActiveReadingToken();
+                readingStatus.textContent = "Přehrávání této položky se nepovedlo.";
+            };
+            window.speechSynthesis.speak(utterance);
+            readingStatus.textContent = `Přehrávám ${text}.`;
+        }
+
+        function readReadingItems(containers, button, completionMessage) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                readingStatus.textContent = "Tento prohlížeč nepodporuje přehrávání řeči.";
+                return;
+            }
+
+            if (button.getAttribute("aria-pressed") === "true") {
+                stopReadingAudio();
+                return;
+            }
+
+            const items = containers.flatMap((container) => [...container.querySelectorAll("button")]);
+            if (!items.length) {
+                readingStatus.textContent = "Nejdřív vytvoř slabiky nebo slova.";
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            clearActiveReadingToken();
+            resetReadingSequenceButtons();
+            button.textContent = button.dataset.stopLabel;
+            button.setAttribute("aria-pressed", "true");
+
+            const sequenceVersion = ++readingSequenceVersion;
+            let index = 0;
+            const readNext = () => {
+                if (sequenceVersion !== readingSequenceVersion) return;
+                if (index >= items.length) {
+                    stopReadingAudio(false);
+                    readingStatus.textContent = completionMessage;
+                    return;
+                }
+
+                const item = items[index];
+                index += 1;
+                const text = item.textContent;
+                activeReadingToken = item;
+                item.setAttribute("aria-pressed", "true");
+                const utterance = new SpeechSynthesisUtterance(prepareSpeechText(text));
+                const czechVoice = getCzechVoice();
+                if (czechVoice) utterance.voice = czechVoice;
+                utterance.lang = "cs-CZ";
+                utterance.rate = Number(document.querySelector("#reading-rate").value);
+                utterance.onend = () => {
+                    item.setAttribute("aria-pressed", "false");
+                    window.setTimeout(() => {
+                        if (sequenceVersion === readingSequenceVersion) readNext();
+                    }, 220);
+                };
+                utterance.onerror = (event) => {
+                    if (event.error === "canceled" || event.error === "interrupted") return;
+                    stopReadingAudio(false);
+                    readingStatus.textContent = "Přehrávání se nepovedlo.";
+                };
+                window.speechSynthesis.speak(utterance);
+                readingStatus.textContent = `Přehrávám ${text}.`;
+            };
+            readNext();
+        }
+
+        function readAllReadingItems() {
+            const completionMessage = wordItems.querySelector("button")
+                ? "Všechny slabiky a slova byly přehrány."
+                : "Všechny slabiky byly přehrány.";
+            readReadingItems([syllableItems, wordItems], readAllReadingButton, completionMessage);
+        }
+
+        function renderReadingItems(container, items) {
+            container.replaceChildren(...items.map((item) => {
+                const token = document.createElement("button");
+                token.className = "reading-token";
+                token.type = "button";
+                token.textContent = item;
+                token.setAttribute("aria-label", `Přehrát: ${item}`);
+                token.setAttribute("aria-pressed", "false");
+                token.addEventListener("click", () => {
+                    speakReadingText(item, token);
+                    if (container === wordItems) {
+                        recordExerciseSuccess(item, Array.from(item));
+                    }
+                });
+                return token;
+            }));
+        }
+
+        function formatWordForSelectedLetters(word) {
+            return Array.from(word).map((letter) => {
+                const lowercase = letter.toLocaleLowerCase("cs-CZ");
+                return selectedLetters.includes(lowercase) ? lowercase : letter;
+            }).join("");
+        }
+
+        function createSizeComparisonIllustration() {
+            const namespace = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(namespace, "svg");
+            svg.setAttribute("class", "size-comparison-illustration");
+            svg.setAttribute("viewBox", "0 0 150 100");
+            svg.setAttribute("aria-hidden", "true");
+
+            const shape = (tagName, attributes) => {
+                const element = document.createElementNS(namespace, tagName);
+                Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
+                return element;
+            };
+            const addHouse = (x, y, scale) => {
+                const house = shape("g", { transform: `translate(${x} ${y}) scale(${scale})` });
+                house.append(
+                    shape("path", {
+                        d: "M0 25 L28 0 L56 25 V62 H0 Z",
+                        fill: "#ffd875",
+                        stroke: "#62398f",
+                        "stroke-linejoin": "round",
+                        "stroke-width": "4"
+                    }),
+                    shape("path", {
+                        d: "M-3 26 L28 -2 L59 26",
+                        fill: "none",
+                        stroke: "#d56f78",
+                        "stroke-linecap": "round",
+                        "stroke-linejoin": "round",
+                        "stroke-width": "6"
+                    }),
+                    shape("rect", {
+                        x: "9",
+                        y: "34",
+                        width: "12",
+                        height: "12",
+                        rx: "2",
+                        fill: "#fff",
+                        stroke: "#62398f",
+                        "stroke-width": "2"
+                    }),
+                    shape("rect", {
+                        x: "34",
+                        y: "39",
+                        width: "13",
+                        height: "23",
+                        rx: "3",
+                        fill: "#f3a8ca",
+                        stroke: "#62398f",
+                        "stroke-width": "2"
+                    })
+                );
+                svg.append(house);
+            };
+
+            addHouse(12, 55, 0.52);
+            addHouse(78, 35, 0.88);
+            svg.append(shape("ellipse", {
+                cx: "27",
+                cy: "69",
+                rx: "22",
+                ry: "20",
+                fill: "none",
+                stroke: "#e34f65",
+                "stroke-width": "3"
+            }));
+            svg.append(shape("path", {
+                d: "M8 90 H142",
+                fill: "none",
+                stroke: "#8052b8",
+                "stroke-linecap": "round",
+                "stroke-width": "3"
+            }));
+            return svg;
+        }
+
+        function renderPictureWordSymbol(element, word) {
+            const picture = pictureWords[word];
+            element.setAttribute("aria-label", `Obrázek: ${picture.label}`);
+            if (picture.illustration === "size-comparison") {
+                element.replaceChildren(createSizeComparisonIllustration());
+            } else {
+                element.textContent = picture.symbol;
+            }
+        }
+
+        function renderMissingLetterWord(revealAnswer = false) {
+            if (!activeMissingLetterRound) return;
+            const { word, missingIndex, answer } = activeMissingLetterRound;
+            missingLetterWord.replaceChildren(...Array.from(word).map((letter, index) => {
+                const slot = document.createElement("span");
+                slot.className = "missing-word-letter";
+                if (index === missingIndex) {
+                    slot.classList.add(revealAnswer ? "is-filled" : "is-missing");
+                    slot.textContent = revealAnswer ? formatWordForSelectedLetters(answer) : "?";
+                } else {
+                    slot.textContent = formatWordForSelectedLetters(letter);
+                }
+                return slot;
+            }));
+            missingLetterWord.setAttribute("aria-label", revealAnswer
+                ? `Slovo ${formatWordForSelectedLetters(word)}`
+                : "Slovo s chybějícím písmenem");
+        }
+
+        function startMissingLetterRound() {
+            const selectedForms = new Set(
+                selectedLetters.map((letter) => letter.toLocaleUpperCase("cs-CZ"))
+            );
+            const availableLetters = [...selectedForms]
+                .filter((letter) => Array.from(letter).length === 1);
+            const availableWords = Object.keys(pictureWords)
+                .filter((word) => Array.from(word).every((letter) => selectedForms.has(letter)));
+
+            if (!availableWords.length || availableLetters.length < 2) {
+                activeMissingLetterRound = null;
+                missingLetterSymbol.textContent = "";
+                missingLetterSymbol.setAttribute("aria-label", "Obrázek ke slovu");
+                missingLetterWord.textContent = "Vyber alespoň dvě známá písmena a zkus to znovu.";
+                missingLetterOptions.replaceChildren();
+                missingLetterStatus.textContent = "Zatím není možné vytvořit slovo z vybraných písmen.";
+                return;
+            }
+
+            if (activeReadingToken) stopReadingAudio(false);
+            const alternatives = availableWords.filter((word) => word !== activeMissingLetterRound?.word);
+            const word = (alternatives.length ? alternatives : availableWords)[randomInteger(
+                0,
+                (alternatives.length ? alternatives : availableWords).length - 1
+            )];
+            const letters = Array.from(word);
+            const missingIndex = randomInteger(0, letters.length - 1);
+            const answer = letters[missingIndex];
+            activeMissingLetterRound = { word, missingIndex, answer };
+            missingLetterAnswered = false;
+            renderPictureWordSymbol(missingLetterSymbol, word);
+            renderMissingLetterWord();
+            missingLetterStatus.textContent = "Vyber písmeno, které ve slově chybí.";
+
+            const distractors = shuffled(availableLetters.filter((letter) => letter !== answer)).slice(0, 2);
+            const options = shuffled([answer, ...distractors]);
+            missingLetterOptions.replaceChildren(...options.map((letter) => {
+                const button = document.createElement("button");
+                button.className = "picture-option";
+                button.type = "button";
+                button.textContent = formatWordForSelectedLetters(letter);
+                button.setAttribute("aria-label", `Písmeno ${button.textContent}`);
+                button.addEventListener("click", () => chooseMissingLetter(letter, button));
+                return button;
+            }));
+        }
+
+        function chooseMissingLetter(letter, button) {
+            if (!activeMissingLetterRound || missingLetterAnswered) return;
+            missingLetterOptions.querySelectorAll(".picture-option").forEach((option) => {
+                option.classList.remove("wrong");
+            });
+
+            if (letter !== activeMissingLetterRound.answer) {
+                button.classList.add("wrong");
+                missingLetterStatus.textContent = "To není ono. Zkus jiné písmenko.";
+                speakReadingText("To není ono. Zkus jiné písmenko.", button);
+                return;
+            }
+
+            missingLetterAnswered = true;
+            button.classList.add("correct");
+            missingLetterOptions.querySelectorAll("button").forEach((option) => {
+                option.disabled = true;
+            });
+            renderMissingLetterWord(true);
+            const spokenWord = formatWordForSelectedLetters(activeMissingLetterRound.word);
+            missingLetterStatus.textContent = `Správně! Slovo je ${spokenWord}.`;
+            recordExerciseSuccess(activeMissingLetterRound.word, Array.from(activeMissingLetterRound.word));
+            speakReadingText(`Správně. Slovo je ${spokenWord}.`, button);
+        }
+
+        function generatePictureRound(canonicalWords) {
+            const available = canonicalWords.filter((word) => Boolean(pictureWords[word]));
+            if (!available.length) {
+                pictureGame.hidden = true;
+                return;
+            }
+
+            const answer = available[Math.floor(Math.random() * available.length)];
+            const possibleDistractors = Object.keys(pictureWords)
+                .filter((word) => word !== answer);
+            const availableDistractors = possibleDistractors
+                .filter((word) => canonicalWords.includes(word));
+            const distractorPool = availableDistractors.length >= 2
+                ? availableDistractors
+                : possibleDistractors;
+            const distractors = shuffled(distractorPool)
+                .slice(0, 2);
+            const options = shuffled([answer, ...distractors]);
+
+            pictureGame.hidden = false;
+            nextPictureButton.hidden = true;
+            pictureStatus.textContent = "";
+            renderPictureWordSymbol(pictureSymbol, answer);
+            pictureOptions.replaceChildren(...options.map((word) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "picture-option";
+                button.textContent = formatWordForSelectedLetters(word);
+                button.addEventListener("click", () => {
+                    const allOptions = pictureOptions.querySelectorAll("button");
+                    allOptions.forEach((option) => {
+                        option.disabled = true;
+                        if (option.textContent === formatWordForSelectedLetters(answer)) {
+                            option.classList.add("correct");
+                        }
+                    });
+                    if (word === answer) {
+                        button.classList.add("correct");
+                        pictureStatus.textContent = "Správně! To je to správné slovo.";
+                        recordExerciseSuccess(answer, Array.from(answer));
+                        speakReadingText(formatWordForSelectedLetters(answer));
+                    } else {
+                        button.classList.add("wrong");
+                        pictureStatus.textContent = `To skoro, správně je ${formatWordForSelectedLetters(answer)}.`;
+                    }
+                    nextPictureButton.hidden = false;
+                });
+                return button;
+            }));
+        }
+
+        let activeBuilderWord = "";
+        let builtLetterIds = [];
+
+        function formatBuilderTarget(word) {
+            return Array.from(word).map((letter) => {
+                const lowercase = letter.toLocaleLowerCase("cs-CZ");
+                return selectedLetters.includes(lowercase) ? lowercase : letter;
+            }).join("");
+        }
+
+        function clearBuiltWord(announce = false) {
+            builtLetterIds = [];
+            wordAnswer.replaceChildren();
+            letterTiles.querySelectorAll("button").forEach((tile) => tile.classList.remove("used"));
+            if (announce) builderStatus.textContent = "Písmena se vrátila zpět.";
+            nextBuiltWordButton.hidden = true;
+        }
+
+        function appendBuilderLetter(tile) {
+            if (tile.classList.contains("used")) return;
+            const answerTile = document.createElement("button");
+            answerTile.type = "button";
+            answerTile.className = "letter-tile";
+            answerTile.textContent = tile.textContent;
+            answerTile.dataset.tileId = tile.dataset.tileId;
+            answerTile.setAttribute("aria-label", `Odebrat písmeno ${tile.textContent}`);
+            answerTile.addEventListener("click", () => {
+                tile.classList.remove("used");
+                answerTile.remove();
+                builtLetterIds = builtLetterIds.filter((id) => id !== tile.dataset.tileId);
+                nextBuiltWordButton.hidden = true;
+                builderStatus.textContent = "";
+            });
+            tile.classList.add("used");
+            builtLetterIds.push(tile.dataset.tileId);
+            wordAnswer.append(answerTile);
+            builderStatus.textContent = "";
+            nextBuiltWordButton.hidden = true;
+        }
+
+        function generateBuilderRound(canonicalWords) {
+            const available = canonicalWords.filter((word) => word.length >= 2 && word.length <= 5);
+            if (!available.length) {
+                wordBuilder.hidden = true;
+                return;
+            }
+
+            activeBuilderWord = available[Math.floor(Math.random() * available.length)];
+            wordBuilder.hidden = false;
+            nextBuiltWordButton.hidden = true;
+            builderStatus.textContent = `Slož slovo ${formatBuilderTarget(activeBuilderWord)}.`;
+            wordAnswer.replaceChildren();
+            builtLetterIds = [];
+
+            const letters = shuffled(Array.from(activeBuilderWord).map((letter, index) => ({
+                letter,
+                id: `${index}-${letter}-${Math.random().toString(36).slice(2)}`
+            })));
+            letterTiles.replaceChildren(...letters.map((entry) => {
+                const tile = document.createElement("button");
+                tile.type = "button";
+                tile.className = "letter-tile";
+                tile.textContent = entry.letter;
+                tile.dataset.tileId = entry.id;
+                tile.draggable = true;
+                tile.setAttribute("aria-label", `Písmeno ${entry.letter}`);
+                tile.addEventListener("click", () => appendBuilderLetter(tile));
+                tile.addEventListener("dragstart", (event) => {
+                    event.dataTransfer.setData("text/plain", entry.id);
+                    event.dataTransfer.effectAllowed = "move";
+                });
+                return tile;
+            }));
+        }
+
+        let yesNoRoundIsCorrect = true;
+
+        function generateYesNoRound(canonicalWords) {
+            const available = canonicalWords.filter((word) => Boolean(pictureWords[word]));
+            if (!available.length) {
+                yesNoGame.hidden = true;
+                return;
+            }
+
+            yesNoGame.hidden = false;
+            yesNoStatus.textContent = "";
+            nextYesNoButton.hidden = true;
+            const answer = available[Math.floor(Math.random() * available.length)];
+            yesNoRoundIsCorrect = Math.random() >= 0.5;
+            let shownWord = answer;
+            if (!yesNoRoundIsCorrect) {
+                const mismatches = available.filter((word) => word !== answer);
+                if (mismatches.length) shownWord = mismatches[Math.floor(Math.random() * mismatches.length)];
+            }
+
+            renderPictureWordSymbol(yesNoSymbol, answer);
+            yesNoWord.textContent = formatWordForSelectedLetters(shownWord);
+            yesNoGame.querySelectorAll(".yes-no-option").forEach((button) => {
+                button.disabled = false;
+            });
+        }
+
+        function generateReadingExercises() {
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
+            readingSequenceVersion += 1;
+            clearActiveReadingToken();
+            resetReadingSequenceButtons();
+            const selectedLetterForms = new Set(selectedLetters.map((letter) => letter.toLocaleLowerCase("cs-CZ")));
+            const consonants = selectedLetters.filter((letter) => !vowels.has(letter.toLocaleLowerCase("cs-CZ")));
+            const selectedVowels = selectedLetters.filter((letter) => vowels.has(letter.toLocaleLowerCase("cs-CZ")));
+            if (consonants.length === 0 || selectedVowels.length === 0) {
+                readingResult.hidden = true;
+                pictureGame.hidden = true;
+                wordBuilder.hidden = true;
+                yesNoGame.hidden = true;
+                readingStatus.textContent = "Pro slabiky vyberte alespoň jednu samohlásku a jednu souhlásku.";
+                return;
+            }
+
+            const syllables = shuffled(consonants.flatMap((consonant) => selectedVowels.map((vowel) => `${consonant}${vowel}`))).slice(0, 10);
+            const availableWords = readingWords
+                .filter((word) => Array.from(word).every((letter) => selectedLetterForms.has(letter.toLocaleLowerCase("cs-CZ"))));
+            const words = shuffled(availableWords
+                .map((word) => formatWordForSelectedLetters(word))
+            ).slice(0, 8);
+            renderReadingItems(syllableItems, syllables);
+            renderReadingItems(wordItems, words);
+            readWordsButton.disabled = words.length === 0;
+            wordMessage.textContent = words.length ? "" : "Z tohoto výběru zatím nejde složit slovo z naší nabídky. Zkuste přidat další písmena.";
+            readingResult.hidden = false;
+            generatePictureRound(availableWords);
+            generateBuilderRound(availableWords);
+            generateYesNoRound(availableWords);
+            readingStatus.textContent = `Připraveno ${syllables.length} slabik${words.length ? ` a ${words.length} slov` : ""}.`;
+        }
+
+        function generateSentence() {
+            const selectedLetterForms = new Set(
+                selectedLetters.map((letter) => letter.toLocaleLowerCase("cs-CZ"))
+            );
+            const availableSentences = readingSentences.filter((sentence) => {
+                const letters = Array.from(sentence.replace(/[^A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/gi, ""));
+                return letters.every((letter) => selectedLetterForms.has(letter.toLocaleLowerCase("cs-CZ")));
+            });
+
+            if (availableSentences.length === 0) {
+                activeGeneratedSentence = "";
+                generatedSentence.textContent = "Zatím tu není věta ze všech vybraných písmen.";
+                sentenceStatus.textContent = "Zkus přidat nebo vybrat další písmena.";
+                readSentenceButton.disabled = true;
+                return;
+            }
+
+            const alternatives = availableSentences.filter((sentence) => sentence !== activeGeneratedSentence);
+            const choices = alternatives.length ? alternatives : availableSentences;
+            activeGeneratedSentence = choices[Math.floor(Math.random() * choices.length)];
+            generatedSentence.textContent = activeGeneratedSentence;
+            sentenceStatus.textContent = "Zkus si větu přečíst, nebo si ji poslechni.";
+            readSentenceButton.disabled = false;
+            readSentenceButton.setAttribute("aria-pressed", "false");
+        }
+
+        function formatMixedCaseWord(word) {
+            const lowercase = word.toLocaleLowerCase("cs-CZ");
+            return lowercase.charAt(0).toLocaleUpperCase("cs-CZ") + lowercase.slice(1);
+        }
+
+        function startCaseMatchingRound() {
+            const selectedLetterForms = new Set(
+                selectedLetters.map((letter) => letter.toLocaleLowerCase("cs-CZ"))
+            );
+            const availableWords = [...new Set(caseMatchingWords)]
+                .filter((word) => Array.from(word).every((letter) => (
+                    selectedLetterForms.has(letter.toLocaleLowerCase("cs-CZ"))
+                )));
+
+            caseMatchingRound = shuffled(availableWords).slice(0, 4);
+            caseMatchingUpperOrder = shuffled(caseMatchingRound);
+            matchedCaseWords = new Set();
+            activeCaseMatchingWord = "";
+            renderCaseMatchingRound();
+        }
+
+        function renderCaseMatchingRound() {
+            const createChoice = (word, side) => {
+                const button = document.createElement("button");
+                button.className = "case-match-choice";
+                button.type = "button";
+                button.dataset.word = word;
+                button.dataset.side = side;
+                button.textContent = side === "lower" ? formatMixedCaseWord(word) : word;
+                button.setAttribute("aria-pressed", String(side === "lower" && activeCaseMatchingWord === word));
+
+                if (matchedCaseWords.has(word)) {
+                    button.classList.add("correct");
+                    button.disabled = true;
+                } else if (side === "lower" && activeCaseMatchingWord === word) {
+                    button.setAttribute("aria-pressed", "true");
+                }
+
+                button.addEventListener("click", () => chooseCaseMatch(word, side));
+                return button;
+            };
+
+            caseMatchingLower.replaceChildren(
+                caseMatchingLower.querySelector("h4"),
+                ...caseMatchingRound.map((word) => createChoice(word, "lower"))
+            );
+            caseMatchingUpper.replaceChildren(
+                caseMatchingUpper.querySelector("h4"),
+                ...caseMatchingUpperOrder.map((word) => createChoice(word, "upper"))
+            );
+
+            if (caseMatchingRound.length === 0) {
+                caseMatchingStatus.textContent = "Zatím není možné vytvořit dvojice. Vyber probraná písmena.";
+            } else {
+                caseMatchingStatus.textContent = "Vyber slovo vlevo a najdi jeho dvojici vpravo.";
+            }
+        }
+
+        function chooseCaseMatch(word, side) {
+            if (matchedCaseWords.has(word)) return;
+            caseMatchingLower.querySelectorAll(".case-match-choice.wrong").forEach((button) => {
+                button.classList.remove("wrong");
+            });
+            caseMatchingUpper.querySelectorAll(".case-match-choice.wrong").forEach((button) => {
+                button.classList.remove("wrong");
+            });
+
+            if (side === "lower") {
+                activeCaseMatchingWord = word;
+                renderCaseMatchingRound();
+                caseMatchingStatus.textContent = `Vybrala jsi ${formatMixedCaseWord(word)}. Najdi stejné slovo napsané velkými písmeny.`;
+                return;
+            }
+
+            if (!activeCaseMatchingWord) {
+                caseMatchingStatus.textContent = "Nejdřív vyber slovo v levém sloupci.";
+                return;
+            }
+
+            if (word !== activeCaseMatchingWord) {
+                caseMatchingUpper.querySelector(`[data-word="${CSS.escape(word)}"]`).classList.add("wrong");
+                caseMatchingStatus.textContent = "To není stejná dvojice. Zkus vybrat jiné slovo.";
+                speakReadingText("To není stejná dvojice. Zkus vybrat jiné slovo.");
+                return;
+            }
+
+            matchedCaseWords.add(word);
+            activeCaseMatchingWord = "";
+            recordExerciseSuccess(word, Array.from(word));
+            renderCaseMatchingRound();
+            if (matchedCaseWords.size === caseMatchingRound.length) {
+                caseMatchingStatus.textContent = "Výborně! Našla jsi všechny dvojice.";
+                speakReadingText("Výborně! Našla jsi všechny dvojice.");
+            } else {
+                caseMatchingStatus.textContent = `Správně! ${formatMixedCaseWord(word)} patří k ${word}. Vyber další dvojici.`;
+                speakReadingText(`Správně! ${formatMixedCaseWord(word)} patří k ${word}.`);
+            }
+        }
+
+        const savedLetterSettings = loadLearnedLetters();
+        learnedLetters = savedLetterSettings.available;
+        selectedLetters = savedLetterSettings.selected;
+        renderLetterPicker();
+        renderWritingLetters();
+        renderProgress();
+        startCaseMatchingRound();
+        resizeWritingCanvas();
+        activeProfileSelect.addEventListener("change", () => {
+            const nextProfile = activeProfileSelect.value;
+            try {
+                window.localStorage.setItem(activeProfileKey, nextProfile);
+            } catch (error) {
+                console.error("Aktivní profil se nepodařilo uložit.", error);
+                activeProfileSelect.value = activeProfile;
+                readingStatus.textContent = "Změnu profilu se nepodařilo uložit. Zkontrolujte nastavení úložiště prohlížeče.";
+                return;
+            }
+
+            activeProfile = nextProfile;
+            resetDaughterProgressButton.hidden = activeProfile !== "daughter";
+            czechProgress = loadProgress();
+            renderProgress();
+            readingStatus.textContent = nextProfile === "testing"
+                ? "Testovací profil je zapnutý. Jeho body se ukládají zvlášť."
+                : "Profil dcery je zapnutý.";
+        });
+        resetDaughterProgressButton.addEventListener("click", () => {
+            if (!window.confirm("Opravdu vynulovat body a statistiky profilu Dcera v tomto prohlížeči? Tuto změnu nelze vrátit.")) {
+                return;
+            }
+
+            const empty = emptyProgress();
+            try {
+                window.localStorage.setItem(progressKey, JSON.stringify(empty));
+            } catch (error) {
+                console.error("Body profilu Dcera se nepodařilo vynulovat.", error);
+                readingStatus.textContent = "Body se nepodařilo vynulovat. Zkontrolujte nastavení úložiště prohlížeče.";
+                return;
+            }
+
+            if (activeProfile === "daughter") {
+                czechProgress = empty;
+                renderProgress();
+            }
+            readingStatus.textContent = "Body a statistiky profilu Dcera byly vynulovány v tomto prohlížeči.";
+        });
+        document.querySelector("#new-reading").addEventListener("click", generateReadingExercises);
+        readAllReadingButton.addEventListener("click", readAllReadingItems);
+        readSyllablesButton.addEventListener("click", () => {
+            readReadingItems([syllableItems], readSyllablesButton, "Všechny slabiky byly přehrány.");
+        });
+        readWordsButton.addEventListener("click", () => {
+            readReadingItems([wordItems], readWordsButton, "Všechna krátká slova byla přehrána.");
+        });
+        newSentenceButton.addEventListener("click", generateSentence);
+        newCaseMatchingRoundButton.addEventListener("click", startCaseMatchingRound);
+        readCaseMatchingInstructionsButton.addEventListener("click", () => {
+            speakReadingText("Vyber slovo vlevo, které má velké jen první písmeno. Potom vpravo najdi stejné slovo napsané celé velkými písmeny. Například Míla patří k MÍLA.", readCaseMatchingInstructionsButton);
+        });
+        readSentenceButton.addEventListener("click", () => {
+            if (activeGeneratedSentence) {
+                speakReadingText(activeGeneratedSentence, readSentenceButton);
+            }
+        });
+        nextPictureButton.addEventListener("click", () => {
+            const selectedLetterForms = new Set(selectedLetters.map((letter) => letter.toLocaleLowerCase("cs-CZ")));
+            const availableWords = readingWords
+                .filter((word) => Array.from(word).every((letter) => selectedLetterForms.has(letter.toLocaleLowerCase("cs-CZ"))));
+            generatePictureRound(availableWords);
+        });
+        readPictureInstructionsButton.addEventListener("click", () => {
+            speakReadingText("Podívej se na obrázek. Vyber slovo, které k němu patří.", readPictureInstructionsButton);
+        });
+        readBuilderInstructionsButton.addEventListener("click", () => {
+            speakReadingText("Poskládej písmena do správného slova. Klikni na písmena ve správném pořadí a potom stiskni Zkontrolovat.", readBuilderInstructionsButton);
+        });
+        readYesNoInstructionsButton.addEventListener("click", () => {
+            speakReadingText("Podívej se na obrázek. Patří k němu napsané slovo? Vyber ANO, když ano, nebo NE, když ne.", readYesNoInstructionsButton);
+        });
+        wordAnswer.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+        });
+        wordAnswer.addEventListener("drop", (event) => {
+            event.preventDefault();
+            const tileId = event.dataTransfer.getData("text/plain");
+            const tile = letterTiles.querySelector(`[data-tile-id="${CSS.escape(tileId)}"]`);
+            if (tile) appendBuilderLetter(tile);
+        });
+        clearBuiltWordButton.addEventListener("click", () => clearBuiltWord(true));
+        checkBuiltWordButton.addEventListener("click", () => {
+            const answer = [...wordAnswer.querySelectorAll(".letter-tile")]
+                .map((tile) => tile.textContent)
+                .join("")
+                .toLocaleUpperCase("cs-CZ");
+            if (!answer) {
+                builderStatus.textContent = "Nejdřív přidej písmena.";
+                return;
+            }
+            if (answer === activeBuilderWord) {
+                builderStatus.textContent = `Správně! Slovo je ${formatBuilderTarget(activeBuilderWord)}.`;
+                nextBuiltWordButton.hidden = false;
+                recordExerciseSuccess(activeBuilderWord, Array.from(activeBuilderWord));
+                speakReadingText(formatBuilderTarget(activeBuilderWord));
+            } else {
+                builderStatus.textContent = "Ještě ne, zkus písmena přeuspořádat.";
+            }
+        });
+        nextBuiltWordButton.addEventListener("click", () => {
+            const selectedLetterForms = new Set(selectedLetters.map((letter) => letter.toLocaleLowerCase("cs-CZ")));
+            const availableWords = readingWords
+                .filter((word) => Array.from(word).every((letter) => selectedLetterForms.has(letter.toLocaleLowerCase("cs-CZ"))));
+            generateBuilderRound(availableWords);
+        });
+        yesNoGame.querySelectorAll(".yes-no-option").forEach((button) => {
+            button.addEventListener("click", () => {
+                const answeredYes = button.dataset.answer === "yes";
+                const isCorrectAnswer = answeredYes === yesNoRoundIsCorrect;
+                yesNoStatus.textContent = isCorrectAnswer
+                    ? "Správně!"
+                    : "To není správně. Zkus to ještě jednou.";
+                if (isCorrectAnswer) {
+                    recordExerciseSuccess(yesNoWord.textContent, Array.from(yesNoWord.textContent));
+                }
+                yesNoGame.querySelectorAll(".yes-no-option").forEach((option) => {
+                    option.disabled = true;
+                });
+                nextYesNoButton.hidden = false;
+                if (isCorrectAnswer) {
+                    speakReadingText(yesNoWord.textContent);
+                }
+            });
+        });
+        nextYesNoButton.addEventListener("click", () => {
+            const selectedLetterForms = new Set(selectedLetters.map((letter) => letter.toLocaleLowerCase("cs-CZ")));
+            const availableWords = readingWords
+                .filter((word) => Array.from(word).every((letter) => selectedLetterForms.has(letter.toLocaleLowerCase("cs-CZ"))));
+            generateYesNoRound(availableWords);
+        });
+        window.addEventListener("beforeunload", () => {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+        });
+        writingLetterSelect.addEventListener("change", () => {
+            guideManuallyVisible = false;
+            updateWritingGuide();
+            clearWriting(false);
+            writingStatus.textContent = `Teď procvičujeme písmeno ${writingLetterSelect.value}.`;
+        });
+        writingModeSelect.addEventListener("change", () => {
+            guideManuallyVisible = false;
+            updateWritingGuide();
+            clearWriting(false);
+            writingStatus.textContent = writingModeSelect.value === "trace"
+                ? "Předloha je připravená k obtahování."
+                : `Zkus napsat písmeno ${writingLetterSelect.value} bez předlohy.`;
+        });
+        writingGuideToggle.addEventListener("click", () => {
+            guideManuallyVisible = !guideManuallyVisible;
+            updateWritingGuide();
+        });
+        document.querySelector("#next-writing-letter").addEventListener("click", () => {
+            if (selectedLetters.length === 0) {
+                writingStatus.textContent = "Nejdřív vyber některá probraná písmena nahoře.";
+                return;
+            }
+            const choices = selectedLetters.filter((letter) => letter !== writingLetterSelect.value);
+            writingLetterSelect.value = choices[Math.floor(Math.random() * choices.length)] ?? selectedLetters[0];
+            writingLetterSelect.dispatchEvent(new Event("change"));
+        });
+        document.querySelector("#check-writing").addEventListener("click", checkWriting);
+        document.querySelector("#clear-writing").addEventListener("click", () => clearWriting());
+        newMissingLetterButton.addEventListener("click", startMissingLetterRound);
+        readMissingLetterInstructionsButton.addEventListener("click", () => {
+            speakReadingText("Doplň chybějící písmenko do slova. Podívej se na obrázek a vyber správné písmeno.", readMissingLetterInstructionsButton);
+        });
+        writingCanvas.addEventListener("pointerdown", startWriting);
+        writingCanvas.addEventListener("pointermove", continueWriting);
+        writingCanvas.addEventListener("pointerup", stopWriting);
+        writingCanvas.addEventListener("pointercancel", stopWriting);
+        window.addEventListener("resize", resizeWritingCanvas);
+        document.querySelector("#add-letter").addEventListener("click", () => {
+            const letter = normalizeLetter(newLetterInput.value);
+            if (!letter) {
+                readingStatus.textContent = "Zadejte jedno písmeno, případně CH.";
+                newLetterInput.focus();
+                return;
+            }
+            if (learnedLetters.includes(letter)) {
+                readingStatus.textContent = `Písmeno ${letter} už je v seznamu.`;
+                newLetterInput.focus();
+                return;
+            }
+            learnedLetters = [...learnedLetters, letter];
+            selectedLetters = [...selectedLetters, letter];
+            newLetterInput.value = "";
+            renderLetterPicker();
+            renderWritingLetters();
+            startCaseMatchingRound();
+            readingResult.hidden = true;
+            saveLearnedLetters();
+        });
+    </script>
+</body>
+</html>
