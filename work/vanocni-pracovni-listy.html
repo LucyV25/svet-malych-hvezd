@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>Vánoční pracovní listy – Mise učení</title>
+<style>
+@page { size:A4; margin:14mm; }
+* { box-sizing:border-box; }
+body { margin:0; color:#243444; font:14pt/1.45 "Segoe UI",Arial,sans-serif; }
+.sheet { position:relative; min-height:268mm; padding-bottom:12mm; page-break-after:always; break-after:page; }
+.sheet:last-child { page-break-after:auto; break-after:auto; }
+h1 { margin:0 0 4mm; color:#1c5d75; font:700 25pt/1.15 Georgia,serif; }
+h2 { margin:7mm 0 3mm; color:#1c5d75; font:700 17pt/1.2 Georgia,serif; }
+p { margin:0 0 4mm; }
+.sub { color:#536879; font-size:11pt; }
+.name-line { display:flex; gap:9mm; margin:7mm 0; font-size:11pt; }
+.line { flex:1; min-height:8mm; border-bottom:1px solid #586878; }
+.problem-grid { display:grid; grid-template-columns:1fr 1fr; gap:5mm; margin-top:7mm; }
+.problem { display:flex; min-height:29mm; align-items:center; gap:4mm; padding:4mm; border:1px solid #aebdc8; border-radius:4mm; }
+.number { display:grid; width:8mm; height:8mm; flex:none; place-items:center; border-radius:50%; background:#deedf2; font-size:10pt; font-weight:700; }
+.math { font-size:19pt; font-weight:650; }
+.answer { display:inline-block; width:19mm; height:10mm; border-bottom:1.5px solid #243444; vertical-align:bottom; }
+.count-dots { display:block; margin-top:1mm; letter-spacing:2mm; font-size:18pt; }
+.money-list { display:grid; gap:5mm; margin-top:7mm; }
+.money-task { display:grid; grid-template-columns:38mm 1fr; gap:4mm; min-height:41mm; align-items:center; padding:4mm; border:1px solid #aebdc8; border-radius:4mm; }
+.toy { text-align:center; font-size:28pt; }
+.toy strong { display:block; font-size:11pt; }
+.coins { display:flex; flex-wrap:wrap; align-items:center; gap:3mm; }
+.coin { display:grid; width:18mm; height:18mm; place-items:center; border:2px solid #b69339; border-radius:50%; background:#fff6cc; color:#4f421e; font-size:10pt; font-weight:750; }
+.money-instruction { margin:0 0 3mm; font-size:10pt; }
+.pattern-list { display:grid; gap:5mm; margin-top:7mm; }
+.pattern { display:flex; min-height:27mm; align-items:center; gap:4mm; padding:4mm; border:1px solid #aebdc8; border-radius:4mm; font-size:20pt; }
+.pattern-label { width:10mm; flex:none; font-size:11pt; font-weight:700; }
+.pattern-answer { min-width:20mm; min-height:12mm; border-bottom:1.5px solid #243444; }
+.picture-row { display:grid; grid-template-columns:repeat(6,1fr); gap:4mm; margin:4mm 0 8mm; }
+.picture { display:grid; min-height:25mm; place-items:center; border:1px solid #aebdc8; border-radius:4mm; font-size:24pt; }
+.task-box { padding:4mm; border:1px solid #aebdc8; border-radius:4mm; }
+.key { color:#263746; }
+.key h1 { color:#69517b; }
+.key-list { margin:7mm 0 0; padding-left:8mm; }
+.key-list li { margin:3mm 0; }
+.parent-note { margin-top:8mm; padding:4mm; border-left:3px solid #a7cbd4; background:#f3f8f9; font-size:10pt; }
+.footer { position:absolute; right:0; bottom:0; left:0; padding-top:3mm; border-top:1px solid #d5dfe4; color:#667987; font-size:9pt; text-align:center; }
+</style>
+</head>
+<body>
+<section class="sheet">
+  <h1>Vánoční počítání</h1><p class="sub">Spočítej obrázky a vyřeš příklady. Výsledky napiš na linku.</p>
+  <div class="name-line"><span>Jméno:</span><span class="line"></span><span>Datum:</span><span class="line"></span></div>
+  <div class="problem-grid">
+    <div class="problem"><span class="number">1</span><div class="math">Kolik je vloček?<span class="count-dots">❄️ ❄️ ❄️ ❄️ ❄️</span></div><span class="answer"></span></div>
+    <div class="problem"><span class="number">2</span><div class="math">3 + 2 =</div><span class="answer"></span></div>
+    <div class="problem"><span class="number">3</span><div class="math">8 − 3 =</div><span class="answer"></span></div>
+    <div class="problem"><span class="number">4</span><div class="math">4 + 4 =</div><span class="answer"></span></div>
+    <div class="problem"><span class="number">5</span><div class="math">9 − 5 =</div><span class="answer"></span></div>
+    <div class="problem"><span class="number">6</span><div class="math">Kolik je dárků?<span class="count-dots">🎁 🎁 🎁 🎁 🎁 🎁</span></div><span class="answer"></span></div>
+    <div class="problem"><span class="number">7</span><div class="math">2 + 6 =</div><span class="answer"></span></div>
+    <div class="problem"><span class="number">8</span><div class="math">4 <span class="answer"></span> 7</div></div>
+  </div>
+  <p class="parent-note">Příklady si můžeš znázornit třeba knoflíky, kostkami nebo prsty.</p>
+  <div class="footer">Mise učení · Vánoční list 1</div>
+</section>
+<section class="sheet">
+  <h1>Vánoční nákupy</h1><p class="sub">Škrtni mince, kterými zaplatíš přesně cenu. Každou minci můžeš použít jen jednou.</p>
+  <div class="name-line"><span>Jméno:</span><span class="line"></span><span>Datum:</span><span class="line"></span></div>
+  <div class="money-list">
+    <div class="money-task"><div class="toy">🔔<strong>Zvoneček · 3 Kč</strong></div><div><p class="money-instruction">V peněžence:</p><div class="coins"><span class="coin">1 Kč</span><span class="coin">1 Kč</span><span class="coin">2 Kč</span></div></div></div>
+    <div class="money-task"><div class="toy">🍪<strong>Cukroví · 4 Kč</strong></div><div><p class="money-instruction">V peněžence:</p><div class="coins"><span class="coin">2 Kč</span><span class="coin">1 Kč</span><span class="coin">2 Kč</span><span class="coin">1 Kč</span></div></div></div>
+    <div class="money-task"><div class="toy">🎁<strong>Dárek · 6 Kč</strong></div><div><p class="money-instruction">V peněžence:</p><div class="coins"><span class="coin">5 Kč</span><span class="coin">1 Kč</span><span class="coin">2 Kč</span><span class="coin">1 Kč</span></div></div></div>
+    <div class="money-task"><div class="toy">⭐<strong>Hvězda · 7 Kč</strong></div><div><p class="money-instruction">V peněžence:</p><div class="coins"><span class="coin">5 Kč</span><span class="coin">2 Kč</span><span class="coin">1 Kč</span><span class="coin">2 Kč</span></div></div></div>
+  </div>
+  <p class="parent-note">Zeptej se: „Kolik korun už máš? Kolik ještě chybí?“</p>
+  <div class="footer">Mise učení · Vánoční list 2</div>
+</section>
+<section class="sheet">
+  <h1>Vánoční obrazcové řady</h1><p class="sub">Podívej se, co se pravidelně opakuje. Doplň další dva obrázky nebo čísla.</p>
+  <div class="name-line"><span>Jméno:</span><span class="line"></span><span>Datum:</span><span class="line"></span></div>
+  <div class="pattern-list">
+    <div class="pattern"><span class="pattern-label">1.</span><span>🎄 ⭐ 🎄 ⭐</span><span class="pattern-answer"></span><span class="pattern-answer"></span></div>
+    <div class="pattern"><span class="pattern-label">2.</span><span>🧦 🎁 🎁 🧦 🎁 🎁</span><span class="pattern-answer"></span><span class="pattern-answer"></span></div>
+    <div class="pattern"><span class="pattern-label">3.</span><span>🔴 🔴 ⭐ 🔴 🔴 ⭐</span><span class="pattern-answer"></span><span class="pattern-answer"></span></div>
+    <div class="pattern"><span class="pattern-label">4.</span><span>2, 4, 6,</span><span class="pattern-answer"></span><span class="pattern-answer"></span></div>
+    <div class="pattern"><span class="pattern-label">5.</span><span>10, 8, 6,</span><span class="pattern-answer"></span><span class="pattern-answer"></span></div>
+  </div>
+  <p class="parent-note">U obrázkových řad může dítě odpověď nakreslit, říct nahlas nebo vybrat z připravených ozdob.</p>
+  <div class="footer">Mise učení · Vánoční list 3</div>
+</section>
+<section class="sheet">
+  <h1>Co patří k Vánocům?</h1><p class="sub">V každém řádku zakroužkuj věci, které patří k Vánocům. Ostatní nech být.</p>
+  <div class="name-line"><span>Jméno:</span><span class="line"></span><span>Datum:</span><span class="line"></span></div>
+  <h2>Vánoční ozdoby a výzdoba</h2>
+  <div class="picture-row"><span class="picture">🎄</span><span class="picture">🔔</span><span class="picture">🎃</span><span class="picture">⭐</span><span class="picture">🎁</span><span class="picture">☀️</span></div>
+  <h2>Co se hodí na zimní procházku?</h2>
+  <div class="picture-row"><span class="picture">🧤</span><span class="picture">🩱</span><span class="picture">🧣</span><span class="picture">🧢</span><span class="picture">🍉</span><span class="picture">👢</span></div>
+  <h2>Co můžeme dát ptáčkům v zimě?</h2>
+  <div class="picture-row"><span class="picture">🌻</span><span class="picture">🍟</span><span class="picture">🌰</span><span class="picture">🍬</span><span class="picture">🌾</span><span class="picture">🍫</span></div>
+  <p class="parent-note">U posledního řádku vysvětlete, že ptáčkům dáváme vhodná semínka a ořechy, ne sladkosti ani slané jídlo.</p>
+  <div class="footer">Mise učení · Vánoční list 4</div>
+</section>
+<section class="sheet key">
+  <h1>Řešení pro rodiče</h1><h2>Vánoční list 1 · Počítání</h2>
+  <ol class="key-list"><li>5 vloček</li><li>5</li><li>5</li><li>8</li><li>4</li><li>6 dárků</li><li>8</li><li>&lt;</li></ol>
+  <div class="footer">Mise učení · Klíč pro rodiče 1</div>
+</section>
+<section class="sheet key">
+  <h1>Řešení pro rodiče</h1><h2>Vánoční list 2 · Nákupy</h2>
+  <ol class="key-list"><li>Zvoneček: 1 Kč + 2 Kč.</li><li>Cukroví: 2 Kč + 2 Kč nebo 2 Kč + 1 Kč + 1 Kč.</li><li>Dárek: 5 Kč + 1 Kč.</li><li>Hvězda: 5 Kč + 2 Kč.</li></ol>
+  <div class="footer">Mise učení · Klíč pro rodiče 2</div>
+</section>
+<section class="sheet key">
+  <h1>Řešení pro rodiče</h1><h2>Vánoční list 3 · Obrazcové řady</h2>
+  <ol class="key-list"><li>🎄 ⭐</li><li>🧦 🎁</li><li>🔴 🔴</li><li>8, 10</li><li>4, 2</li></ol>
+  <div class="footer">Mise učení · Klíč pro rodiče 3</div>
+</section>
+<section class="sheet key">
+  <h1>Řešení pro rodiče</h1><h2>Vánoční list 4 · Co patří k Vánocům?</h2>
+  <ol class="key-list"><li>Vánoční výzdoba: stromeček, zvoneček, hvězda, dárek.</li><li>Zimní procházka: rukavice, šála, čepice, boty.</li><li>Ptáčkům: slunečnicová semínka, ořechy, obilí.</li></ol>
+  <div class="footer">Mise učení · Klíč pro rodiče 4</div>
+</section>
+</body>
+</html>

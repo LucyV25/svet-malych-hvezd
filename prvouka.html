@@ -78,6 +78,15 @@
         .road-sign { display:grid; width:132px; height:132px; place-items:center; margin:auto; }
         .road-sign svg { display:block; width:100%; height:100%; }
         .memory-card .road-sign { width:54px; height:54px; }
+        .shape-target { display:grid; min-height:180px; place-items:center; margin:16px 0; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#eaf4fb,#fff3d8); }
+        .shape-target .shape-svg { width:112px; height:112px; }
+        .shape-options { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+        .shape-option { display:grid; min-height:86px; place-items:center; border:1px solid var(--line); border-radius:14px; background:#fff; cursor:pointer; }
+        .shape-option:hover:not(:disabled) { border-color:var(--accent); background:var(--soft); }
+        .shape-option:disabled { cursor:default; opacity:.65; }
+        .shape-option.is-correct { border-color:#63a67a; background:#edf8ef; }
+        .shape-option.is-wrong { border-color:#d7a0a0; background:#fff0f0; }
+        .shape-option .shape-svg { width:56px; height:56px; }
         footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
         @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets,.sequence-options { grid-template-columns:repeat(2,minmax(0,1fr)); } .memory-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
     </style>
@@ -109,6 +118,7 @@
             <button class="activity-button" type="button" data-activity-target="season-order" aria-pressed="false">🔄 Pořadí období</button>
             <button class="activity-button" type="button" data-activity-target="category-sort" aria-pressed="false">🧺 Třídění věcí</button>
             <button class="activity-button" type="button" data-activity-target="memory" aria-pressed="false">🃏 Pexeso</button>
+            <button class="activity-button" type="button" data-activity-target="shapes" aria-pressed="false">🔷 Barvy a tvary</button>
         </div>
         <section data-activity-panel="topics" aria-labelledby="practice-title">
         <div class="activity-heading"><p class="eyebrow">Otázky a odpovědi</p><h2 id="practice-title">Procvičování témat</h2><p>Vyber téma, poslechni si otázku a klepni na správnou odpověď.</p></div>
@@ -160,11 +170,21 @@
             <p class="category-status" id="memory-status" role="status" aria-live="polite"></p>
             <div class="quiz-actions"><button class="action-button primary" id="restart-memory" type="button">Zamíchat kartičky</button></div>
         </section>
+        <section class="sorting-card" data-activity-panel="shapes" aria-labelledby="shapes-title" hidden>
+            <div class="quiz-heading"><div><p class="eyebrow">Barvy a geometrické tvary</p><h2 id="shapes-title">Najdi stejnou barvu a tvar</h2></div><button class="action-button" id="read-shapes" type="button">🔊 Přečíst zadání</button></div>
+            <p class="sorting-intro">Prohlédni si předlohu. Potom klepni na stejný tvar ve stejné barvě.</p>
+            <div class="shape-target" id="shape-target" role="img" aria-label="Předloha"></div>
+            <div class="shape-options" id="shape-options" role="group" aria-label="Vyber stejný tvar a barvu"></div>
+            <p class="season-status" id="shape-status" role="status" aria-live="polite"></p>
+            <p class="quiz-progress" id="shape-progress" aria-live="polite"></p>
+            <div class="quiz-actions"><button class="action-button primary" id="next-shape" type="button" hidden>Další tvar</button><button class="action-button" id="restart-shapes" type="button">Začít znovu</button></div>
+        </section>
         <section class="category-card" aria-labelledby="printables-title">
             <p class="eyebrow">Pro rodiče</p>
             <h2 id="printables-title">Pracovní listy k vytištění</h2>
             <p class="sorting-intro">V PDF najdete list o ročních obdobích i další úlohy z matematiky. Na konci jsou řešení pro rodiče.</p>
             <a class="action-button" style="display:inline-flex;align-items:center;text-decoration:none;" href="assets/pracovni-listy/sada-pracovnich-listu.pdf" download>📄 Stáhnout pracovní listy v PDF</a>
+            <a class="action-button" style="display:inline-flex;align-items:center;text-decoration:none;margin:6px;" href="assets/pracovni-listy/vanocni-pracovni-listy.pdf" download>🎄 Stáhnout vánoční listy</a>
         </section>
     </main>
     <footer>Každá správná odpověď přidá minci tvému mazlíčkovi.</footer>
@@ -283,6 +303,21 @@
             jobs: { title:"Povolání", pairs:[{id:"doctor",name:"Lékař",symbol:"🩺"},{id:"baker",name:"Pekař",symbol:"🥖"},{id:"farmer",name:"Zemědělec",symbol:"🚜"},{id:"firefighter",name:"Hasič",symbol:"🚒"},{id:"teacher",name:"Učitel",symbol:"🍎"},{id:"builder",name:"Stavitel",symbol:"🧱"}] },
             signs: { title:"Dopravní značky", pairs:[{id:"stop",name:"Stop",symbol:"",signType:"stop"},{id:"no-entry",name:"Zákaz vjezdu",symbol:"",signType:"no-entry"},{id:"children",name:"Pozor, děti",symbol:"",signType:"children"},{id:"give-way",name:"Dej přednost",symbol:"",signType:"give-way"},{id:"no-cycling",name:"Zákaz vjezdu kol",symbol:"",signType:"no-cycling"},{id:"traffic-light",name:"Semafor",symbol:"🚦"}] }
         };
+        const shapeColors = [
+            { id:"red", name:"červená", value:"#d64545" },
+            { id:"blue", name:"modrá", value:"#438be0" },
+            { id:"yellow", name:"žlutá", value:"#e6ba2f" },
+            { id:"green", name:"zelená", value:"#49a65c" }
+        ];
+        const shapeKinds = [
+            { id:"circle", name:"kruh" },
+            { id:"square", name:"čtverec" },
+            { id:"triangle", name:"trojúhelník" },
+            { id:"star", name:"hvězda" }
+        ];
+        const shapeItems = shapeColors.flatMap((color) => shapeKinds.map((shape) => ({
+            id:`${color.id}-${shape.id}`, color, shape
+        })));
         const roadSignSvgs = {
             stop: '<svg viewBox="0 0 120 120" aria-hidden="true"><polygon points="38,5 82,5 115,38 115,82 82,115 38,115 5,82 5,38" fill="#d92332" stroke="#fff" stroke-width="5"/><polygon points="38,10 82,10 110,38 110,82 82,110 38,110 10,82 10,38" fill="#d92332" stroke="#d92332" stroke-width="2"/><text x="60" y="68" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="22" font-weight="700">STOP</text></svg>',
             "no-entry": '<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="51" fill="#d92332"/><rect x="22" y="51" width="76" height="18" rx="3" fill="#fff"/></svg>',
@@ -296,6 +331,35 @@
             wrapper.className = `road-sign road-sign-${signType}`;
             wrapper.innerHTML = roadSignSvgs[signType] ?? "";
             return wrapper;
+        }
+
+        function createShapeGraphic(item) {
+            const namespace = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(namespace, "svg");
+            svg.classList.add("shape-svg");
+            svg.setAttribute("viewBox", "0 0 100 100");
+            svg.setAttribute("aria-hidden", "true");
+            let shape;
+            if (item.shape.id === "circle") {
+                shape = document.createElementNS(namespace, "circle");
+                shape.setAttribute("cx", "50"); shape.setAttribute("cy", "50"); shape.setAttribute("r", "38");
+            } else if (item.shape.id === "square") {
+                shape = document.createElementNS(namespace, "rect");
+                shape.setAttribute("x", "14"); shape.setAttribute("y", "14"); shape.setAttribute("width", "72"); shape.setAttribute("height", "72"); shape.setAttribute("rx", "4");
+            } else {
+                shape = document.createElementNS(namespace, "polygon");
+                const points = item.shape.id === "triangle"
+                    ? "50,10 91,86 9,86"
+                    : Array.from({ length:10 }, (_, index) => {
+                        const angle = Math.PI * index / 5 - Math.PI / 2;
+                        const radius = index % 2 === 0 ? 42 : 19;
+                        return `${50 + Math.cos(angle) * radius},${50 + Math.sin(angle) * radius}`;
+                    }).join(" ");
+                shape.setAttribute("points", points);
+            }
+            shape.setAttribute("fill", item.color.value);
+            svg.append(shape);
+            return svg;
         }
 
         function stopQuestionSpeech() {
@@ -562,6 +626,15 @@
         const memoryTopicPicker = document.querySelector("#memory-topic-picker");
         const memoryGrid = document.querySelector("#memory-grid");
         const memoryStatus = document.querySelector("#memory-status");
+        const shapeTarget = document.querySelector("#shape-target");
+        const shapeOptions = document.querySelector("#shape-options");
+        const shapeStatus = document.querySelector("#shape-status");
+        const shapeProgress = document.querySelector("#shape-progress");
+        const nextShapeButton = document.querySelector("#next-shape");
+        let shapeDeck = [];
+        let shapeRoundIndex = 0;
+        let activeShapeItem = null;
+        let shapeAnswered = false;
 
         function renderMemoryTopics() {
             memoryTopicPicker.replaceChildren(...Object.entries(memoryTopics).map(([id, topic]) => {
@@ -648,6 +721,56 @@
             }, 850);
         }
 
+        function startShapeGame() {
+            shapeDeck = shuffled(shapeItems).slice(0, 8);
+            shapeRoundIndex = 0;
+            showShapeQuestion();
+        }
+
+        function showShapeQuestion() {
+            shapeAnswered = false;
+            nextShapeButton.hidden = true;
+            if (shapeRoundIndex >= shapeDeck.length) {
+                shapeTarget.replaceChildren(document.createTextNode("🎉"));
+                shapeTarget.setAttribute("aria-label", "Hotovo");
+                shapeStatus.textContent = "Výborně! Našla jsi všechny barvy a tvary.";
+                shapeProgress.textContent = `Hotovo: ${shapeDeck.length} z ${shapeDeck.length}`;
+                return;
+            }
+            activeShapeItem = shapeDeck[shapeRoundIndex];
+            shapeTarget.replaceChildren(createShapeGraphic(activeShapeItem));
+            shapeTarget.setAttribute("aria-label", `Předloha: ${activeShapeItem.shape.name}, ${activeShapeItem.color.name} barva`);
+            shapeOptions.replaceChildren(...shuffled(shapeItems).map((item) => {
+                const button = document.createElement("button");
+                button.className = "shape-option";
+                button.type = "button";
+                button.setAttribute("aria-label", `${item.color.name} barva, ${item.shape.name}`);
+                button.append(createShapeGraphic(item));
+                button.addEventListener("click", () => chooseShape(item, button));
+                return button;
+            }));
+            shapeStatus.textContent = "Najdi stejnou barvu a tvar.";
+            shapeProgress.textContent = `Tvar ${shapeRoundIndex + 1} z ${shapeDeck.length}`;
+        }
+
+        function chooseShape(item, button) {
+            if (shapeAnswered) return;
+            if (item.id !== activeShapeItem.id) {
+                button.classList.add("is-wrong");
+                shapeStatus.textContent = "To není stejný tvar a barva. Zkus to znovu.";
+                window.setTimeout(() => button.classList.remove("is-wrong"), 700);
+                return;
+            }
+            shapeAnswered = true;
+            button.classList.add("is-correct");
+            shapeOptions.querySelectorAll("button").forEach((option) => { option.disabled = true; });
+            shapeRoundIndex += 1;
+            shapeStatus.textContent = "Správně! Našla jsi stejný tvar i barvu.";
+            shapeProgress.textContent = `Správně: ${shapeRoundIndex} z ${shapeDeck.length}`;
+            window.rewardPetCoin?.(`prvouka-shapes-${activeShapeItem.id}-${shapeRoundIndex}`);
+            nextShapeButton.hidden = false;
+        }
+
         function checkAnswer(button) {
             if (answered) return;
             if (button.dataset.correct === "true") {
@@ -671,12 +794,15 @@
         document.querySelector("#read-category-sort").addEventListener("click", () => speakCzech(`Zařaď věc do správné skupiny. Teď je na obrázku ${categoryLabel.textContent}. Vyber ovoce, oblečení, hračky nebo školní potřeby.`, categoryStatus));
         document.querySelector("#read-sequence").addEventListener("click", () => speakCzech("Seřaď roční období tak, jak jdou během roku za sebou. Začni jarem a pokračuj létem, podzimem a zimou.", sequenceStatus));
         document.querySelector("#read-memory").addEventListener("click", () => speakCzech(`Zahraj si obrázkové pexeso na téma ${memoryTopics[activeMemoryTopic].title}. Otoč dvě kartičky a hledej stejné obrázky.`, memoryStatus));
+        document.querySelector("#read-shapes").addEventListener("click", () => speakCzech("Prohlédni si předlohu. Potom klepni na stejný geometrický tvar ve stejné barvě.", shapeStatus));
         nextSeasonButton.addEventListener("click", showSeasonItem);
         document.querySelector("#restart-season-sort").addEventListener("click", startSeasonSort);
         nextCategoryButton.addEventListener("click", showCategoryItem);
         document.querySelector("#restart-category-sort").addEventListener("click", startCategorySort);
         document.querySelector("#restart-sequence").addEventListener("click", startSeasonSequence);
         document.querySelector("#restart-memory").addEventListener("click", startMemoryGame);
+        nextShapeButton.addEventListener("click", showShapeQuestion);
+        document.querySelector("#restart-shapes").addEventListener("click", startShapeGame);
         document.querySelectorAll("[data-activity-target]").forEach((button) => {
             button.addEventListener("click", () => {
                 stopQuestionSpeech();
@@ -696,6 +822,7 @@
         startSeasonSequence();
         renderMemoryTopics();
         startMemoryGame();
+        startShapeGame();
         window.addEventListener("beforeunload", stopQuestionSpeech);
     </script>
 </body>

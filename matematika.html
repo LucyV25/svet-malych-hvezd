@@ -288,14 +288,15 @@
         .money-coin[aria-pressed="true"]::after { position:absolute; width:82px; height:4px; border-radius:4px; background:#c34242; content:""; transform:rotate(-43deg); }
         .money-total { margin:12px 0 0; color:var(--accent-dark); font-weight:750; text-align:center; }
         .money-status { min-height:24px; margin:12px 0 0; color:var(--accent-dark); font-weight:650; text-align:center; }
-        .match-target { display:flex; min-height:100px; flex-direction:column; align-items:center; justify-content:center; gap:4px; margin:0; color:var(--accent-dark); font-size:11px; font-weight:700; text-align:center; }
-        .match-target-number { display:grid; width:72px; height:72px; place-items:center; border:3px solid #d9c9e6; border-radius:50%; background:var(--lavender); color:var(--accent-dark); font-size:38px; font-weight:800; }
-        .match-picture-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+        .match-target { position:relative; z-index:1; display:flex; min-height:100px; flex-direction:column; align-items:center; justify-content:center; gap:4px; margin:0; color:var(--accent-dark); font-size:11px; font-weight:700; text-align:center; }
+        .match-target-number { display:grid; width:72px; height:72px; place-items:center; border:3px solid #d9c9e6; border-radius:50%; background:var(--lavender); color:var(--accent-dark); cursor:pointer; font-size:38px; font-weight:800; }
+        .match-target-number[aria-pressed="true"] { border-color:var(--accent); box-shadow:0 0 0 4px #287f9b30; }
+        .match-picture-grid { position:relative; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+        .match-lines { position:absolute; z-index:0; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
         .match-picture { position:relative; display:flex; min-height:100px; flex-wrap:wrap; align-content:center; align-items:center; justify-content:center; gap:3px; padding:9px 5px; overflow:hidden; border:1px solid var(--line); border-radius:12px; background:#fff; cursor:pointer; font-size:24px; }
-        .match-picture[aria-pressed="true"] { border-color:#d49b91; background:#fff4f1; }
-        .match-picture[aria-pressed="true"]::after { position:absolute; top:50%; left:-8%; width:116%; height:4px; border-radius:4px; background:#c34242; content:""; transform:rotate(-34deg); pointer-events:none; }
-        .match-picture.is-right { border-color:#63a67a; background:#edf8ef; }
+        .match-picture.is-connected { border-color:#63a67a; background:#edf8ef; }
         .match-picture.is-wrong { border-color:#c87878; background:#fff1f1; }
+        .match-picture:disabled { cursor:default; }
         footer { padding: 0 20px 24px; color: #617482; font-size: 12px; text-align: center; }
         @media (max-width: 700px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
@@ -390,17 +391,16 @@
         </section>
         <section class="math-card" aria-labelledby="match-title" style="margin-top: 20px;">
             <h2 id="match-title">Najdi stejné množství</h2>
-            <p class="card-intro">Podívej se na číslo uprostřed a škrtni všechny skupiny, ve kterých je právě tolik obrázků.</p>
+            <p class="card-intro">Klepni na číslo uprostřed a potom postupně klepej na skupiny, ve kterých je právě tolik obrázků. Spoj je čarou.</p>
             <div class="exercise-controls" style="margin-top:0;">
                 <button class="secondary-button" id="read-match-instructions" type="button">🔊 Přehrát zadání</button>
                 <button class="secondary-button" id="stop-match-speech" type="button" hidden>⏹ Zastavit</button>
             </div>
             <p class="toast" id="match-speech-status" role="status" aria-live="polite"></p>
             <div class="match-picture-grid" id="match-picture-grid" role="group" aria-label="Skupiny obrázků kolem cílového čísla">
-                <div class="match-target"><span>Najdi počet</span><span class="match-target-number" id="match-target-number"></span></div>
+                <div class="match-target"><span>Vyber číslo</span><button class="match-target-number" id="match-target-number" type="button" aria-pressed="false"></button></div>
             </div>
             <div class="exercise-controls">
-                <button class="submit-button" id="check-matches" type="button">Zkontrolovat</button>
                 <button class="secondary-button" id="new-matches" type="button" hidden>Další úloha</button>
             </div>
             <p class="money-status" id="match-status" role="status" aria-live="polite"></p>
@@ -409,6 +409,7 @@
             <h2 id="printables-title">Pracovní listy ke stažení</h2>
             <p class="card-intro">Sada obsahuje čtyři listy pro děti a čtyři stránky s řešením pro rodiče. Můžete vytisknout jen první čtyři stránky a klíč si nechat pro sebe.</p>
             <a class="secondary-button download-button" href="assets/pracovni-listy/sada-pracovnich-listu.pdf" download>📄 Stáhnout pracovní listy v PDF</a>
+            <a class="secondary-button download-button" style="margin-left:6px;" href="assets/pracovni-listy/vanocni-pracovni-listy.pdf" download>🎄 Vánoční pracovní listy</a>
         </section>
     </main>
 
@@ -441,7 +442,6 @@
         const matchStatus = document.querySelector("#match-status");
         const matchSpeechStatus = document.querySelector("#match-speech-status");
         const stopMatchSpeechButton = document.querySelector("#stop-match-speech");
-        const checkMatchesButton = document.querySelector("#check-matches");
         const newMatchesButton = document.querySelector("#new-matches");
         let generatedMathQuestions = [];
         let generatedNumberBonds = [];
@@ -453,6 +453,8 @@
         let selectedCoinIndexes = new Set();
         let currentMatchTarget = 0;
         let matchingRound = 0;
+        let matchingConnections = [];
+        let matchingSourceArmed = false;
         let activeMathSpeechStatus = null;
         let activeMathStopButton = null;
         const shopTasks = [
@@ -595,6 +597,10 @@
             matchingRound += 1;
             currentMatchTarget = randomInteger(2, 5);
             matchTargetNumber.textContent = String(currentMatchTarget);
+            matchTargetNumber.disabled = false;
+            matchTargetNumber.setAttribute("aria-pressed", "false");
+            matchingSourceArmed = false;
+            matchingConnections = [];
             const counts = shuffled([currentMatchTarget, currentMatchTarget, currentMatchTarget, ...[1, 2, 3, 4, 5, 6].filter((count) => count !== currentMatchTarget)]);
             const symbols = ["🍎", "🚗", "⭐", "🐟", "🌷", "⚽", "🐸", "🧸"];
             const pictureButtons = counts.map((count, index) => {
@@ -602,7 +608,6 @@
                 button.className = "match-picture";
                 button.type = "button";
                 button.setAttribute("aria-label", `Skupina ${index + 1}: ${count} obrázků`);
-                button.setAttribute("aria-pressed", "false");
                 button.dataset.count = String(count);
                 const items = Array.from({ length: count }, () => {
                     const item = document.createElement("span");
@@ -611,42 +616,89 @@
                     return item;
                 });
                 button.append(...items);
-                button.addEventListener("click", () => {
-                    if (checkMatchesButton.hidden) return;
-                    const selected = button.getAttribute("aria-pressed") === "true";
-                    button.setAttribute("aria-pressed", String(!selected));
-                    button.classList.remove("is-right", "is-wrong");
-                    matchStatus.textContent = "";
-                });
+                button.addEventListener("click", () => connectMatchingGroup(button));
                 return button;
             });
             matchTarget.remove();
             matchPictureGrid.replaceChildren(...pictureButtons.slice(0, 4), matchTarget, ...pictureButtons.slice(4));
-            matchStatus.textContent = "Označ všechny skupiny, které mají tento počet.";
-            checkMatchesButton.hidden = false;
+            const lineSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            lineSvg.classList.add("match-lines");
+            lineSvg.setAttribute("aria-hidden", "true");
+            matchPictureGrid.prepend(lineSvg);
+            matchStatus.textContent = "Klepni na číslo uprostřed a potom na všechny odpovídající skupiny.";
             newMatchesButton.hidden = true;
+            drawMatchingLines();
         }
 
-        function checkMatchingGroups() {
-            const buttons = [...matchPictureGrid.querySelectorAll("button")];
-            const correctGroups = buttons.filter((button) => Number(button.dataset.count) === currentMatchTarget);
-            const selectedGroups = buttons.filter((button) => button.getAttribute("aria-pressed") === "true");
-            const allCorrectSelected = selectedGroups.length === correctGroups.length
-                && selectedGroups.every((button) => Number(button.dataset.count) === currentMatchTarget);
-            buttons.forEach((button) => {
-                const selected = button.getAttribute("aria-pressed") === "true";
-                button.classList.toggle("is-right", selected && Number(button.dataset.count) === currentMatchTarget);
-                button.classList.toggle("is-wrong", selected && Number(button.dataset.count) !== currentMatchTarget);
+        function matchingLineCoordinates(button) {
+            const gridRect = matchPictureGrid.getBoundingClientRect();
+            const sourceRect = matchTargetNumber.getBoundingClientRect();
+            const targetRect = button.getBoundingClientRect();
+            return {
+                x1: sourceRect.left + sourceRect.width / 2 - gridRect.left,
+                y1: sourceRect.top + sourceRect.height / 2 - gridRect.top,
+                x2: targetRect.left + targetRect.width / 2 - gridRect.left,
+                y2: targetRect.top + targetRect.height / 2 - gridRect.top
+            };
+        }
+
+        function drawMatchingLines() {
+            const svg = matchPictureGrid.querySelector(".match-lines");
+            if (!svg) return;
+            const gridRect = matchPictureGrid.getBoundingClientRect();
+            svg.setAttribute("viewBox", `0 0 ${gridRect.width} ${gridRect.height}`);
+            svg.replaceChildren();
+            matchingConnections.forEach(({ button, color }) => {
+                const coords = matchingLineCoordinates(button);
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                Object.entries(coords).forEach(([key, value]) => line.setAttribute(key, String(value)));
+                line.setAttribute("stroke", color);
+                line.setAttribute("stroke-width", "4");
+                line.setAttribute("stroke-linecap", "round");
+                svg.append(line);
             });
-            if (!allCorrectSelected) {
-                matchStatus.textContent = "Něco nesedí nebo ještě chybí. Uprav výběr a zkus to znovu.";
+        }
+
+        function connectMatchingGroup(button) {
+            if (!matchingSourceArmed || button.disabled) return;
+            const isCorrect = Number(button.dataset.count) === currentMatchTarget;
+            if (!isCorrect) {
+                button.classList.add("is-wrong");
+                matchingConnections.push({ button, color:"#c34242" });
+                drawMatchingLines();
+                matchStatus.textContent = "Tahle skupina nemá správný počet. Zkus jinou.";
+                window.setTimeout(() => {
+                    matchingConnections = matchingConnections.filter((connection) => connection.button !== button);
+                    button.classList.remove("is-wrong");
+                    drawMatchingLines();
+                }, 800);
                 return;
             }
-            matchStatus.textContent = "Výborně! Našla jsi všechny skupiny se stejným počtem.";
-            checkMatchesButton.hidden = true;
-            newMatchesButton.hidden = false;
-            buttons.forEach((button) => { button.disabled = true; });
-            window.rewardPetCoin?.(`math-match-groups-${matchingRound}`);
+            button.disabled = true;
+            button.classList.add("is-connected");
+            matchingConnections.push({ button, color:"#4b9562" });
+            drawMatchingLines();
+            const connectedCount = matchingConnections.filter((connection) => connection.color === "#4b9562").length;
+            if (connectedCount === 3) {
+                matchingSourceArmed = false;
+                matchTargetNumber.setAttribute("aria-pressed", "false");
+                matchTargetNumber.disabled = true;
+                matchStatus.textContent = "Výborně! Spojila jsi číslo se všemi skupinami, které mají stejný počet.";
+                newMatchesButton.hidden = false;
+                matchPictureGrid.querySelectorAll(".match-picture").forEach((picture) => { picture.disabled = true; });
+                window.rewardPetCoin?.(`math-match-groups-${matchingRound}`);
+                return;
+            }
+            matchStatus.textContent = `Správně! Spojeno ${connectedCount} ze 3 skupin. Pokračuj další skupinou.`;
+        }
+
+        function armMatchingSource() {
+            if (matchTargetNumber.disabled) return;
+            matchingSourceArmed = !matchingSourceArmed;
+            matchTargetNumber.setAttribute("aria-pressed", String(matchingSourceArmed));
+            matchStatus.textContent = matchingSourceArmed
+                ? "Teď klepni na obrázkovou skupinu se stejným počtem."
+                : "Klepni na číslo uprostřed a potom na všechny odpovídající skupiny.";
         }
 
         function speakMathText(text, statusElement, stopButton) {
@@ -947,11 +999,12 @@
         buyToyButton.addEventListener("click", buyToy);
         nextPurchaseButton.addEventListener("click", startShopRound);
         document.querySelector("#read-match-instructions").addEventListener("click", () => {
-            speakMathText(`Uprostřed je číslo ${numberInCzech(currentMatchTarget)}. Škrtni všechny skupiny, ve kterých je právě ${numberInCzech(currentMatchTarget)} obrázků. Potom klepni na Zkontrolovat.`, matchSpeechStatus, stopMatchSpeechButton);
+            speakMathText(`Uprostřed je číslo ${numberInCzech(currentMatchTarget)}. Klepni na něj a potom spoj čarou všechny skupiny obrázků, které mají stejný počet obrázků.`, matchSpeechStatus, stopMatchSpeechButton);
         });
         stopMatchSpeechButton.addEventListener("click", () => stopNumberBondSpeech());
-        checkMatchesButton.addEventListener("click", checkMatchingGroups);
+        matchTargetNumber.addEventListener("click", armMatchingSource);
         newMatchesButton.addEventListener("click", renderMatchingRound);
+        window.addEventListener("resize", drawMatchingLines);
         startShopRound();
         renderMatchingRound();
         window.addEventListener("beforeunload", () => {
