@@ -191,16 +191,16 @@
             inset: 0;
             display: grid;
             place-items: center;
-            color: rgba(98, 57, 143, .2);
+            color: rgba(40, 127, 155, .2);
             font-family: "Borel", cursive;
-            font-size: 180px;
+            font-size: clamp(130px, 35vw, 230px);
             font-weight: 400;
             line-height: 1;
             pointer-events: none;
             user-select: none;
         }
         .writing-guide[hidden] { display: none; }
-        .writing-guide[data-digraph="true"] { font-size: 150px; }
+        .writing-guide[data-digraph="true"] { font-size: clamp(100px, 27vw, 175px); }
         .writing-canvas {
             position: relative;
             z-index: 1;
@@ -940,8 +940,8 @@
         const missingLetterStatus = document.querySelector("#missing-letter-status");
         const newMissingLetterButton = document.querySelector("#new-missing-letter");
         const readMissingLetterInstructionsButton = document.querySelector("#read-missing-letter-instructions");
-        const writingGridWidth = 128;
-        const writingGridHeight = 96;
+        const writingGridWidth = 64;
+        const writingGridHeight = 32;
         let learnedLetters = [];
         let selectedLetters = [];
         let writingStrokes = [];
@@ -1155,47 +1155,12 @@
             });
         }
 
-        function fitWritingGuide() {
-            const selectedLetter = writingLetterSelect.value;
-            if (!selectedLetter) {
-                writingGuide.style.removeProperty("font-size");
-                return;
-            }
-
-            const board = writingCanvas.parentElement.getBoundingClientRect();
-            if (!board.width || !board.height) return;
-
-            const context = document.createElement("canvas").getContext("2d");
-            if (!context) return;
-            const guideStyle = window.getComputedStyle(writingGuide);
-            const sampleSize = 512;
-            const fontDescription = `${guideStyle.fontWeight} ${sampleSize}px ${guideStyle.fontFamily}`;
-            if (document.fonts && !document.fonts.check(fontDescription, selectedLetter)) {
-                document.fonts.load(fontDescription, selectedLetter).then(() => {
-                    if (writingLetterSelect.value === selectedLetter) fitWritingGuide();
-                });
-                return;
-            }
-            context.font = fontDescription;
-            const metrics = context.measureText(selectedLetter);
-            const glyphHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-            const glyphWidth = metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight;
-            if (!glyphHeight || !glyphWidth) return;
-
-            const scale = Math.min(
-                (board.height * 0.84) / glyphHeight,
-                (board.width * 0.84) / glyphWidth
-            );
-            writingGuide.style.fontSize = `${sampleSize * scale}px`;
-        }
-
         function updateWritingGuide() {
             const selectedLetter = writingLetterSelect.value;
             const showGuide = selectedLetter !== ""
                 && (writingModeSelect.value === "trace" || guideManuallyVisible);
             writingGuide.textContent = selectedLetter;
             writingGuide.dataset.digraph = String(selectedLetter.length > 1);
-            fitWritingGuide();
             writingCanvas.setAttribute("aria-label", selectedLetter
                 ? `Plocha pro psaní písmene ${selectedLetter}. Kresli prstem nebo stylusem.`
                 : "Plocha pro kreslení. Nejdřív vyber známé písmeno.");
@@ -1261,7 +1226,6 @@
         function resizeWritingCanvas() {
             const bounds = writingCanvas.getBoundingClientRect();
             if (!bounds.width || !bounds.height) return;
-            fitWritingGuide();
             const pixelRatio = window.devicePixelRatio || 1;
             writingCanvas.width = Math.round(bounds.width * pixelRatio);
             writingCanvas.height = Math.round(bounds.height * pixelRatio);
@@ -1310,7 +1274,9 @@
             referenceCanvas.height = writingGridHeight;
             const context = referenceCanvas.getContext("2d");
             const guideStyle = window.getComputedStyle(writingGuide);
-            const fontSize = Number.parseFloat(guideStyle.fontSize);
+            const fontSize = letter.length > 1
+                ? Math.min(175, Math.max(100, window.innerWidth * 0.27))
+                : Math.min(230, Math.max(130, window.innerWidth * 0.35));
             context.setTransform(writingGridWidth / bounds.width, 0, 0, writingGridHeight / bounds.height, 0, 0);
             context.font = `${guideStyle.fontWeight} ${fontSize}px ${guideStyle.fontFamily}`;
             context.textAlign = "center";
@@ -1474,14 +1440,14 @@
                 ...compareWritingMasks(drawing.mask, createReferenceMask(letter))
             })).sort((first, second) => second.score - first.score);
             const closest = candidates[0];
-            if (!closest || closest.score < 0.55 || (candidates[1] && closest.score - candidates[1].score < 0.08)) {
+            if (!closest || closest.score < 0.35) {
                 writingStatus.textContent = "Písmenko zatím nedokážu poznat. Zkus ho napsat pomalu ještě jednou nebo si ukázat předlohu.";
                 return;
             }
 
             if (writingModeSelect.value === "trace") {
                 const target = candidates.find((candidate) => candidate.letter === targetLetter);
-                if (target && target.score >= 0.55 && target.precision >= 0.55 && target.coverage >= 0.28 && target.partsCovered) {
+                if (target && target.precision >= 0.5 && target.coverage >= 0.12 && target.partsCovered) {
                     writingStatus.textContent = `Dobrá práce, tahy se přibližují předloze písmene ${targetLetter}.`;
                     recordExerciseSuccess("", [targetLetter]);
                 } else {
