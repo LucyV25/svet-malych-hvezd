@@ -33,6 +33,7 @@
         .question-symbol { display:grid; min-height:150px; place-items:center; margin:16px 0; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#eaf4fb,#fff3d8); font-size:78px; }
         .answer-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
         .answer-option { min-height:64px; border-radius:14px; font-size:16px; }
+        .answer-option-icon { display:block; margin-bottom:4px; font-size:34px; line-height:1.1; }
         .answer-option:hover:not(:disabled) { background:#edf5f7; }
         .answer-option:disabled { cursor:default; opacity:.8; }
         .answer-option.is-correct { border-color:#63a67a; background:#edf8ef; color:#275b35; }
@@ -117,8 +118,11 @@
         .body-parts { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
         .body-part { min-width:90px; min-height:54px; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--deep); cursor:pointer; font-weight:700; }
         .body-part[aria-pressed="true"] { border-color:var(--accent); background:var(--soft); }
+        #plant-options { grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+        #plant-options .answer-option { display:grid; min-height:138px; align-content:center; justify-items:center; font-size:16px; }
+        #plant-options .answer-option-icon { margin:0 0 7px; font-size:64px; }
         footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
-        @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets,.sequence-options { grid-template-columns:repeat(2,minmax(0,1fr)); } .memory-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+        @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } #plant-options { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; } #plant-options .answer-option { min-height:118px; padding:8px 4px; } #plant-options .answer-option-icon { font-size:54px; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets,.sequence-options { grid-template-columns:repeat(2,minmax(0,1fr)); } .memory-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
     </style>
 </head>
 <body>
@@ -441,23 +445,23 @@
             { prompt:"Který obrázek není oblečení?", items:[{symbol:"👕",label:"tričko"},{symbol:"🧥",label:"bunda"},{symbol:"🧤",label:"rukavice"},{symbol:"🍉",label:"meloun"}], correct:3, explain:"Tričko, bunda a rukavice jsou oblečení. Meloun je ovoce." }
         ];
         const habitatRounds = [
-            { animal:"🐸", name:"Žába", prompt:"Kde žába hledá vodu a žije poblíž ní?", correct:"pond", choices:[{id:"pond",symbol:"🪷",label:"u rybníka"},{id:"forest",symbol:"🌲",label:"v lese"},{id:"farm",symbol:"🚜",label:"na farmě"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] },
-            { animal:"🦊", name:"Liška", prompt:"Kde si liška vyhrabává noru?", correct:"forest", choices:[{id:"forest",symbol:"🌳",label:"v lese"},{id:"pond",symbol:"🌊",label:"v rybníku"},{id:"farm",symbol:"🏠",label:"v chlévě"},{id:"sea",symbol:"🐚",label:"v moři"}] },
-            { animal:"🐄", name:"Kráva", prompt:"Kde se o krávu stará hospodář?", correct:"farm", choices:[{id:"farm",symbol:"🚜",label:"na farmě"},{id:"forest",symbol:"🌲",label:"v lese"},{id:"sea",symbol:"🌊",label:"v moři"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] },
-            { animal:"🐦", name:"Ptáček", prompt:"Kde si ptáček staví domov pro mláďata?", correct:"nest", choices:[{id:"nest",symbol:"🪺",label:"v hnízdě"},{id:"pond",symbol:"🪷",label:"v rybníku"},{id:"farm",symbol:"🏠",label:"v chlévě"},{id:"sea",symbol:"🐚",label:"v moři"}] },
-            { animal:"🐬", name:"Delfín", prompt:"Kde delfín plave a hledá potravu?", correct:"sea", choices:[{id:"sea",symbol:"🌊",label:"v moři"},{id:"forest",symbol:"🌳",label:"v lese"},{id:"farm",symbol:"🚜",label:"na farmě"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] }
+            { symbol:"🐸", name:"Žába", prompt:"Kde žába hledá vodu a žije poblíž ní?", correct:"pond", choices:[{id:"pond",symbol:"🪷",label:"u rybníka"},{id:"forest",symbol:"🌲",label:"v lese"},{id:"farm",symbol:"🚜",label:"na farmě"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] },
+            { symbol:"🦊", name:"Liška", prompt:"Kde si liška vyhrabává noru?", correct:"forest", choices:[{id:"forest",symbol:"🌳",label:"v lese"},{id:"pond",symbol:"🌊",label:"v rybníku"},{id:"farm",symbol:"🏠",label:"v chlévě"},{id:"sea",symbol:"🐚",label:"v moři"}] },
+            { symbol:"🐄", name:"Kráva", prompt:"Kde se o krávu stará hospodář?", correct:"farm", choices:[{id:"farm",symbol:"🚜",label:"na farmě"},{id:"forest",symbol:"🌲",label:"v lese"},{id:"sea",symbol:"🌊",label:"v moři"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] },
+            { symbol:"🐦", name:"Ptáček", prompt:"Kde si ptáček staví domov pro mláďata?", correct:"nest", choices:[{id:"nest",symbol:"🪺",label:"v hnízdě"},{id:"pond",symbol:"🪷",label:"v rybníku"},{id:"farm",symbol:"🏠",label:"v chlévě"},{id:"sea",symbol:"🐚",label:"v moři"}] },
+            { symbol:"🐬", name:"Delfín", prompt:"Kde delfín plave a hledá potravu?", correct:"sea", choices:[{id:"sea",symbol:"🌊",label:"v moři"},{id:"forest",symbol:"🌳",label:"v lese"},{id:"farm",symbol:"🚜",label:"na farmě"},{id:"nest",symbol:"🪺",label:"v hnízdě"}] }
         ];
         const safetyRounds = [
-            { prompt:"Chceš přejít silnici. Co uděláš?", symbol:"🚸", choices:["Rozhlédnu se a přejdu s dospělým na přechodu.","Rozběhnu se mezi zaparkovanými auty."], correct:0, explain:"Na silnici přecházíme opatrně, po rozhlédnutí a nejlépe s dospělým." },
-            { prompt:"Našel jsi venku neznámé prášky. Co uděláš?", symbol:"💊", choices:["Nedotýkám se jich a řeknu to dospělému.","Ochutnám jeden, abych zjistil, co to je."], correct:0, explain:"Neznámé léky ani věci z podlahy nikdy neochutnáváme. Zavoláme dospělého." },
-            { prompt:"Jsi v autě. Jak se připravíš na jízdu?", symbol:"🚗", choices:["Připoutám se bezpečnostním pásem.","Postavím se na sedačku."], correct:0, explain:"V autě sedíme a vždy se připoutáme bezpečnostním pásem." },
-            { prompt:"Cizí člověk tě láká, abys šel s ním. Co uděláš?", symbol:"🧍", choices:["Zůstanu na bezpečném místě a řeknu to dospělému, kterému věřím.","Půjdu s ním, protože slíbil sladkost."], correct:0, explain:"S cizím člověkem nikam neodcházíme. Vyhledáme dospělého, kterému důvěřujeme." },
-            { prompt:"Chceš si hrát venku na kole. Co si vezmeš?", symbol:"🚲", choices:["Přilbu a bezpečné místo na jízdu.","Šálu přes oči, aby byla legrace."], correct:0, explain:"Na kole nosíme správně nasazenou přilbu a jezdíme na bezpečném místě." }
+            { prompt:"Chceš přejít silnici. Co uděláš?", symbol:"🚸", choices:["Rozhlédnu se a přejdu s dospělým na přechodu.","Rozběhnu se mezi zaparkovanými auty.","Přejdu mezi auty bez rozhlédnutí."], correct:0, explain:"Na silnici přecházíme opatrně, po rozhlédnutí a nejlépe s dospělým." },
+            { prompt:"Našel jsi venku neznámé prášky. Co uděláš?", symbol:"💊", choices:["Nedotýkám se jich a řeknu to dospělému.","Ochutnám jeden, abych zjistil, co to je.","Vezmu si je s sebou a schovám do kapsy."], correct:0, explain:"Neznámé léky ani věci z podlahy nikdy neochutnáváme. Zavoláme dospělého." },
+            { prompt:"Jsi v autě. Jak se připravíš na jízdu?", symbol:"🚗", choices:["Připoutám se bezpečnostním pásem.","Postavím se na sedačku.","Sundám si pás, abych se mohl rozhlížet."], correct:0, explain:"V autě sedíme a vždy se připoutáme bezpečnostním pásem." },
+            { prompt:"Cizí člověk tě láká, abys šel s ním. Co uděláš?", symbol:"🧍", choices:["Zůstanu na bezpečném místě a řeknu to dospělému, kterému věřím.","Půjdu s ním, protože slíbil sladkost.","Řeknu mu, kde bydlím, ať mě doprovodí."], correct:0, explain:"S cizím člověkem nikam neodcházíme. Vyhledáme dospělého, kterému důvěřujeme." },
+            { prompt:"Chceš si hrát venku na kole. Co si vezmeš?", symbol:"🚲", choices:["Přilbu a bezpečné místo na jízdu.","Šálu přes oči, aby byla legrace.","Pojedu rychle po silnici mezi auty."], correct:0, explain:"Na kole nosíme správně nasazenou přilbu a jezdíme na bezpečném místě." }
         ];
         const plantRounds = [
-            { prompt:"Co pomáhá rostlině vyrábět potravu a růst?", correct:"☀️", choices:["☀️","🧸","🚗"], explain:"Rostlina potřebuje světlo ze slunce." },
-            { prompt:"Co musí rostlina pravidelně dostávat?", correct:"💧", choices:["💧","⚽","🧦"], explain:"Rostlina potřebuje vodu. Zaléváme ji přiměřeně." },
-            { prompt:"V čem rostou kořeny většiny rostlin?", correct:"🪴", choices:["🪴","🛏️","🚌"], explain:"Kořeny rostou v půdě, která rostlinu také drží." }
+            { prompt:"Co pomáhá rostlině vyrábět potravu a růst?", correct:"sun", choices:[{id:"sun",symbol:"☀️",label:"slunce"},{id:"toy",symbol:"🧸",label:"hračka"},{id:"car",symbol:"🚗",label:"auto"}], explain:"Rostlina potřebuje světlo ze slunce." },
+            { prompt:"Co musí rostlina pravidelně dostávat?", correct:"water", choices:[{id:"water",symbol:"💧",label:"vodu"},{id:"ball",symbol:"⚽",label:"míč"},{id:"socks",symbol:"🧦",label:"ponožky"}], explain:"Rostlina potřebuje vodu. Zaléváme ji přiměřeně." },
+            { prompt:"V čem rostou kořeny většiny rostlin?", correct:"soil", choices:[{id:"soil",symbol:"🪴",label:"půda"},{id:"bed",symbol:"🛏️",label:"postel"},{id:"bus",symbol:"🚌",label:"autobus"}], explain:"Kořeny rostou v půdě, která rostlinu také drží." }
         ];
         const roadSignSvgs = {
             stop: '<svg viewBox="0 0 120 120" aria-hidden="true"><polygon points="38,5 82,5 115,38 115,82 82,115 38,115 5,82 5,38" fill="#d92332" stroke="#fff" stroke-width="5"/><polygon points="38,10 82,10 110,38 110,82 82,110 38,110 10,82 10,38" fill="#d92332" stroke="#d92332" stroke-width="2"/><text x="60" y="68" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="22" font-weight="700">STOP</text></svg>',
@@ -1170,7 +1174,16 @@
                     button.type = "button";
                     const icon = typeof choice === "string" ? "" : choice.symbol ?? "";
                     const label = typeof choice === "string" ? choice : choice.label;
-                    button.textContent = icon ? `${icon} ${label}` : label;
+                    if (icon) {
+                        const iconElement = document.createElement("span");
+                        iconElement.className = "answer-option-icon";
+                        iconElement.setAttribute("aria-hidden", "true");
+                        iconElement.textContent = icon;
+                        button.append(iconElement);
+                    }
+                    const labelElement = document.createElement("span");
+                    labelElement.textContent = label;
+                    button.append(labelElement);
                     button.setAttribute("aria-label", label);
                     button.addEventListener("click", () => {
                         if (answeredRound) return;
@@ -1316,7 +1329,7 @@
             tryAgainText:"Tohle rostlině nepomůže. Zkus jiný obrázek.",
             completeText:"Paráda! Už víš, co rostlina potřebuje k růstu.",
             nextLabel:"Další otázka", voiceInstruction:"Vyber správnou odpověď.",
-            isCorrect:(round, choice) => choice === round.correct,
+            isCorrect:(round, choice) => choice.id === round.correct,
             successText:(round) => round.explain
         });
 
