@@ -193,14 +193,14 @@
             place-items: center;
             color: rgba(98, 57, 143, .2);
             font-family: "Borel", cursive;
-            font-size: clamp(130px, 35vw, 230px);
+            font-size: clamp(210px, 60vw, 320px);
             font-weight: 400;
             line-height: 1;
             pointer-events: none;
             user-select: none;
         }
         .writing-guide[hidden] { display: none; }
-        .writing-guide[data-digraph="true"] { font-size: clamp(100px, 27vw, 175px); }
+        .writing-guide[data-digraph="true"] { font-size: clamp(150px, 43vw, 230px); }
         .writing-canvas {
             position: relative;
             z-index: 1;
@@ -1274,9 +1274,7 @@
             referenceCanvas.height = writingGridHeight;
             const context = referenceCanvas.getContext("2d");
             const guideStyle = window.getComputedStyle(writingGuide);
-            const fontSize = letter.length > 1
-                ? Math.min(175, Math.max(100, window.innerWidth * 0.27))
-                : Math.min(230, Math.max(130, window.innerWidth * 0.35));
+            const fontSize = Number.parseFloat(guideStyle.fontSize);
             context.setTransform(writingGridWidth / bounds.width, 0, 0, writingGridHeight / bounds.height, 0, 0);
             context.font = `${guideStyle.fontWeight} ${fontSize}px ${guideStyle.fontFamily}`;
             context.textAlign = "center";
