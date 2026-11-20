@@ -72,6 +72,12 @@
         .memory-card { min-height:84px; border:1px solid var(--line); border-radius:14px; background:var(--soft); color:var(--deep); cursor:pointer; font-size:32px; font-weight:750; }
         .memory-card.is-open,.memory-card.is-matched { background:#fff; }
         .memory-card.is-matched { border-color:#63a67a; }
+        .activity-picker { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 auto 22px; }
+        .activity-button { min-height:46px; padding:9px 14px; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--deep); cursor:pointer; font-weight:750; }
+        .activity-button[aria-pressed="true"] { border-color:var(--accent); background:var(--soft); }
+        .road-sign { display:grid; width:132px; height:132px; place-items:center; margin:auto; }
+        .road-sign svg { display:block; width:100%; height:100%; }
+        .memory-card .road-sign { width:54px; height:54px; }
         footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
         @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets,.sequence-options { grid-template-columns:repeat(2,minmax(0,1fr)); } .memory-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
     </style>
@@ -97,7 +103,14 @@
             <h1>Prvouka</h1>
             <p>Vyber si téma na procvičování, nebo si zahraj některou ze samostatných her.</p>
         </header>
-        <section aria-labelledby="practice-title">
+        <div class="activity-picker" id="activity-picker" role="group" aria-label="Vyber si aktivitu">
+            <button class="activity-button" type="button" data-activity-target="topics" aria-pressed="true">📚 Témata</button>
+            <button class="activity-button" type="button" data-activity-target="season-sort" aria-pressed="false">🍂 Třídění období</button>
+            <button class="activity-button" type="button" data-activity-target="season-order" aria-pressed="false">🔄 Pořadí období</button>
+            <button class="activity-button" type="button" data-activity-target="category-sort" aria-pressed="false">🧺 Třídění věcí</button>
+            <button class="activity-button" type="button" data-activity-target="memory" aria-pressed="false">🃏 Pexeso</button>
+        </div>
+        <section data-activity-panel="topics" aria-labelledby="practice-title">
         <div class="activity-heading"><p class="eyebrow">Otázky a odpovědi</p><h2 id="practice-title">Procvičování témat</h2><p>Vyber téma, poslechni si otázku a klepni na správnou odpověď.</p></div>
         <div class="topic-picker" id="topic-picker" role="group" aria-label="Vyber téma prvouky"></div>
         <section class="quiz-card" aria-labelledby="question-title">
@@ -112,9 +125,7 @@
             <div class="quiz-actions"><button class="action-button primary" id="next-question" type="button">Další otázka</button></div>
         </section>
         </section>
-        <section class="activity-section" aria-labelledby="activities-title">
-        <div class="activity-heading"><p class="eyebrow">Samostatné hry</p><h2 id="activities-title">Hry a třídění</h2><p>Každou hru můžeš spustit a procvičovat zvlášť.</p></div>
-        <section class="sorting-card" aria-labelledby="sorting-title">
+        <section class="sorting-card" data-activity-panel="season-sort" aria-labelledby="sorting-title" hidden>
             <div class="quiz-heading"><div><p class="eyebrow">Roční období</p><h2 id="sorting-title">Co patří ke kterému období?</h2></div><button class="action-button" id="read-season-sort" type="button">🔊 Přečíst zadání</button></div>
             <p class="sorting-intro">Podívej se na obrázek a vyber roční období, ke kterému věc nejvíc patří.</p>
             <div class="sorting-item" id="season-item-symbol" aria-hidden="true"></div>
@@ -124,7 +135,7 @@
             <p class="quiz-progress" id="season-progress" aria-live="polite"></p>
             <div class="quiz-actions"><button class="action-button primary" id="next-season-item" type="button" hidden>Další věc</button><button class="action-button" id="restart-season-sort" type="button">Začít znovu</button></div>
         </section>
-        <section class="category-card" aria-labelledby="category-title">
+        <section class="category-card" data-activity-panel="category-sort" aria-labelledby="category-title" hidden>
             <div class="quiz-heading"><div><p class="eyebrow">Skupiny věcí</p><h2 id="category-title">Kam to patří?</h2></div><button class="action-button" id="read-category-sort" type="button">🔊 Přečíst zadání</button></div>
             <p class="sorting-intro">Každá věc patří do jedné skupiny. Vyber, kam ji zařadíš.</p>
             <div class="category-item" id="category-item-symbol" aria-hidden="true"></div>
@@ -134,21 +145,20 @@
             <p class="quiz-progress" id="category-progress" aria-live="polite"></p>
             <div class="quiz-actions"><button class="action-button primary" id="next-category-item" type="button" hidden>Další věc</button><button class="action-button" id="restart-category-sort" type="button">Začít znovu</button></div>
         </section>
-        <section class="sorting-card" aria-labelledby="sequence-title">
+        <section class="sorting-card" data-activity-panel="season-order" aria-labelledby="sequence-title" hidden>
             <div class="quiz-heading"><div><p class="eyebrow">Roční období</p><h2 id="sequence-title">Seřaď období za sebou</h2></div><button class="action-button" id="read-sequence" type="button">🔊 Přečíst zadání</button></div>
             <p class="sorting-intro">Klepni na období v pořadí, v jakém během roku přicházejí. Začni jarem.</p>
             <div class="sequence-options" id="sequence-options" role="group" aria-label="Vyber roční období v pořadí"></div>
             <p class="season-status" id="sequence-status" role="status" aria-live="polite"></p>
             <div class="quiz-actions"><button class="action-button primary" id="restart-sequence" type="button">Zkusit znovu</button></div>
         </section>
-        <section class="category-card" aria-labelledby="memory-title">
+        <section class="category-card" data-activity-panel="memory" aria-labelledby="memory-title" hidden>
             <div class="quiz-heading"><div><p class="eyebrow">Obrázkové pexeso</p><h2 id="memory-title">Najdi stejné obrázky</h2></div><button class="action-button" id="read-memory" type="button">🔊 Přečíst zadání</button></div>
             <p class="sorting-intro">Otoč vždy dvě kartičky a hledej stejné obrázky. Vyber si téma pexesa.</p>
             <div class="topic-picker" id="memory-topic-picker" role="group" aria-label="Téma pexesa"></div>
             <div class="memory-grid" id="memory-grid" role="group" aria-label="Kartičky pexesa"></div>
             <p class="category-status" id="memory-status" role="status" aria-live="polite"></p>
             <div class="quiz-actions"><button class="action-button primary" id="restart-memory" type="button">Zamíchat kartičky</button></div>
-        </section>
         </section>
     </main>
     <footer>Každá správná odpověď přidá minci tvému mazlíčkovi.</footer>
@@ -200,12 +210,12 @@
                 { id:"farmer", prompt:"Kdo pěstuje na poli obilí?", symbol:"🚜", choices:["Zemědělec nebo zemědělkyně","Zubař nebo zubařka","Pošťák nebo pošťačka"], correct:0, success:"Obilí pěstuje zemědělec nebo zemědělkyně." },
                 { id:"librarian", prompt:"Kdo půjčuje knížky v knihovně?", symbol:"📚", choices:["Knihovník nebo knihovnice","Hasič nebo hasička","Kadeřník nebo kadeřnice"], correct:0, success:"Knížky v knihovně půjčuje knihovník nebo knihovnice." }
             ]},
-            { id:"traffic-signs", title:"Dopravní značky", icon:"🚸", questions:[
-                { id:"stop", prompt:"Co nám přikazuje značka STOP?", symbol:"🛑", choices:["Zastavit","Zrychlit","Zatroubit"], correct:0, success:"U značky STOP musíme zastavit." },
-                { id:"no-entry", prompt:"Co znamená červená značka s bílým pruhem?", symbol:"⛔", choices:["Zákaz vjezdu","Přechod pro chodce","Parkoviště"], correct:0, success:"Červená značka s bílým pruhem znamená zákaz vjezdu." },
-                { id:"children", prompt:"Na co upozorňuje značka s dětmi?", symbol:"🚸", choices:["Na místo, kde mohou přecházet děti","Na blízkou nemocnici","Na parkoviště"], correct:0, success:"Upozorňuje na místo, kde mohou přecházet děti." },
-                { id:"give-way", prompt:"Co uděláme u značky Dej přednost v jízdě?", symbol:"🔻", choices:["Dáme přednost vozidlům na hlavní silnici","Vždy zaparkujeme","Zastavíme u každého domu"], correct:0, success:"Dáme přednost vozidlům, která jedou po hlavní silnici." },
-                { id:"no-cycling", prompt:"Co zakazuje značka se symbolem kola v červeném kruhu?", symbol:"🚳", choices:["Vjezd jízdním kolům","Jízdu autobusu","Chůzi po chodníku"], correct:0, success:"Tato značka zakazuje vjezd jízdním kolům." }
+            { id:"traffic-signs", title:"Dopravní značky", icon:"🚦", questions:[
+                { id:"stop", prompt:"Co nám přikazuje značka STOP?", symbol:"", signType:"stop", choices:["Zastavit","Zrychlit","Zatroubit"], correct:0, success:"U značky STOP musíme zastavit." },
+                { id:"no-entry", prompt:"Co znamená červená značka s bílým pruhem?", symbol:"", signType:"no-entry", choices:["Zákaz vjezdu","Přechod pro chodce","Parkoviště"], correct:0, success:"Červená značka s bílým pruhem znamená zákaz vjezdu." },
+                { id:"children", prompt:"Na co upozorňuje trojúhelníková značka s dětmi?", symbol:"", signType:"children", choices:["Na místo, kde mohou přecházet děti","Na blízkou nemocnici","Na parkoviště"], correct:0, success:"Trojúhelníková značka s dětmi upozorňuje na místo, kde mohou přecházet děti." },
+                { id:"give-way", prompt:"Co uděláme u značky Dej přednost v jízdě?", symbol:"", signType:"give-way", choices:["Dáme přednost vozidlům na hlavní silnici","Vždy zaparkujeme","Zastavíme u každého domu"], correct:0, success:"U značky Dej přednost v jízdě dáme přednost vozidlům na hlavní silnici." },
+                { id:"no-cycling", prompt:"Co zakazuje značka s přeškrtnutým kolem?", symbol:"", signType:"no-cycling", choices:["Vjezd jízdním kolům","Jízdu autobusu","Chůzi po chodníku"], correct:0, success:"Tato značka zakazuje vjezd jízdním kolům." }
             ]},
             { id:"safety", title:"Bezpečně na cestě", icon:"🚦", questions:[
                 { id:"green", prompt:"Na jakou barvu semaforu můžeme přejít?", symbol:"🚦", choices:["Na zelenou","Na červenou","Na modrou"], correct:0, success:"Přecházíme na zelenou, když je cesta volná." },
@@ -265,8 +275,22 @@
         const memoryTopics = {
             seasons: { title:"Roční období", pairs:[{id:"spring",name:"Jaro",symbol:"🌷"},{id:"summer",name:"Léto",symbol:"☀️"},{id:"autumn",name:"Podzim",symbol:"🍂"},{id:"winter",name:"Zima",symbol:"❄️"},{id:"rain",name:"Déšť",symbol:"🌧️"},{id:"rainbow",name:"Duha",symbol:"🌈"}] },
             jobs: { title:"Povolání", pairs:[{id:"doctor",name:"Lékař",symbol:"🩺"},{id:"baker",name:"Pekař",symbol:"🥖"},{id:"farmer",name:"Zemědělec",symbol:"🚜"},{id:"firefighter",name:"Hasič",symbol:"🚒"},{id:"teacher",name:"Učitel",symbol:"🍎"},{id:"builder",name:"Stavitel",symbol:"🧱"}] },
-            signs: { title:"Dopravní značky", pairs:[{id:"stop",name:"Stop",symbol:"🛑"},{id:"no-entry",name:"Zákaz vjezdu",symbol:"⛔"},{id:"children",name:"Pozor, děti",symbol:"🚸"},{id:"give-way",name:"Dej přednost",symbol:"🔻"},{id:"no-cycling",name:"Zákaz vjezdu kol",symbol:"🚳"},{id:"traffic-light",name:"Semafor",symbol:"🚦"}] }
+            signs: { title:"Dopravní značky", pairs:[{id:"stop",name:"Stop",symbol:"",signType:"stop"},{id:"no-entry",name:"Zákaz vjezdu",symbol:"",signType:"no-entry"},{id:"children",name:"Pozor, děti",symbol:"",signType:"children"},{id:"give-way",name:"Dej přednost",symbol:"",signType:"give-way"},{id:"no-cycling",name:"Zákaz vjezdu kol",symbol:"",signType:"no-cycling"},{id:"traffic-light",name:"Semafor",symbol:"🚦"}] }
         };
+        const roadSignSvgs = {
+            stop: '<svg viewBox="0 0 120 120" aria-hidden="true"><polygon points="38,5 82,5 115,38 115,82 82,115 38,115 5,82 5,38" fill="#d92332" stroke="#fff" stroke-width="5"/><polygon points="38,10 82,10 110,38 110,82 82,110 38,110 10,82 10,38" fill="#d92332" stroke="#d92332" stroke-width="2"/><text x="60" y="68" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="22" font-weight="700">STOP</text></svg>',
+            "no-entry": '<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="51" fill="#d92332"/><rect x="22" y="51" width="76" height="18" rx="3" fill="#fff"/></svg>',
+            children: '<svg viewBox="0 0 120 120" aria-hidden="true"><path d="M60 7 114 105H6Z" fill="#f7d84a" stroke="#d92332" stroke-width="8" stroke-linejoin="round"/><g fill="#20252a"><circle cx="48" cy="47" r="6"/><circle cx="70" cy="50" r="5"/><path d="M44 56h9l5 19-5 2-4-12-3 14h-5l2-17-5 8-4-2zM66 58h8l4 15-4 2-4-9-2 10h-5l2-12-4 5-3-2z"/><path d="m47 76-7 13h5l8-11m1-1 4 12h5l-5-15m10-1-5 14h5l6-13"/></g></svg>',
+            "give-way": '<svg viewBox="0 0 120 120" aria-hidden="true"><path d="M9 20h102L60 111Z" fill="#d92332"/><path d="M19 28h82L60 96Z" fill="#fff"/></svg>',
+            "no-cycling": '<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="49" fill="#fff" stroke="#d92332" stroke-width="10"/><g fill="none" stroke="#20252a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="39" cy="77" r="15"/><circle cx="82" cy="77" r="15"/><path d="m39 77 18-25 13 25H39l11-17h21l11 17M57 52h-9m17-6h8"/></g><path d="M25 94 95 25" stroke="#d92332" stroke-width="9"/></svg>'
+        };
+
+        function createRoadSign(signType) {
+            const wrapper = document.createElement("span");
+            wrapper.className = `road-sign road-sign-${signType}`;
+            wrapper.innerHTML = roadSignSvgs[signType] ?? "";
+            return wrapper;
+        }
 
         function stopQuestionSpeech() {
             if ("speechSynthesis" in window) window.speechSynthesis.cancel();
@@ -341,7 +365,9 @@
             lastQuestion = activeQuestion;
             topicLabel.textContent = activeTopic.title;
             questionTitle.textContent = activeQuestion.prompt;
-            questionSymbol.textContent = activeQuestion.symbol;
+            questionSymbol.replaceChildren();
+            if (activeQuestion.signType) questionSymbol.append(createRoadSign(activeQuestion.signType));
+            else questionSymbol.textContent = activeQuestion.symbol;
             quizStatus.textContent = "Vyber správnou odpověď.";
             activeChoices = shuffled(activeQuestion.choices.map((label, index) => ({
                 label,
@@ -571,7 +597,9 @@
 
         function flipMemoryCard(button, pair, index) {
             if (memoryLocked || button.disabled || button === memoryFirst) return;
-            button.textContent = pair.symbol;
+            button.replaceChildren();
+            if (pair.signType) button.append(createRoadSign(pair.signType));
+            else button.textContent = pair.symbol;
             button.classList.add("is-open");
             button.setAttribute("aria-label", `${pair.name}, kartička ${index + 1}`);
             if (!memoryFirst) {
@@ -603,7 +631,7 @@
             window.setTimeout(() => {
                 if (boardVersion !== memoryBoardVersion) return;
                 [memoryFirst, memorySecond].forEach((card) => {
-                    card.textContent = "❔";
+                    card.replaceChildren(document.createTextNode("❔"));
                     card.classList.remove("is-open");
                     const cardIndex = [...memoryGrid.children].indexOf(card);
                     card.setAttribute("aria-label", `Kartička ${cardIndex + 1}, zakrytá`);
@@ -643,6 +671,18 @@
         document.querySelector("#restart-category-sort").addEventListener("click", startCategorySort);
         document.querySelector("#restart-sequence").addEventListener("click", startSeasonSequence);
         document.querySelector("#restart-memory").addEventListener("click", startMemoryGame);
+        document.querySelectorAll("[data-activity-target]").forEach((button) => {
+            button.addEventListener("click", () => {
+                stopQuestionSpeech();
+                const target = button.dataset.activityTarget;
+                document.querySelectorAll("[data-activity-target]").forEach((option) => {
+                    option.setAttribute("aria-pressed", String(option === button));
+                });
+                document.querySelectorAll("[data-activity-panel]").forEach((panel) => {
+                    panel.hidden = panel.dataset.activityPanel !== target;
+                });
+            });
+        });
         renderTopics();
         showQuestion();
         startSeasonSort();

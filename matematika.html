@@ -275,12 +275,26 @@
         .secondary-button { border-color: #d7e3e8; background: #fff; color: var(--accent-dark); }
         .secondary-button:hover { background: #f4f9f7; }
         .toast { min-height: 22px; margin: 12px 0 0; color: var(--accent-dark); font-size: 12px; text-align: center; }
+        .shop-stage { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:14px; margin:16px 0; padding:14px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(135deg,#eaf4fb,#fff3d8); }
+        .shop-toy { display:grid; width:96px; height:96px; place-items:center; border-radius:14px; background:#fff; font-size:58px; }
+        .shop-toy-name { margin:0; color:var(--ink); font-size:19px; font-weight:750; }
+        .shop-price { margin:3px 0 0; color:var(--accent-dark); font-size:18px; font-weight:750; }
+        .wallet { padding:14px; border:2px dashed #a9c7cf; border-radius:16px; background:#f7fbfc; }
+        .wallet-heading { margin-bottom:10px; color:var(--accent-dark); font-weight:750; }
+        .wallet-coins { display:flex; flex-wrap:wrap; justify-content:center; gap:9px; }
+        .money-coin { position:relative; display:grid; width:70px; height:70px; place-items:center; border:3px solid #d2a73f; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff8cd,#f3d976 72%,#dfb848); color:#654d16; cursor:pointer; font-size:14px; font-weight:800; box-shadow:inset 0 0 0 3px #f9e9a5,0 2px 4px #26374620; }
+        .money-coin[aria-pressed="true"] { background:radial-gradient(circle at 35% 30%,#f8e7b0,#d8c7b0 72%,#b3a08b); color:#625747; }
+        .money-coin[aria-pressed="true"]::after { position:absolute; width:82px; height:4px; border-radius:4px; background:#c34242; content:""; transform:rotate(-43deg); }
+        .money-total { margin:12px 0 0; color:var(--accent-dark); font-weight:750; text-align:center; }
+        .money-status { min-height:24px; margin:12px 0 0; color:var(--accent-dark); font-weight:650; text-align:center; }
         footer { padding: 0 20px 24px; color: #617482; font-size: 12px; text-align: center; }
         @media (max-width: 700px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
             .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 12px; }
             main { width: min(100% - 28px, 560px); padding-top: 22px; }
             .math-card { padding: 22px; }
+            .shop-stage { grid-template-columns:1fr; justify-items:center; text-align:center; }
+            .money-coin { width:62px; height:62px; }
         }
         @media (max-width: 390px) {
             .brand { gap: 7px; font-size: 16px; }
@@ -342,6 +356,29 @@
             <p class="toast" id="number-bond-status" role="status" aria-live="polite"></p>
             <p class="toast" id="number-bond-speech-status" role="status" aria-live="polite"></p>
         </section>
+        <section class="math-card" aria-labelledby="shop-title" style="margin-top: 20px;">
+            <h2 id="shop-title">Nakupujeme za mince</h2>
+            <p class="card-intro">Vyber z peněženky mince, kterými zaplatíš přesně cenu hračky. Vybranou minci můžeš klepnutím zase vrátit.</p>
+            <div class="exercise-controls" style="margin-top:0;">
+                <button class="secondary-button" id="read-shop-instructions" type="button">🔊 Přehrát zadání</button>
+                <button class="secondary-button" id="stop-shop-speech" type="button" hidden>⏹ Zastavit</button>
+            </div>
+            <p class="toast" id="shop-speech-status" role="status" aria-live="polite"></p>
+            <div class="shop-stage" aria-live="polite">
+                <div class="shop-toy" id="shop-toy-symbol" aria-hidden="true"></div>
+                <div><p class="shop-toy-name" id="shop-toy-name"></p><p class="shop-price" id="shop-price"></p></div>
+            </div>
+            <div class="wallet">
+                <div class="wallet-heading">👛 Tvoje peněženka</div>
+                <div class="wallet-coins" id="wallet-coins" role="group" aria-label="Mince v peněžence"></div>
+            </div>
+            <p class="money-total" id="money-total" aria-live="polite"></p>
+            <div class="exercise-controls">
+                <button class="submit-button" id="buy-toy" type="button">Zaplatit přesně</button>
+                <button class="secondary-button" id="next-purchase" type="button" hidden>Další nákup</button>
+            </div>
+            <p class="money-status" id="money-status" role="status" aria-live="polite"></p>
+        </section>
     </main>
 
     <footer>Každý malý krok se počítá. Cvičte jen tak dlouho, jak je vám příjemné.</footer>
@@ -357,10 +394,32 @@
         const numberBondStatus = document.querySelector("#number-bond-status");
         const numberBondSpeechStatus = document.querySelector("#number-bond-speech-status");
         const stopNumberBondSpeechButton = document.querySelector("#stop-number-bond-speech");
+        const shopToySymbol = document.querySelector("#shop-toy-symbol");
+        const shopToyName = document.querySelector("#shop-toy-name");
+        const shopPrice = document.querySelector("#shop-price");
+        const walletCoins = document.querySelector("#wallet-coins");
+        const moneyTotal = document.querySelector("#money-total");
+        const moneyStatus = document.querySelector("#money-status");
+        const shopSpeechStatus = document.querySelector("#shop-speech-status");
+        const stopShopSpeechButton = document.querySelector("#stop-shop-speech");
+        const buyToyButton = document.querySelector("#buy-toy");
+        const nextPurchaseButton = document.querySelector("#next-purchase");
         let generatedMathQuestions = [];
         let generatedNumberBonds = [];
         let maxNumber = 5;
         let activeMathUtterance = null;
+        let activeShopUtterance = null;
+        let shopRound = 0;
+        let currentShopTask = null;
+        let selectedCoinIndexes = new Set();
+        const shopTasks = [
+            { id:"kite", name:"Drak", symbol:"🪁", price:3, coins:[1,1,2] },
+            { id:"ball", name:"Míč", symbol:"⚽", price:4, coins:[1,2,2,1] },
+            { id:"teddy", name:"Plyšový medvěd", symbol:"🧸", price:5, coins:[2,1,5,1] },
+            { id:"book", name:"Knížka", symbol:"📘", price:6, coins:[5,1,2,1] },
+            { id:"car", name:"Autíčko", symbol:"🚗", price:7, coins:[5,2,1,2] },
+            { id:"doll", name:"Panenka", symbol:"🪆", price:8, coins:[5,2,2,1,1] }
+        ];
 
         function initializeNumberLimit() {
             try {
@@ -389,6 +448,104 @@
                 [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
             }
             return result;
+        }
+
+        function renderWallet() {
+            selectedCoinIndexes = new Set();
+            walletCoins.replaceChildren(...currentShopTask.coins.map((value, index) => {
+                const coin = document.createElement("button");
+                coin.className = "money-coin";
+                coin.type = "button";
+                coin.textContent = `${value} Kč`;
+                const denomination = value === 1 ? "koruna" : value < 5 ? "koruny" : "korun";
+                coin.setAttribute("aria-label", `${index + 1}. mince, ${value} ${denomination}`);
+                coin.setAttribute("aria-pressed", "false");
+                coin.addEventListener("click", () => {
+                    if (coin.disabled) return;
+                    if (selectedCoinIndexes.has(index)) selectedCoinIndexes.delete(index);
+                    else selectedCoinIndexes.add(index);
+                    coin.setAttribute("aria-pressed", String(selectedCoinIndexes.has(index)));
+                    updateMoneyTotal();
+                });
+                return coin;
+            }));
+            shopToySymbol.textContent = currentShopTask.symbol;
+            shopToyName.textContent = currentShopTask.name;
+            shopPrice.textContent = `Cena: ${currentShopTask.price} Kč`;
+            moneyStatus.textContent = "Vyber mince, kterými zaplatíš.";
+            buyToyButton.hidden = false;
+            nextPurchaseButton.hidden = true;
+            updateMoneyTotal();
+        }
+
+        function updateMoneyTotal() {
+            const sum = [...selectedCoinIndexes].reduce((total, index) => total + currentShopTask.coins[index], 0);
+            moneyTotal.textContent = `Vybráno: ${sum} Kč z ${currentShopTask.price} Kč`;
+            if (sum === currentShopTask.price) moneyStatus.textContent = "Máš přesně. Teď můžeš zaplatit.";
+            else if (sum > currentShopTask.price) moneyStatus.textContent = `To je o ${sum - currentShopTask.price} Kč víc. Vrať některou minci.`;
+            else if (sum > 0) moneyStatus.textContent = `Ještě chybí ${currentShopTask.price - sum} Kč.`;
+            else moneyStatus.textContent = "Vyber mince, kterými zaplatíš.";
+        }
+
+        function startShopRound() {
+            const choices = shopRound === 0 ? [shopTasks[0]] : shopTasks.filter((task) => task !== currentShopTask);
+            currentShopTask = choices[randomInteger(0, choices.length - 1)];
+            shopRound += 1;
+            renderWallet();
+        }
+
+        function buyToy() {
+            const sum = [...selectedCoinIndexes].reduce((total, index) => total + currentShopTask.coins[index], 0);
+            if (sum !== currentShopTask.price) {
+                moneyStatus.textContent = sum < currentShopTask.price
+                    ? `Ještě chybí ${currentShopTask.price - sum} Kč. Vyber další minci.`
+                    : `Vybral/a jsi o ${sum - currentShopTask.price} Kč víc. Vrať některou minci.`;
+                return;
+            }
+            walletCoins.querySelectorAll("button").forEach((coin) => { coin.disabled = true; });
+            moneyStatus.textContent = `Výborně! Za ${sum} Kč sis koupil/a ${currentShopTask.name.toLowerCase()}.`;
+            buyToyButton.hidden = true;
+            nextPurchaseButton.hidden = false;
+            window.rewardPetCoin?.(`math-shop-${currentShopTask.id}-${shopRound}`);
+        }
+
+        function speakShopInstructions() {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                shopSpeechStatus.textContent = "Tento prohlížeč nepodporuje čtení nahlas.";
+                return;
+            }
+            stopNumberBondSpeech(false);
+            const utterance = new SpeechSynthesisUtterance("Vyber z peněženky mince, kterými zaplatíš přesně cenu hračky. Klepnutím na minci ji vybereš nebo vrátíš. Až budeš mít přesnou částku, klepni na Zaplatit přesně.");
+            const voice = window.speechSynthesis.getVoices().find((item) => item.lang?.toLowerCase().startsWith("cs"));
+            if (voice) utterance.voice = voice;
+            utterance.lang = "cs-CZ";
+            utterance.rate = 0.88;
+            activeShopUtterance = utterance;
+            stopShopSpeechButton.hidden = false;
+            utterance.onend = () => {
+                if (activeShopUtterance !== utterance) return;
+                activeShopUtterance = null;
+                stopShopSpeechButton.hidden = true;
+                shopSpeechStatus.textContent = "";
+            };
+            utterance.onerror = (event) => {
+                if (event.error === "canceled" || event.error === "interrupted" || activeShopUtterance !== utterance) return;
+                activeShopUtterance = null;
+                stopShopSpeechButton.hidden = true;
+                shopSpeechStatus.textContent = "Přehrávání se nepovedlo. Zkontroluj zvuk a hlasové nastavení zařízení.";
+            };
+            window.speechSynthesis.speak(utterance);
+            shopSpeechStatus.textContent = "Přehrávám zadání.";
+        }
+
+        function stopShopSpeech(updateStatus = true) {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            activeShopUtterance = null;
+            activeMathUtterance = null;
+            stopShopSpeechButton.hidden = true;
+            stopNumberBondSpeechButton.hidden = true;
+            shopSpeechStatus.textContent = updateStatus ? "Přehrávání bylo zastaveno." : "";
+            numberBondSpeechStatus.textContent = "";
         }
 
         function makeMathQuestion(type) {
@@ -582,7 +739,10 @@
         function stopNumberBondSpeech(updateStatus = true) {
             if ("speechSynthesis" in window) window.speechSynthesis.cancel();
             activeMathUtterance = null;
+            activeShopUtterance = null;
             stopNumberBondSpeechButton.hidden = true;
+            stopShopSpeechButton.hidden = true;
+            shopSpeechStatus.textContent = "";
             numberBondSpeechStatus.textContent = updateStatus ? "Přehrávání bylo zastaveno." : "";
         }
 
@@ -664,6 +824,11 @@
             speakNumberBondText("Doplň číslo, které chybí. Nahoře vidíš celé číslo. Dole jsou jeho dvě části. V jednom okénku je číslo napsané. Do druhého okénka doplň, kolik ještě chybí.");
         });
         stopNumberBondSpeechButton.addEventListener("click", () => stopNumberBondSpeech());
+        document.querySelector("#read-shop-instructions").addEventListener("click", speakShopInstructions);
+        stopShopSpeechButton.addEventListener("click", () => stopShopSpeech());
+        buyToyButton.addEventListener("click", buyToy);
+        nextPurchaseButton.addEventListener("click", startShopRound);
+        startShopRound();
         window.addEventListener("beforeunload", () => {
             if ("speechSynthesis" in window) window.speechSynthesis.cancel();
         });
