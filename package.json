@@ -6,5 +6,8 @@
     "story:serve": "node scripts/serve-story.mjs"
   },
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
 }
