@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#edf5f7">
+    <meta name="description" content="Hravé otázky z prvouky pro malé školáky.">
+    <title>Prvouka — Mise učení</title>
+    <style>
+        :root { color-scheme: light; --ink:#263746; --muted:#617482; --paper:#fff; --accent:#287f9b; --deep:#1c5d75; --soft:#deedf2; --line:#d7e3e8; }
+        * { box-sizing:border-box; }
+        body { margin:0; color:var(--ink); background:linear-gradient(135deg,#edf5f7 0%,#f4f9f7 54%,#fff7e6 100%); font:15px/1.6 "Segoe UI",Arial,sans-serif; }
+        button,a { font:inherit; -webkit-tap-highlight-color:transparent; }
+        button:focus-visible,a:focus-visible { outline:3px solid #70adba; outline-offset:3px; }
+        .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; max-width:1160px; margin:auto; padding:20px 30px; }
+        .brand { display:flex; align-items:center; gap:10px; color:var(--ink); font:700 19px Georgia,"Times New Roman",serif; text-decoration:none; }
+        .brand-mark { display:grid; width:36px; height:36px; place-items:center; border-radius:50%; background:var(--soft); font:19px sans-serif; }
+        .topbar-actions { display:flex; flex-wrap:wrap; align-items:center; gap:14px; }
+        .top-link { color:var(--deep); font-size:13px; font-weight:650; text-decoration:none; }
+        .top-link[aria-current="page"] { color:var(--muted); }
+        main { width:min(100% - 32px,900px); margin:auto; padding:28px 0 64px; }
+        .page-heading { max-width:650px; margin:0 auto 22px; text-align:center; }
+        .eyebrow { margin:0 0 8px; color:var(--accent); font-size:11px; font-weight:750; letter-spacing:.15em; text-transform:uppercase; }
+        h1,h2,p { margin-top:0; }
+        h1 { margin:0 0 8px; font:500 clamp(32px,6vw,46px)/1.15 Georgia,"Times New Roman",serif; }
+        .page-heading p:last-child { margin-bottom:0; color:var(--muted); }
+        .topic-picker { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 auto 18px; }
+        .topic-button,.action-button,.answer-option { min-height:44px; padding:9px 14px; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--deep); cursor:pointer; font-weight:700; }
+        .topic-button[aria-pressed="true"] { border-color:var(--accent); background:var(--soft); }
+        .quiz-card { padding:24px; border:1px solid rgba(38,55,70,.1); border-radius:20px; background:var(--paper); box-shadow:0 12px 32px rgba(38,55,70,.07); }
+        .quiz-heading { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:12px; }
+        .quiz-heading h2 { margin:0; font:600 clamp(20px,4vw,27px)/1.25 Georgia,"Times New Roman",serif; }
+        .question-symbol { display:grid; min-height:150px; place-items:center; margin:16px 0; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#eaf4fb,#fff3d8); font-size:78px; }
+        .answer-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+        .answer-option { min-height:64px; border-radius:14px; font-size:16px; }
+        .answer-option:hover:not(:disabled) { background:#edf5f7; }
+        .answer-option:disabled { cursor:default; opacity:.8; }
+        .answer-option.is-correct { border-color:#63a67a; background:#edf8ef; color:#275b35; }
+        .answer-option.is-wrong { border-color:#d7a0a0; background:#fff0f0; color:#8a3c2e; }
+        .quiz-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:16px; }
+        .action-button.primary { border-color:var(--accent); background:var(--accent); color:#fff; }
+        .action-button.primary:hover { background:var(--deep); }
+        .quiz-status { min-height:24px; margin:12px 0 0; color:var(--deep); font-weight:650; text-align:center; }
+        .quiz-progress { color:var(--muted); font-size:12px; text-align:center; }
+        footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
+        @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } .quiz-card { padding:18px; } }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html"><span class="brand-mark" aria-hidden="true">🧭</span><span>Mise učení</span></a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="prvouka.html" aria-current="page">Prvouka</a>
+            <a class="top-link" href="minecraft.html">Minecraft</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+            <a class="top-link" href="mazlicek.html">🐱 Mazlíček</a>
+        </nav>
+    </header>
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">Poznáváme svět kolem sebe</p>
+            <h1>Prvouka</h1>
+            <p>Vyber si téma, poslechni si otázku a klepni na správnou odpověď.</p>
+        </header>
+        <div class="topic-picker" id="topic-picker" role="group" aria-label="Vyber téma prvouky"></div>
+        <section class="quiz-card" aria-labelledby="question-title">
+            <div class="quiz-heading">
+                <div><p class="eyebrow" id="topic-label"></p><h2 id="question-title"></h2></div>
+                <button class="action-button" id="read-question" type="button">🔊 Přečíst otázku</button>
+            </div>
+            <div class="question-symbol" id="question-symbol" aria-hidden="true"></div>
+            <div class="answer-options" id="answer-options" role="group" aria-label="Možnosti odpovědi"></div>
+            <p class="quiz-status" id="quiz-status" role="status" aria-live="polite"></p>
+            <p class="quiz-progress" id="quiz-progress" aria-live="polite">Správné odpovědi: 0</p>
+            <div class="quiz-actions"><button class="action-button primary" id="next-question" type="button">Další otázka</button></div>
+        </section>
+    </main>
+    <footer>Každá správná odpověď přidá minci tvému mazlíčkovi.</footer>
+    <script src="scripts/pet-rewards.js"></script>
+    <script>
+        const topics = [
+            { id:"body", title:"Lidské tělo", icon:"🧍", questions:[
+                { id:"ears", prompt:"Čím slyšíme zvuky?", symbol:"👂", choices:["Ušima","Očima","Rukama"], correct:0, success:"Zvuky slyšíme ušima." },
+                { id:"eyes", prompt:"Kterou částí těla vidíme?", symbol:"👀", choices:["Nosem","Očima","Koleny"], correct:1, success:"Vidíme očima." },
+                { id:"smell", prompt:"Čím cítíme vůni květiny?", symbol:"🌷", choices:["Nosem","Ušima","Loktem"], correct:0, success:"Vůni cítíme nosem." },
+                { id:"elbow", prompt:"Kde se ohýbá ruka?", symbol:"💪", choices:["V lokti","V kotníku","V koleni"], correct:0, success:"Ruka se ohýbá v lokti." }
+            ]},
+            { id:"nature", title:"Příroda", icon:"🌱", questions:[
+                { id:"roots", prompt:"Kterou částí rostlina přijímá vodu z půdy?", symbol:"🌿", choices:["Kořeny","Květem","Plodem"], correct:0, success:"Vodu z půdy přijímají kořeny." },
+                { id:"leaves", prompt:"Která část rostliny zachycuje světlo?", symbol:"🍃", choices:["Listy","Kořeny","Semínka"], correct:0, success:"Světlo zachycují listy." },
+                { id:"oak", prompt:"Který z těchto stromů má žaludy?", symbol:"🌳", choices:["Dub","Bříza","Smrk"], correct:0, success:"Žaludy rostou na dubu." },
+                { id:"flower", prompt:"Co může vyrůst z květu?", symbol:"🌼", choices:["Plod se semínky","Kamínek","Vločka"], correct:0, success:"Z květu může vzniknout plod se semínky." }
+            ]},
+            { id:"animals", title:"Zvířata", icon:"🐾", questions:[
+                { id:"water", prompt:"Které zvíře žije ve vodě?", symbol:"💧", choices:["Delfín","Liška","Kůň"], correct:0, success:"Delfín žije ve vodě." },
+                { id:"milk", prompt:"Které zvíře nám dává mléko?", symbol:"🥛", choices:["Kravička","Žába","Vrabec"], correct:0, success:"Mléko nám dává třeba kravička." },
+                { id:"shell", prompt:"Které zvíře nosí svůj krunýř?", symbol:"🐢", choices:["Želva","Kočka","Včela"], correct:0, success:"Želva nosí krunýř." },
+                { id:"fox", prompt:"Kde nejčastěji bydlí liška?", symbol:"🦊", choices:["V noře","V rybníku","V úlu"], correct:0, success:"Liška bydlí v noře." }
+            ]},
+            { id:"seasons", title:"Roční období", icon:"🍂", questions:[
+                { id:"spring", prompt:"Které období přichází po zimě?", symbol:"🌷", choices:["Jaro","Léto","Podzim"], correct:0, success:"Po zimě přichází jaro." },
+                { id:"autumn", prompt:"Kdy na stromech dozrávají jablka?", symbol:"🍎", choices:["Na podzim","V zimě","Na jaře"], correct:0, success:"Jablka dozrávají na podzim." },
+                { id:"summer", prompt:"Kdy bývá nejtepleji?", symbol:"☀️", choices:["V létě","V zimě","Na podzim"], correct:0, success:"Nejtepleji bývá v létě." },
+                { id:"winter", prompt:"Ve kterém období často padá sníh?", symbol:"❄️", choices:["V zimě","V létě","Na jaře"], correct:0, success:"Sníh často padá v zimě." }
+            ]},
+            { id:"safety", title:"Bezpečně na cestě", icon:"🚦", questions:[
+                { id:"green", prompt:"Na jakou barvu semaforu můžeme přejít?", symbol:"🚦", choices:["Na zelenou","Na červenou","Na modrou"], correct:0, success:"Přecházíme na zelenou, když je cesta volná." },
+                { id:"crossing", prompt:"Kde přecházíme silnici?", symbol:"🚸", choices:["Na přechodu","Mezi zaparkovanými auty","Kdekoliv v zatáčce"], correct:0, success:"Silnici přecházíme na přechodu." },
+                { id:"seatbelt", prompt:"Co si připneme v autě?", symbol:"🚗", choices:["Bezpečnostní pás","Šálu přes oči","Batoh na hlavu"], correct:0, success:"V autě si připínáme bezpečnostní pás." },
+                { id:"lost", prompt:"Co uděláš, když se ztratíš?", symbol:"🧑‍🚒", choices:["Požádám o pomoc důvěryhodného dospělého","Odejdu s cizím člověkem","Schovám se"], correct:0, success:"O pomoc požádáme důvěryhodného dospělého nebo policistu." }
+            ]}
+        ];
+        const topicPicker = document.querySelector("#topic-picker");
+        const topicLabel = document.querySelector("#topic-label");
+        const questionTitle = document.querySelector("#question-title");
+        const questionSymbol = document.querySelector("#question-symbol");
+        const answerOptions = document.querySelector("#answer-options");
+        const quizStatus = document.querySelector("#quiz-status");
+        const quizProgress = document.querySelector("#quiz-progress");
+        let activeTopic = topics[0];
+        let activeQuestion = null;
+        let activeChoices = [];
+        let lastQuestion = null;
+        let answered = false;
+        let correctCount = 0;
+        let activeUtterance = null;
+
+        function stopQuestionSpeech() {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            activeUtterance = null;
+        }
+
+        function speakQuestion() {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+                quizStatus.textContent = "Tento prohlížeč neumí otázku přečíst nahlas.";
+                return;
+            }
+            stopQuestionSpeech();
+            const choices = activeChoices.map((choice) => choice.label).join(". ");
+            const utterance = new SpeechSynthesisUtterance(`${activeQuestion.prompt} Možnosti: ${choices}.`);
+            const voice = window.speechSynthesis.getVoices().find((item) => item.lang.toLowerCase().startsWith("cs"));
+            if (voice) utterance.voice = voice;
+            utterance.lang = "cs-CZ";
+            utterance.rate = 0.88;
+            activeUtterance = utterance;
+            utterance.onend = () => { if (activeUtterance === utterance) activeUtterance = null; };
+            utterance.onerror = () => { if (activeUtterance === utterance) activeUtterance = null; };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function shuffled(items) {
+            const result = [...items];
+            for (let index = result.length - 1; index > 0; index -= 1) {
+                const other = Math.floor(Math.random() * (index + 1));
+                [result[index], result[other]] = [result[other], result[index]];
+            }
+            return result;
+        }
+        function renderTopics() {
+            topicPicker.replaceChildren(...topics.map((topic) => {
+                const button = document.createElement("button");
+                button.className = "topic-button";
+                button.type = "button";
+                button.textContent = `${topic.icon} ${topic.title}`;
+                button.setAttribute("aria-pressed", String(topic === activeTopic));
+                button.addEventListener("click", () => {
+                    activeTopic = topic;
+                    lastQuestion = null;
+                    renderTopics();
+                    showQuestion();
+                });
+                return button;
+            }));
+        }
+
+        function showQuestion() {
+            stopQuestionSpeech();
+            answered = false;
+            const available = activeTopic.questions.filter((question) => question !== lastQuestion);
+            activeQuestion = available[Math.floor(Math.random() * available.length)] ?? activeTopic.questions[0];
+            lastQuestion = activeQuestion;
+            topicLabel.textContent = activeTopic.title;
+            questionTitle.textContent = activeQuestion.prompt;
+            questionSymbol.textContent = activeQuestion.symbol;
+            quizStatus.textContent = "Vyber správnou odpověď.";
+            activeChoices = shuffled(activeQuestion.choices.map((label, index) => ({
+                label,
+                correct: index === activeQuestion.correct
+            })));
+            answerOptions.replaceChildren(...activeChoices.map((choice) => {
+                const button = document.createElement("button");
+                button.className = "answer-option";
+                button.type = "button";
+                button.textContent = choice.label;
+                button.dataset.correct = String(choice.correct);
+                button.addEventListener("click", () => checkAnswer(button));
+                return button;
+            }));
+        }
+
+        function checkAnswer(button) {
+            if (answered) return;
+            if (button.dataset.correct === "true") {
+                answered = true;
+                button.classList.add("is-correct");
+                answerOptions.querySelectorAll("button").forEach((option) => { option.disabled = true; });
+                correctCount += 1;
+                quizProgress.textContent = `Správné odpovědi: ${correctCount}`;
+                quizStatus.textContent = `Výborně! ${activeQuestion.success}`;
+                window.rewardPetCoin?.(`prvouka-${activeTopic.id}-${activeQuestion.id}`);
+                return;
+            }
+            button.classList.add("is-wrong");
+            button.disabled = true;
+            quizStatus.textContent = "To není ono. Zkus jinou odpověď.";
+        }
+
+        document.querySelector("#read-question").addEventListener("click", speakQuestion);
+        document.querySelector("#next-question").addEventListener("click", showQuestion);
+        renderTopics();
+        showQuestion();
+        window.addEventListener("beforeunload", stopQuestionSpeech);
+    </script>
+</body>
+</html>
