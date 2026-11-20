@@ -50,6 +50,7 @@
         .reader-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
         .reader-head h2 { font-size:27px; }
         .reader-tools { display:flex; gap:8px; flex-wrap:wrap; }
+        .reader-tools button[hidden] { display:none; }
         .reading-text { margin:12px 0 18px; padding:clamp(18px,4vw,32px); border-radius:14px; background:#fffaf1; font:clamp(22px,3.5vw,29px)/1.85 Georgia,serif; letter-spacing:.015em; }
         .reading-text p { margin:0 0 12px; } .reading-text p:last-child { margin-bottom:0; }
         .question { margin:14px 0 8px; font-weight:750; font-size:17px; }
@@ -104,11 +105,11 @@
         </section>
 
         <section class="panel" id="reader" aria-labelledby="story-title" hidden>
-            <div class="reader-head"><div><p class="eyebrow" id="story-level"></p><h2 id="story-title"></h2></div><div class="reader-tools"><button class="small-button" id="speak" type="button">🔊 Přečíst nahlas</button><button class="small-button" id="font-size" type="button" aria-label="Zvětšit písmo">A+</button></div></div>
+            <div class="reader-head"><div><p class="eyebrow" id="story-level"></p><h2 id="story-title"></h2></div><div class="reader-tools"><button class="small-button" id="speak" type="button">🔊 Přečíst nahlas</button><button class="small-button" id="pause-speech" type="button" hidden>Pozastavit</button><button class="small-button" id="stop-speech" type="button" hidden>⏹ Zastavit</button><button class="small-button" id="font-size" type="button" aria-label="Zvětšit písmo">A+</button></div></div>
             <div class="reading-text" id="story-text"></div>
             <div id="question-box" hidden><p class="question" id="question-text"></p><div class="answers" id="answers"></div><p class="feedback" id="feedback" role="status" aria-live="polite"></p></div>
             <section id="create-box" hidden aria-labelledby="create-title"><p class="question" id="create-title">Co se bude dít dál?</p><p class="subtle">Vyber jednu možnost. Podle ní se příběh rozvine a nabídne ti další rozhodnutí.</p><p class="subtle">V pokračování se mohou objevit i nová písmena — zkus je přečíst s někým dospělým.</p><p class="question" id="branch-prompt" aria-live="polite"></p><div class="idea-buttons" id="branch-options"></div></section>
-            <div id="completion" hidden><p class="question">Příběh dokončen! ⭐</p><p class="subtle">Vymyslel/a jsi vlastní pokračování. Hvězdička je za čtení i nápady!</p><button class="button" id="speak-complete" type="button">🔊 Přehrát celý příběh</button><p class="status" id="speech-status" role="status" aria-live="polite"></p></div>
+            <div id="completion" hidden><p class="question">Příběh dokončen! ⭐</p><p class="subtle">Vymyslel/a jsi vlastní pokračování. Hvězdička je za čtení i nápady!</p><button class="button" id="speak-complete" type="button">🔊 Přehrát celý příběh</button></div><p class="status" id="speech-status" role="status" aria-live="polite"></p>
             <div class="finish-row"><button class="button" id="back-to-map" type="button">← Zpět na stezku</button><button class="button" id="retry" type="button" hidden>Přečíst znovu ↻</button><button class="button primary" id="continue" type="button" hidden>Další příběh →</button></div>
         </section>
     </main>
@@ -199,6 +200,7 @@
         let storyPath = [];
         let branchStep = 0;
         let currentFont = 29;
+        let activeStorySpeech = null;
         try { const stored = JSON.parse(localStorage.getItem(key)); if (stored && Array.isArray(stored.completed) && Array.isArray(stored.letters)) state = { ...state, ...stored, creations:Array.isArray(stored.creations)?stored.creations:[] }; } catch { /* Poškozený nebo vypnutý místní úložný prostor nebrání čtení. */ }
         const letterSet = new Set(state.letters);
         const normalizeLetters = (text) => [...text.normalize("NFC").toLocaleUpperCase("cs-CZ")].filter((char) => /\p{L}/u.test(char));
@@ -224,7 +226,16 @@
             if (!available.length) { const note = document.createElement("p"); note.className="empty"; note.textContent="Zatím tu není příběh se všemi vybranými písmeny. Zkus přidat další písmena, nebo vybrat jinou úroveň."; holder.append(note); return; }
             for (const story of available) { const button = document.createElement("button"); button.className="story-pick"; button.type="button"; button.setAttribute("aria-pressed", String(activeStory?.id === story.id)); const title=document.createElement("strong"); title.textContent=`${state.completed.includes(story.id) ? "⭐ " : "📖 "}${story.title}`; const detail=document.createElement("span"); detail.textContent=story.level===0?"Krátké věty · začínám číst":story.level===1?"První třída · krátký příběh":"Druhá třída · příběh a přemýšlení"; button.append(title,detail); button.addEventListener("click",()=>openStory(story)); holder.append(button); }
         }
+        function stopStorySpeech(message = "") {
+            if ("speechSynthesis" in window) speechSynthesis.cancel();
+            activeStorySpeech = null;
+            $("#pause-speech").hidden = true;
+            $("#stop-speech").hidden = true;
+            $("#pause-speech").textContent = "Pozastavit";
+            $("#speech-status").textContent = message;
+        }
         function openStory(story) {
+            stopStorySpeech();
             activeStory=story; $("#reader").hidden=false; $("#story-title").textContent=story.title; $("#story-level").textContent=story.level===0?"Začínám číst":story.level===1?"První třída":"Druhá třída";
             const text=$("#story-text"); text.replaceChildren(...story.text.map(line=>{ const p=document.createElement("p"); p.textContent=line; return p; })); text.style.fontSize=`${currentFont}px`;
             storyPath=[]; branchStep=0; $("#question-box").hidden=true; $("#create-box").hidden=true; $("#completion").hidden=true; $("#continue").hidden=true; $("#retry").hidden=true; $("#feedback").textContent=""; $("#speech-status").textContent=""; $("#question-text").textContent=story.question;
@@ -255,28 +266,38 @@
         function finishStory() {
             $("#create-box").hidden=true; $("#question-box").hidden=false; $("#question-text").textContent=`Na konec příběhu: ${activeStory.question}`; $("#feedback").textContent="";
         }
-        $("#level").value=String(state.level); $("#level").addEventListener("change",()=>{ activeStory=null; save(); renderStories(); });
+        $("#level").value=String(state.level); $("#level").addEventListener("change",()=>{ stopStorySpeech(); activeStory=null; save(); renderStories(); });
         $("#select-all").addEventListener("click",()=>{ alphabet.forEach(char=>letterSet.add(char)); save(); renderLetters(); renderStories(); });
         $("#clear-letters").addEventListener("click",()=>{ letterSet.clear(); save(); renderLetters(); renderStories(); });
         $("#select-common").addEventListener("click",()=>{ letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char)); save(); renderLetters(); renderStories(); });
         function speakWholeStory() {
             if(!activeStory) return;
-            if(!("speechSynthesis" in window)) { $("#speech-status").textContent="Přehrávání nahlas tento prohlížeč nepodporuje."; return; }
-            speechSynthesis.cancel();
+            if(!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") { $("#speech-status").textContent="Přehrávání nahlas tento prohlížeč nepodporuje."; return; }
+            stopStorySpeech();
             const utterance=new SpeechSynthesisUtterance(`${activeStory.title}. ${$("#story-text").innerText}`);
             utterance.lang="cs-CZ";
-            utterance.onstart=()=>{ $("#speech-status").textContent="Přehrávám celý příběh…"; };
-            utterance.onend=()=>{ $("#speech-status").textContent="Příběh je přehrán."; };
-            utterance.onerror=()=>{ $("#speech-status").textContent="Příběh se nepodařilo přehrát."; };
+            activeStorySpeech=utterance;
+            $("#pause-speech").hidden=false;
+            $("#stop-speech").hidden=false;
+            utterance.onstart=()=>{ if(activeStorySpeech===utterance) $("#speech-status").textContent="Přehrávám celý příběh…"; };
+            utterance.onend=()=>{ if(activeStorySpeech!==utterance) return; activeStorySpeech=null; $("#pause-speech").hidden=true; $("#stop-speech").hidden=true; $("#pause-speech").textContent="Pozastavit"; $("#speech-status").textContent="Příběh je přehrán."; };
+            utterance.onerror=(event)=>{ if(activeStorySpeech!==utterance || event.error==="canceled" || event.error==="interrupted") return; activeStorySpeech=null; $("#pause-speech").hidden=true; $("#stop-speech").hidden=true; $("#speech-status").textContent="Příběh se nepodařilo přehrát."; };
             speechSynthesis.speak(utterance);
         }
         $("#speak").addEventListener("click",speakWholeStory);
         $("#speak-complete").addEventListener("click",speakWholeStory);
+        $("#pause-speech").addEventListener("click",()=>{
+            if(!activeStorySpeech) return;
+            if(speechSynthesis.paused) { speechSynthesis.resume(); $("#pause-speech").textContent="Pozastavit"; $("#speech-status").textContent="Přehrávám celý příběh…"; }
+            else { speechSynthesis.pause(); $("#pause-speech").textContent="Pokračovat"; $("#speech-status").textContent="Přehrávání je pozastavené."; }
+        });
+        $("#stop-speech").addEventListener("click",()=>stopStorySpeech("Přehrávání bylo zastaveno."));
         $("#font-size").addEventListener("click",()=>{ currentFont=currentFont>=37?25:currentFont+4; $("#story-text").style.fontSize=`${currentFont}px`; });
-        $("#back-to-map").addEventListener("click",()=>{ $("#reader").hidden=true; activeStory=null; renderStories(); });
+        $("#back-to-map").addEventListener("click",()=>{ stopStorySpeech(); $("#reader").hidden=true; activeStory=null; renderStories(); });
         $("#retry").addEventListener("click",()=>{ if(activeStory) openStory(activeStory); $("#retry").hidden=true; });
-        $("#continue").addEventListener("click",()=>{ $("#reader").hidden=true; activeStory=null; renderStories(); $("#story-list").scrollIntoView({behavior:"smooth",block:"center"}); });
+        $("#continue").addEventListener("click",()=>{ stopStorySpeech(); $("#reader").hidden=true; activeStory=null; renderStories(); $("#story-list").scrollIntoView({behavior:"smooth",block:"center"}); });
         $("#reset-journey").addEventListener("click",()=>{
+            stopStorySpeech();
             if(!window.confirm("Opravdu chceš začít znovu? Smažou se hvězdičky, přečtené příběhy i vlastní pokračování.")) return;
             state={level:0,letters:[...defaultLetters],completed:[],creations:[],stars:0};
             letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char)); activeStory=null;

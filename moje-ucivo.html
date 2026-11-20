@@ -125,6 +125,10 @@
             color: var(--ink);
         }
         .template-help { min-height: 22px; margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+        .step-heading { display:flex; align-items:flex-start; gap:12px; margin:22px 0 12px; }
+        .step-number { display:grid; flex:0 0 30px; width:30px; height:30px; place-items:center; border-radius:50%; background:var(--lavender); color:var(--accent-dark); font-weight:750; }
+        .step-heading h3 { margin:0 0 2px; color:#49365b; font-size:15px; }
+        .step-heading p { margin:0; color:var(--muted); font-size:12px; }
         .cards-heading {
             display: flex;
             align-items: center;
@@ -269,10 +273,11 @@
             <p>Vytvořte jednoduché procvičování z toho, co právě probíráte. Vyplníte pár slov a aktivitu připravíme za vás.</p>
         </header>
         <section class="panel" aria-labelledby="create-title">
-            <h2 id="create-title">Připravit nové téma</h2>
+            <h2 id="create-title">Připravit procvičování</h2>
             <p class="intro">Například slovíčka, písmena nebo příklady ze školy. Není potřeba nic programovat.</p>
             <p class="storage-note">Témata se ukládají jen v tomto prohlížeči a na tomto zařízení. Zatím se nesdílejí s ostatními rodiči ani mezi zařízeními.</p>
             <form id="topic-form">
+                <div class="step-heading"><span class="step-number" aria-hidden="true">1</span><div><h3>Co se dítě učí?</h3><p>Pojmenujte téma a vyberte předmět.</p></div></div>
                 <div class="form-grid">
                     <div class="field">
                         <label for="topic-title">Název tématu</label>
@@ -288,7 +293,7 @@
                         </select>
                     </div>
                     <div class="field full">
-                        <label for="topic-template">Jak si chceš učivo procvičovat?</label>
+                        <label for="topic-template">Jak má dítě učivo procvičovat?</label>
                         <select id="topic-template" name="template">
                             <option value="cards">Obrázkové kartičky</option>
                             <option value="pairs">Přiřazování dvojic</option>
@@ -297,12 +302,14 @@
                         <p class="template-help" id="template-help"></p>
                     </div>
                 </div>
+                <div class="step-heading"><span class="step-number" aria-hidden="true">2</span><div><h3>Přidejte obsah</h3><p>Do každého řádku napište zadání a správnou odpověď. Obrázek je nepovinný.</p></div></div>
                 <div class="cards-heading">
                     <h3>Slova, příklady nebo pojmy</h3>
                     <button class="button" id="add-topic-row" type="button">＋ Přidat řádek</button>
                 </div>
                 <div id="topic-rows"></div>
                 <p class="intro" id="row-requirement"></p>
+                <div class="step-heading"><span class="step-number" aria-hidden="true">3</span><div><h3>Uložte a spusťte</h3><p>Téma se uloží v tomto prohlížeči a pak ho můžete spustit pro dítě.</p></div></div>
                 <div class="form-actions">
                     <button class="button primary" id="save-topic" type="submit">Uložit téma</button>
                     <button class="button" id="cancel-edit" type="button" hidden>Zrušit úpravy</button>
