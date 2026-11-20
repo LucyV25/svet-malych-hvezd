@@ -36,6 +36,10 @@
         .letter { display:flex; align-items:center; justify-content:center; min-height:38px; border:1px solid var(--line); border-radius:9px; cursor:pointer; font-weight:650; }
         .letter:has(input:checked) { border-color:#a987c9; background:var(--lav); color:var(--deep); }
         .letter input { position:absolute; opacity:0; pointer-events:none; }
+        .word-tools { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+        .known-words { display:flex; flex-wrap:wrap; gap:7px; }
+        .known-word { display:flex; align-items:center; gap:6px; min-height:36px; padding:5px 10px; border:1px solid var(--line); border-radius:9px; background:#fff; cursor:pointer; }
+        .known-word:has(input:checked) { border-color:#a987c9; background:var(--lav); color:var(--deep); }
         .journey { display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px; }
         .meter { height:11px; overflow:hidden; border-radius:99px; background:#eee8f1; }
         .meter span { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#bd9be0,#8052b8); transition:width .2s; }
@@ -84,7 +88,7 @@
 
         <section class="panel" aria-labelledby="setup-title">
             <h2 id="setup-title">Moje čtecí výprava</h2>
-            <p class="subtle">Rodič může nastavit úroveň. Postup a hvězdičky zůstávají uložené v tomto prohlížeči.</p>
+            <p class="subtle">Rodič může nastavit úroveň i slova, která už dítě přečte. Postup a výběr se ukládají v tomto prohlížeči.</p>
             <div class="setup-grid">
                 <div><label class="field-label" for="level">Co si chceš číst?</label><select id="level"><option value="0">Začínám číst — krátká slova a věty</option><option value="1">První třída — krátké příběhy</option><option value="2">Druhá třída — delší příběhy</option></select></div>
             </div>
@@ -93,6 +97,13 @@
                 <p class="subtle">Příběhy se ukážou jen tehdy, když jsou jejich písmena vybraná. Zaškrtnutí upravuje dospělý.</p>
                 <div class="letter-tools"><button class="small-button" id="select-common" type="button">Vybrat písmena příběhu</button><button class="small-button" id="select-all" type="button">Vybrat všechna</button><button class="small-button" id="clear-letters" type="button">Zrušit výběr</button></div>
                 <div class="letters" id="letters"></div>
+            </details>
+            <details id="word-settings">
+                <summary>Nastavit slova, která už dítě přečte</summary>
+                <p class="subtle">Příběh se ukáže, když dítě zná všechna jeho klíčová slova. Vyberte předvolbu a případně ji upravte zaškrtnutím slov.</p>
+                <div class="word-tools"><button class="small-button" id="words-beginner" type="button">Začíná číst</button><button class="small-button" id="words-first-grade" type="button">Prvňák</button><button class="small-button" id="words-all" type="button">Druhá třída · všechna slova</button><button class="small-button" id="words-none" type="button">Zrušit výběr</button></div>
+                <div class="known-words" id="known-words"></div>
+                <p class="status" id="word-setup-status" role="status" aria-live="polite"></p>
             </details>
             <p class="status" id="setup-status" role="status" aria-live="polite"></p>
         </section>
@@ -109,7 +120,7 @@
             <div class="reader-head"><div><p class="eyebrow" id="story-level"></p><h2 id="story-title"></h2></div><div class="reader-tools"><button class="small-button" id="speak" type="button">🔊 Přečíst nahlas</button><button class="small-button" id="pause-speech" type="button" hidden>Pozastavit</button><button class="small-button" id="stop-speech" type="button" hidden>⏹ Zastavit</button><button class="small-button" id="font-size" type="button" aria-label="Zvětšit písmo">A+</button></div></div>
             <div class="reading-text" id="story-text"></div>
             <div id="question-box" hidden><p class="question" id="question-text"></p><div class="answers" id="answers"></div><p class="feedback" id="feedback" role="status" aria-live="polite"></p></div>
-            <section id="create-box" hidden aria-labelledby="create-title"><p class="question" id="create-title">Co se bude dít dál?</p><p class="subtle">Vyber jednu možnost. Podle ní se příběh rozvine a nabídne ti další rozhodnutí.</p><p class="subtle">V pokračování se mohou objevit i nová písmena — zkus je přečíst s někým dospělým.</p><p class="question" id="branch-prompt" aria-live="polite"></p><div class="idea-buttons" id="branch-options"></div></section>
+            <section id="create-box" hidden aria-labelledby="create-title"><p class="question" id="create-title">Co se bude dít dál?</p><p class="subtle">Vyber jednu možnost. Podle ní se příběh rozvine a nabídne ti další rozhodnutí.</p><p class="subtle">V pokračování se mohou objevit i neznámá slova — přečtěte si je spolu s dospělým.</p><p class="question" id="branch-prompt" aria-live="polite"></p><div class="idea-buttons" id="branch-options"></div></section>
             <div id="completion" hidden><p class="question">Příběh dokončen! ⭐</p><p class="subtle">Vymyslel/a jsi vlastní pokračování. Hvězdička je za čtení i nápady!</p><button class="button" id="speak-complete" type="button">🔊 Přehrát celý příběh</button> <a class="button" href="mazlicek.html">🐱 Za odměnu navštívit mazlíčka</a></div><p class="status" id="speech-status" role="status" aria-live="polite"></p>
             <div class="finish-row"><button class="button" id="back-to-map" type="button">← Zpět na stezku</button><button class="button" id="retry" type="button" hidden>Přečíst znovu ↻</button><button class="button primary" id="continue" type="button" hidden>Další příběh →</button></div>
         </section>
@@ -119,12 +130,12 @@
     <script>
         const alphabet = [..."AÁBCČDĎEÉĚFGHIÍJKLMNŇOÓPQRŘSŠTŤUÚŮVWXYÝZŽ"];
         const stories = [
-            { id:"misa", level:0, title:"Míč pro Míšu", text:["MÁMA MÁ MÍČ.","MÍČ MÁ MÍŠA.","MÍŠA MÁ MÁMU."], question:"Kdo má míč?", answers:["Míša", "Ema"], correct:0 },
-            { id:"ema", level:0, title:"Ema a máma", text:["EMA MÁ MÍSU.","MÁMA MÁ MÍSU.","EMA MÁ MÁMU."], question:"Co má Ema?", answers:["Mísu", "Míč"], correct:0 },
-            { id:"kocka", level:1, title:"Kočka u okna", text:["Míša sedí u okna.","U domu se ukáže malá kočka.","Míša jí dá misku s vodou. Kočka pomalu pije."], question:"Co dala Míša kočce?", answers:["Misku s vodou", "Modrou mašli"], correct:0 },
-            { id:"drak", level:1, title:"Drak na louce", text:["Ema našla na louce červený drak.","Vítr ho zvedl vysoko nad stromy.","Ema držela provázek a smála se. Drak jí zamával dlouhým ocasem."], question:"Kde Ema našla draka?", answers:["Na louce", "U řeky"], correct:0 },
-            { id:"klic", level:2, title:"Ztracený klíč", text:["Cestou ze školy našel Matěj na chodníku malý stříbrný klíč. Zrovna spěchal domů, protože se těšil na novou knížku, ale zastavil se.","Zvedl klíč a rozhlédl se, jestli ho někdo nehledá. U blízké lavičky stála paní a prohledávala si kapsy.","Matěj k ní opatrně přišel. „Neztratila jste něco?“ zeptal se a ukázal jí klíč.","Paní si úlevně oddechla. Byl to klíč od jejího domu a bez něj by se nedostala dovnitř.","Poděkovala Matějovi a nabídla mu jablko. Matěj ho přijal a domů už šel pomaleji, aby si cestou mohl prohlédnout novou knížku."], question:"Proč Matěj klíč zvedl?", answers:["Chtěl zjistit, komu patří", "Chtěl si ho nechat"], correct:0 },
-            { id:"zahrada", level:2, title:"Zahrada po dešti", text:["Po nočním dešti se zahrada třpytila kapkami. Anička si vzala holínky a šla zkontrolovat, jestli bouřka nepolámala květiny.","Uprostřed cesty si všimla malého šneka. Pomalu se sunul přes mokré dlaždice a pokaždé se schoval, když někde zašustil list.","Anička věděla, že by na něj někdo mohl omylem šlápnout. Rozhlédla se a našla pod keřem měkkou trávu.","Opatrně šneka přenesla k širokému listu. Na jeho okraji se držela velká kapka vody.","Šnek pomalu vylezl z ulity a zamířil do trávy. Anička počkala, až bude v bezpečí, a pak pokračovala v prohlídce zahrady.","U růžového keře našla jednu ohnutou větvičku. Zavolala tatínka a společně ji přivázali k opoře."], question:"Proč Anička šneka přenesla?", answers:["Aby byl v bezpečí", "Aby si ho odnesla domů"], correct:0 },
+            { id:"misa", level:0, title:"Míč pro Míšu", vocabulary:["máma","míč","míša"], text:["MÁMA MÁ MÍČ.","MÍČ MÁ MÍŠA.","MÍŠA MÁ MÁMU."], question:"Kdo má míč?", answers:["Míša", "Ema"], correct:0 },
+            { id:"ema", level:0, title:"Ema a máma", vocabulary:["ema","máma","mísu"], text:["EMA MÁ MÍSU.","MÁMA MÁ MÍSU.","EMA MÁ MÁMU."], question:"Co má Ema?", answers:["Mísu", "Míč"], correct:0 },
+            { id:"kocka", level:1, title:"Kočka u okna", vocabulary:["míša","okna","kočka","misku","voda","pomalu"], text:["Míša sedí u okna.","U domu se ukáže malá kočka.","Míša jí dá misku s vodou. Kočka pomalu pije."], question:"Co dala Míša kočce?", answers:["Misku s vodou", "Modrou mašli"], correct:0 },
+            { id:"drak", level:1, title:"Drak na louce", vocabulary:["ema","louce","červený","vítr","provázek"], text:["Ema našla na louce červený drak.","Vítr ho zvedl vysoko nad stromy.","Ema držela provázek a smála se. Drak jí zamával dlouhým ocasem."], question:"Kde Ema našla draka?", answers:["Na louce", "U řeky"], correct:0 },
+            { id:"klic", level:2, title:"Ztracený klíč", vocabulary:["cestou","školy","matěj","chodníku","stříbrný","klíč","lavičky"], text:["Cestou ze školy našel Matěj na chodníku malý stříbrný klíč. Zrovna spěchal domů, protože se těšil na novou knížku, ale zastavil se.","Zvedl klíč a rozhlédl se, jestli ho někdo nehledá. U blízké lavičky stála paní a prohledávala si kapsy.","Matěj k ní opatrně přišel. „Neztratila jste něco?“ zeptal se a ukázal jí klíč.","Paní si úlevně oddechla. Byl to klíč od jejího domu a bez něj by se nedostala dovnitř.","Poděkovala Matějovi a nabídla mu jablko. Matěj ho přijal a domů už šel pomaleji, aby si cestou mohl prohlédnout novou knížku."], question:"Proč Matěj klíč zvedl?", answers:["Chtěl zjistit, komu patří", "Chtěl si ho nechat"], correct:0 },
+            { id:"zahrada", level:2, title:"Zahrada po dešti", vocabulary:["deště","zahrada","kapkami","holínky","šnek","tráva","větvičku"], text:["Po nočním dešti se zahrada třpytila kapkami. Anička si vzala holínky a šla zkontrolovat, jestli bouřka nepolámala květiny.","Uprostřed cesty si všimla malého šneka. Pomalu se sunul přes mokré dlaždice a pokaždé se schoval, když někde zašustil list.","Anička věděla, že by na něj někdo mohl omylem šlápnout. Rozhlédla se a našla pod keřem měkkou trávu.","Opatrně šneka přenesla k širokému listu. Na jeho okraji se držela velká kapka vody.","Šnek pomalu vylezl z ulity a zamířil do trávy. Anička počkala, až bude v bezpečí, a pak pokračovala v prohlídce zahrady.","U růžového keře našla jednu ohnutou větvičku. Zavolala tatínka a společně ji přivázali k opoře."], question:"Proč Anička šneka přenesla?", answers:["Aby byl v bezpečí", "Aby si ho odnesla domů"], correct:0 },
         ];
         const storyBranches = {
             misa:{prompt:"Co Míša udělá s míčem?",choices:[
@@ -195,9 +206,12 @@
             ]
         };
         const key = "hvezdicka:reading-journey:v1";
-        const defaultLetters = new Set("AÁČÍMŠTÉUS".split(""));
+        const defaultLetters = new Set("AÁČÍEMŠTÉUS".split(""));
+        const keyWords = ["máma","míč","míša","ema","mísu","okna","kočka","misku","voda","pomalu","louce","červený","vítr","provázek","cestou","školy","matěj","chodníku","stříbrný","klíč","lavičky","deště","zahrada","kapkami","holínky","šnek","tráva","větvičku"];
+        const beginnerWords = ["máma","míč","míša","ema","mísu"];
+        const firstGradeWords = [...beginnerWords,"okna","kočka","misku","voda","pomalu","louce","červený","vítr"];
         const $ = (selector) => document.querySelector(selector);
-        let state = { level:0, letters:[...defaultLetters], completed:[], creations:[], stars:0 };
+        let state = { level:0, letters:[...defaultLetters], knownWords:[...beginnerWords], completed:[], creations:[], stars:0 };
         let activeStory = null;
         let storyPath = [];
         let branchStep = 0;
@@ -205,11 +219,33 @@
         let activeStorySpeech = null;
         try { const stored = JSON.parse(localStorage.getItem(key)); if (stored && Array.isArray(stored.completed) && Array.isArray(stored.letters)) state = { ...state, ...stored, creations:Array.isArray(stored.creations)?stored.creations:[] }; } catch { /* Poškozený nebo vypnutý místní úložný prostor nebrání čtení. */ }
         const letterSet = new Set(state.letters);
+        if (!Array.isArray(state.knownWords)) state.knownWords = [...beginnerWords];
+        const knownWordSet = new Set(state.knownWords);
         const normalizeLetters = (text) => [...text.normalize("NFC").toLocaleUpperCase("cs-CZ")].filter((char) => /\p{L}/u.test(char));
-        function save() { state.level = Number($("#level").value); state.letters = [...letterSet]; try { localStorage.setItem(key, JSON.stringify(state)); } catch { $("#setup-status").textContent = "Postup se nepodařilo uložit. Číst můžeš dál."; } }
+        function save() { state.level = Number($("#level").value); state.letters = [...letterSet]; state.knownWords = [...knownWordSet]; try { localStorage.setItem(key, JSON.stringify(state)); } catch { $("#setup-status").textContent = "Postup se nepodařilo uložit. Číst můžeš dál."; } }
         function renderLetters() {
             const holder = $("#letters"); holder.replaceChildren();
             for (const char of alphabet) { const label = document.createElement("label"); label.className = "letter"; const input = document.createElement("input"); input.type="checkbox"; input.value=char; input.checked=letterSet.has(char); input.setAttribute("aria-label", `Písmeno ${char}`); input.addEventListener("change", () => { input.checked ? letterSet.add(char) : letterSet.delete(char); save(); renderStories(); }); label.append(input, document.createTextNode(char)); holder.append(label); }
+        }
+        function renderKnownWords() {
+            const holder = $("#known-words"); holder.replaceChildren();
+            for (const word of keyWords) {
+                const label = document.createElement("label"); label.className = "known-word";
+                const input = document.createElement("input"); input.type = "checkbox"; input.value = word; input.checked = knownWordSet.has(word);
+                input.addEventListener("change", () => { input.checked ? knownWordSet.add(word) : knownWordSet.delete(word); save(); renderStories(); });
+                label.append(input, document.createTextNode(word)); holder.append(label);
+            }
+        }
+        function chooseKnownWords(words, message) {
+            knownWordSet.clear(); words.forEach((word) => knownWordSet.add(word));
+            save(); renderKnownWords(); renderStories(); $("#word-setup-status").textContent = message;
+        }
+        function chooseReadingPreset(level, words, letters, message) {
+            $("#level").value = String(level);
+            letterSet.clear(); letters.forEach((letter) => letterSet.add(letter));
+            knownWordSet.clear(); words.forEach((word) => knownWordSet.add(word));
+            save(); renderLetters(); renderKnownWords(); renderStories();
+            $("#word-setup-status").textContent = message;
         }
         function renderProgress() {
             const stars = state.completed.length; const max = stories.length;
@@ -224,8 +260,10 @@
         }
         function renderStories() {
             const holder = $("#story-list"); holder.replaceChildren();
-            const available = stories.filter((story) => story.level <= Number($("#level").value) && normalizeLetters(story.text.join(" ")).every((letter) => letterSet.has(letter)));
-            if (!available.length) { const note = document.createElement("p"); note.className="empty"; note.textContent="Zatím tu není příběh se všemi vybranými písmeny. Zkus přidat další písmena, nebo vybrat jinou úroveň."; holder.append(note); return; }
+            const available = stories.filter((story) => story.level <= Number($("#level").value)
+                && normalizeLetters(story.text.join(" ")).every((letter) => letterSet.has(letter))
+                && (story.vocabulary ?? []).every((word) => knownWordSet.has(word)));
+            if (!available.length) { const note = document.createElement("p"); note.className="empty"; note.textContent="Zatím tu není příběh pro zvolenou úroveň, písmena a známá slova. Uprav nastavení nahoře."; holder.append(note); return; }
             for (const story of available) { const button = document.createElement("button"); button.className="story-pick"; button.type="button"; button.setAttribute("aria-pressed", String(activeStory?.id === story.id)); const title=document.createElement("strong"); title.textContent=`${state.completed.includes(story.id) ? "⭐ " : "📖 "}${story.title}`; const detail=document.createElement("span"); detail.textContent=story.level===0?"Krátké věty · začínám číst":story.level===1?"První třída · krátký příběh":"Druhá třída · příběh a přemýšlení"; button.append(title,detail); button.addEventListener("click",()=>openStory(story)); holder.append(button); }
         }
         function stopStorySpeech(message = "") {
@@ -273,6 +311,10 @@
         $("#select-all").addEventListener("click",()=>{ alphabet.forEach(char=>letterSet.add(char)); save(); renderLetters(); renderStories(); });
         $("#clear-letters").addEventListener("click",()=>{ letterSet.clear(); save(); renderLetters(); renderStories(); });
         $("#select-common").addEventListener("click",()=>{ letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char)); save(); renderLetters(); renderStories(); });
+        $("#words-beginner").addEventListener("click",()=>chooseReadingPreset(0,beginnerWords,defaultLetters,"Zobrazuji krátké příběhy pro začínající čtenáře."));
+        $("#words-first-grade").addEventListener("click",()=>chooseReadingPreset(1,firstGradeWords,alphabet,"Zobrazuji příběhy pro prvňáka. Známá slova můžeš upravit níže."));
+        $("#words-all").addEventListener("click",()=>chooseReadingPreset(2,keyWords,alphabet,"Zobrazuji všechny příběhy a klíčová slova."));
+        $("#words-none").addEventListener("click",()=>chooseKnownWords([],"Příběhy se zobrazí až po výběru známých slov."));
         function speakWholeStory() {
             if(!activeStory) return;
             if(!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") { $("#speech-status").textContent="Přehrávání nahlas tento prohlížeč nepodporuje."; return; }
@@ -302,12 +344,13 @@
         $("#reset-journey").addEventListener("click",()=>{
             stopStorySpeech();
             if(!window.confirm("Opravdu chceš začít znovu? Smažou se hvězdičky, přečtené příběhy i vlastní pokračování.")) return;
-            state={level:0,letters:[...defaultLetters],completed:[],creations:[],stars:0};
+            state={level:0,letters:[...defaultLetters],knownWords:[...beginnerWords],completed:[],creations:[],stars:0};
             letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char)); activeStory=null;
+            knownWordSet.clear(); beginnerWords.forEach(word=>knownWordSet.add(word));
             $("#level").value="0"; $("#reader").hidden=true; $("#setup-status").textContent="Výprava začíná znovu. Hodně štěstí!";
-            save(); renderLetters(); renderProgress(); renderStories(); renderCreations();
+            save(); renderLetters(); renderKnownWords(); renderProgress(); renderStories(); renderCreations();
         });
-        renderLetters(); renderProgress(); renderStories(); renderCreations();
+        renderLetters(); renderKnownWords(); renderProgress(); renderStories(); renderCreations();
     </script>
 </body>
 </html>
