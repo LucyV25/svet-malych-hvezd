@@ -742,8 +742,8 @@
             </section>
             <section class="word-builder" aria-labelledby="word-builder-title" hidden>
                 <h3 id="word-builder-title">Skládání slov</h3>
-                <p class="card-intro">Klikni nebo přetáhni písmena do správného pořadí.</p>
                 <button class="secondary-button" id="read-builder-instructions" type="button" aria-pressed="false">🔊 Přehrát zadání</button>
+                <p class="card-intro">Klikni nebo přetáhni písmena do správného pořadí.</p>
                 <div class="letter-tiles" id="letter-tiles"></div>
                 <div class="word-answer" id="word-answer" aria-label="Složené slovo"></div>
                 <p class="game-status" id="builder-status" role="status" aria-live="polite"></p>
@@ -765,10 +765,10 @@
             </section>
             <section class="sentence-generator" aria-labelledby="sentence-generator-title">
                 <h3 id="sentence-generator-title">Věty z probraných písmen</h3>
+                <button class="secondary-button" id="read-sentence-instructions" type="button" aria-pressed="false">🔊 Přehrát zadání</button>
                 <p>Věta obsahuje jen písmena, která už máš vybraná.</p>
                 <div class="generated-sentence" id="generated-sentence" aria-live="polite">Klikni na „Nová věta“.</div>
                 <div class="sentence-actions">
-                    <button class="secondary-button" id="read-sentence-instructions" type="button" aria-pressed="false">🔊 Přehrát zadání</button>
                     <button class="secondary-button" id="new-sentence" type="button">Nová věta</button>
                     <button class="secondary-button" id="read-sentence" type="button" aria-pressed="false" disabled>🔊 Přehrát větu</button>
                 </div>
@@ -776,8 +776,8 @@
             </section>
             <section class="case-matching" aria-labelledby="case-matching-title">
                 <h3 id="case-matching-title">Malá, nebo VELKÁ písmena?</h3>
-                <p class="card-intro">Vlevo je slovo napsané jako v běžném textu (Míla). Vpravo najdi stejné slovo celé velkými písmeny (MÍLA).</p>
                 <button class="secondary-button" id="read-case-matching-instructions" type="button">🔊 Přehrát zadání</button>
+                <p class="card-intro">Vlevo je slovo napsané jako v běžném textu (Míla). Vpravo najdi stejné slovo celé velkými písmeny (MÍLA).</p>
                 <div class="case-matching-columns">
                     <div class="case-matching-column" id="case-matching-lower" role="group" aria-label="Slova jako v běžném textu">
                         <h4>Běžný zápis</h4>
@@ -821,6 +821,7 @@
             <p class="writing-status" id="writing-status" role="status" aria-live="polite"></p>
             <section class="missing-letter-game" aria-labelledby="missing-letter-title">
                 <h3 id="missing-letter-title">Doplň chybějící písmenko</h3>
+                <button class="secondary-button" id="read-missing-letter-instructions" type="button">🔊 Přehrát zadání</button>
                 <p class="card-intro">Podívej se na obrázek a vyber písmeno, které ve slově chybí.</p>
                 <div class="picture-symbol missing-letter-symbol" id="missing-letter-symbol" role="img" aria-label="Obrázek ke slovu"></div>
                 <div class="missing-word-display" id="missing-letter-word" aria-label="Slovo s chybějícím písmenem" aria-live="polite">
@@ -829,7 +830,6 @@
                 <div class="picture-options" id="missing-letter-options" role="group" aria-label="Možnosti písmen"></div>
                 <div class="missing-letter-actions">
                     <button class="secondary-button" id="new-missing-letter" type="button">Nové slovo</button>
-                    <button class="secondary-button" id="read-missing-letter-instructions" type="button">🔊 Přehrát zadání</button>
                 </div>
                 <p class="picture-status" id="missing-letter-status" role="status" aria-live="polite"></p>
             </section>
@@ -1493,7 +1493,7 @@
         function prepareSpeechText(text) {
             const normalized = text.toLocaleLowerCase("cs-CZ");
             // Samostatné „me“ může mobilní hlas zaměnit za anglické zájmeno.
-            return normalized === "me" ? "slabika me" : normalized;
+            return normalized === "me" ? "meh" : normalized;
         }
 
         function stopReadingAudio(updateStatus = true) {

@@ -330,12 +330,12 @@
         </section>
         <section class="math-card" aria-labelledby="number-bonds-title" style="margin-top: 20px;">
             <h2 id="number-bonds-title">Doplň do čísla</h2>
+            <button class="secondary-button" id="read-number-bond-instructions" type="button">🔊 Přehrát zadání</button>
             <p class="card-intro">Nahoře je celé číslo. Doplň do prázdného okénka druhou část, která chybí.</p>
             <div class="bond-list" id="number-bond-exercises" aria-live="polite"></div>
             <div class="exercise-controls">
                 <button class="submit-button" id="check-number-bonds" type="button">Zkontrolovat</button>
                 <button class="secondary-button" id="new-number-bonds" type="button">Nová cvičení</button>
-                <button class="secondary-button" id="read-number-bond-instructions" type="button">🔊 Přehrát zadání</button>
                 <button class="secondary-button" id="stop-number-bond-speech" type="button" hidden>⏹ Zastavit</button>
             </div>
             <p class="toast" id="number-bond-status" role="status" aria-live="polite"></p>
@@ -481,16 +481,19 @@
             if (clearStatus) mathStatus.textContent = "";
         }
 
-        function makeNumberBond() {
-            const whole = randomInteger(2, maxNumber);
-            const given = randomInteger(1, whole - 1);
-            return { whole, given, missing: whole - given, input: null, row: null };
+        function createNumberBondPool() {
+            const bonds = [];
+            for (let whole = 2; whole <= maxNumber; whole += 1) {
+                for (let given = 1; given < whole; given += 1) {
+                    bonds.push({ whole, given, missing: whole - given, input: null, row: null });
+                }
+            }
+            return bonds;
         }
-
         function renderNumberBondExercises(clearStatus = true) {
             if (activeMathUtterance) stopNumberBondSpeech(false);
             numberBondSpeechStatus.textContent = "";
-            generatedNumberBonds = Array.from({ length: 5 }, makeNumberBond);
+            generatedNumberBonds = shuffled(createNumberBondPool()).slice(0, 5);
             numberBondExercises.replaceChildren();
             generatedNumberBonds.forEach((bond, index) => {
                 const row = document.createElement("article");
