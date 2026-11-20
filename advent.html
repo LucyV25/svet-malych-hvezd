@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f2fb">
+    <meta name="theme-color" content="#edf5f7">
     <meta name="description" content="Adventní kalendář s pohádkami, hádankami, laskavými úkoly a malými překvapeními.">
-    <title>Adventní kalendář — Svět malé hvězdičky</title>
+    <title>Adventní kalendář — Mise učení</title>
     <style>
         :root {
             color-scheme: light;
-            --ink: #352844;
-            --muted: #756a80;
-            --paper: #fffdfd;
-            --accent: #8052b8;
-            --accent-dark: #62398f;
-            --lavender: #eee5f7;
-            --line: #e9e0ed;
+            --ink: #263746;
+            --muted: #617482;
+            --paper: #ffffff;
+            --accent: #287f9b;
+            --accent-dark: #1c5d75;
+            --lavender: #deedf2;
+            --line: #d7e3e8;
             --gold: #f1c96b;
             --serif: Georgia, "Times New Roman", serif;
         }
         * { box-sizing: border-box; }
         body {
             margin: 0;
-            background: linear-gradient(145deg, #f8f2fb 0%, #fff5fa 52%, #f0f7fc 100%);
+            background: linear-gradient(145deg, #edf5f7 0%, #f4f9f7 52%, #fff7e6 100%);
             color: var(--ink);
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 15px;
@@ -31,7 +31,7 @@
         button, a { -webkit-tap-highlight-color: transparent; }
         button { font: inherit; }
         button:focus-visible, a:focus-visible {
-            outline: 3px solid #b99adb;
+            outline: 3px solid #70adba;
             outline-offset: 3px;
         }
         .topbar {
@@ -86,10 +86,10 @@
         }
         .page-heading p:last-child { margin-bottom: 0; color: var(--muted); }
         .calendar-card, .surprise-card {
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 20px;
             background: var(--paper);
-            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+            box-shadow: 0 12px 32px rgba(38, 55, 70, .07);
         }
         .calendar-card { padding: 22px; }
         .calendar-top {
@@ -114,8 +114,8 @@
             margin: 0 0 17px;
             padding: 10px 12px;
             border-radius: 10px;
-            background: #f7f2fb;
-            color: #5e4d6d;
+            background: #edf5f7;
+            color: #617482;
             font-size: 12px;
         }
         .day-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
@@ -127,17 +127,17 @@
             justify-items: center;
             gap: 2px;
             padding: 8px;
-            border: 1px solid #e6d9ed;
+            border: 1px solid #deedf2;
             border-radius: 13px;
-            background: linear-gradient(145deg, #fff, #f6effa);
+            background: linear-gradient(145deg, #fff, #f4f9f7);
             color: var(--accent-dark);
             cursor: pointer;
             transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
         }
-        .day-door:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(97, 63, 117, .12); }
+        .day-door:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(38, 55, 70, .12); }
         .day-door.is-opened { border-color: #e8d18c; background: linear-gradient(145deg, #fffaf0, #fff1cd); }
-        .day-door.is-active { outline: 3px solid #d5b9e8; outline-offset: 1px; }
-        .day-door:disabled { border-color: #e7e4e9; background: #f4f2f5; color: #938b99; cursor: not-allowed; }
+        .day-door.is-active { outline: 3px solid #70adba; outline-offset: 1px; }
+        .day-door:disabled { border-color: #d7e3e8; background: #f4f2f5; color: #938b99; cursor: not-allowed; }
         .door-number { font-family: var(--serif); font-size: 25px; font-weight: 700; line-height: 1.1; }
         .door-icon { font-size: 21px; line-height: 1.2; }
         .door-opened-mark { position: absolute; top: 5px; right: 7px; color: #7a9e49; font-size: 12px; }
@@ -166,7 +166,7 @@
             font-size: 12px;
             font-weight: 700;
         }
-        .answer-button:hover, .speech-button:hover { background: #f7effa; }
+        .answer-button:hover, .speech-button:hover { background: #f4f9f7; }
         .answer-copy {
             margin: 11px 0 0;
             padding: 10px 12px;
@@ -178,7 +178,7 @@
         .answer-copy[hidden] { display: none; }
         .surprise-actions { display: flex; flex-wrap: wrap; gap: 8px; }
         .surprise-status { min-height: 20px; margin: 12px 0 0; color: var(--accent-dark); font-size: 12px; }
-        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        footer { padding: 0 20px 24px; color: #617482; font-size: 12px; text-align: center; }
         @media (max-width: 700px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
             .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 11px; }
@@ -201,8 +201,8 @@
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
-            <span class="brand-mark" aria-hidden="true">☾</span>
-            <span>Svět malé hvězdičky</span>
+            <span class="brand-mark" aria-hidden="true">🧭</span>
+            <span>Mise učení</span>
         </a>
         <nav class="topbar-actions" aria-label="Hlavní navigace">
             <a class="top-link" href="index.html">Pohádky</a>

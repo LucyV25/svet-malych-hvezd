@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f2fb">
+    <meta name="theme-color" content="#edf5f7">
     <meta name="description" content="Jemné pohádky na dobrou noc o emocích, odvaze a malých školních dobrodružstvích.">
-    <title>Pohádky na míru — Svět malé hvězdičky</title>
+    <title>Pohádky na míru — Mise učení</title>
     <style>
         :root {
             color-scheme: light;
-            --ink: #352844;
-            --muted: #756a80;
-            --paper: #fffdfd;
-            --canvas: #f8f2fb;
-            --accent: #8052b8;
-            --accent-dark: #62398f;
-            --lavender: #eee5f7;
-            --pink: #f8e6f2;
+            --ink: #263746;
+            --muted: #617482;
+            --paper: #ffffff;
+            --canvas: #edf5f7;
+            --accent: #287f9b;
+            --accent-dark: #1c5d75;
+            --lavender: #deedf2;
+            --sunlight: #fff1cf;
             --sky: #e6f3fb;
             --gold: #fff3d6;
-            --line: #e9e0ed;
+            --line: #d7e3e8;
             --serif: Georgia, "Times New Roman", serif;
         }
 
@@ -27,7 +27,7 @@
 
         body {
             margin: 0;
-            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            background: linear-gradient(135deg, #edf5f7 0%, #f4f9f7 54%, #fff7e6 100%);
             color: var(--ink);
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 15px;
@@ -37,7 +37,7 @@
         button, input, select { font: inherit; }
         button, a, input, select { -webkit-tap-highlight-color: transparent; }
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-            outline: 3px solid #b99adb;
+            outline: 3px solid #70adba;
             outline-offset: 3px;
         }
 
@@ -135,10 +135,10 @@
             display: grid;
             grid-template-columns: minmax(0, 1fr) 260px;
             overflow: hidden;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 22px;
             background: var(--paper);
-            box-shadow: 0 14px 40px rgba(97, 63, 117, .08);
+            box-shadow: 0 14px 40px rgba(38, 55, 70, .08);
         }
 
         .form-panel { padding: 34px 38px 30px; }
@@ -168,7 +168,7 @@
 
         .field-hint {
             margin: -4px 0 9px;
-            color: #81758b;
+            color: #617482;
             font-size: 12px;
         }
 
@@ -176,7 +176,7 @@
             width: 100%;
             min-height: 47px;
             padding: 0 14px;
-            border: 1px solid #e4dbe8;
+            border: 1px solid #d7e3e8;
             border-radius: 10px;
             background: #fff;
             color: var(--ink);
@@ -209,14 +209,14 @@
             align-items: center;
             gap: 9px;
             padding: 0 12px;
-            border: 1px solid #e4dbe8;
+            border: 1px solid #d7e3e8;
             border-radius: 10px;
-            background: #f7f2fb;
-            color: #5b4770;
+            background: #edf5f7;
+            color: #617482;
             font-size: 13px;
         }
 
-        .duration-note span { color: #8c62b3; font-size: 16px; }
+        .duration-note span { color: #287f9b; font-size: 16px; }
 
         .submit-button {
             display: flex;
@@ -240,7 +240,7 @@
 
         .privacy-note {
             margin: 13px 0 0;
-            color: #81758b;
+            color: #617482;
             font-size: 11px;
             text-align: center;
         }
@@ -250,7 +250,7 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 29px 25px;
-            background: linear-gradient(160deg, var(--lavender), var(--pink));
+            background: linear-gradient(160deg, var(--lavender), var(--sunlight));
         }
 
         .aside-illustration {
@@ -271,7 +271,7 @@
 
         .aside-panel p {
             margin-bottom: 20px;
-            color: #695b75;
+            color: #617482;
             font-size: 13px;
             line-height: 1.65;
         }
@@ -281,29 +281,29 @@
             display: flex;
             align-items: flex-start;
             gap: 9px;
-            color: #514360;
+            color: #263746;
             font-size: 12px;
             line-height: 1.5;
         }
-        .gentle-point span { color: #b86193; font-size: 14px; }
+        .gentle-point span { color: #287f9b; font-size: 14px; }
 
         .story-card {
             margin-top: 24px;
             padding: 35px clamp(24px, 6vw, 64px) 38px;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 22px;
             background: var(--paper);
-            box-shadow: 0 14px 40px rgba(97, 63, 117, .08);
+            box-shadow: 0 14px 40px rgba(38, 55, 70, .08);
         }
 
         .story-card[hidden] { display: none; }
         .favorites-card {
             margin-top: 24px;
             padding: 27px 30px;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 22px;
             background: var(--paper);
-            box-shadow: 0 14px 40px rgba(97, 63, 117, .08);
+            box-shadow: 0 14px 40px rgba(38, 55, 70, .08);
         }
 
         .favorites-heading {
@@ -394,14 +394,14 @@
 
         .story-heading .reading-time {
             margin: -13px 0 23px;
-            color: #81758b;
+            color: #617482;
             font-size: 12px;
         }
 
         .story-text {
             max-width: 650px;
             margin: 0 auto;
-            color: #4c4055;
+            color: #263746;
             font-family: var(--serif);
             font-size: 17px;
             line-height: 1.85;
@@ -421,15 +421,15 @@
         .secondary-button {
             min-height: 42px;
             padding: 0 16px;
-            border: 1px solid #e5daeb;
+            border: 1px solid #deedf2;
             border-radius: 9px;
             background: transparent;
-            color: #63487c;
+            color: #1c5d75;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
         }
-        .secondary-button:hover { background: #f7effa; }
+        .secondary-button:hover { background: #f4f9f7; }
 
         .speech-control {
             display: inline-flex;
@@ -437,9 +437,9 @@
             align-items: center;
             gap: 8px;
             padding: 0 10px;
-            border: 1px solid #e5daeb;
+            border: 1px solid #deedf2;
             border-radius: 9px;
-            color: #63487c;
+            color: #1c5d75;
             font-size: 12px;
             font-weight: 600;
         }
@@ -467,7 +467,7 @@
 
         footer {
             padding: 0 20px 24px;
-            color: #81758b;
+            color: #617482;
             font-size: 12px;
             text-align: center;
         }
@@ -507,8 +507,8 @@
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
-            <span class="brand-mark" aria-hidden="true">☾</span>
-            <span>Svět malé hvězdičky</span>
+            <span class="brand-mark" aria-hidden="true">🧭</span>
+            <span>Mise učení</span>
         </a>
         <nav class="topbar-actions" aria-label="Hlavní navigace">
             <a class="top-link" href="index.html" aria-current="page">Pohádky</a>
@@ -865,6 +865,7 @@
         const speechRate = document.querySelector("#speech-rate");
         const favoritesKey = "dobrouNocHvezdicko:favorites:v1";
         const sharedStorageEnabled = window.location.protocol !== "file:";
+        let favoritesStorageMode = sharedStorageEnabled ? "shared" : "local";
         const storyLengths = {
             short: { journeyCount: 2, minutes: 3 },
             medium: { journeyCount: 4, minutes: 6 },
@@ -1034,7 +1035,7 @@
         }
 
         async function persistFavorites(nextFavorites) {
-            if (sharedStorageEnabled) {
+            if (sharedStorageEnabled && favoritesStorageMode === "shared") {
                 try {
                     const response = await fetch("/api/favorites", {
                         method: "POST",
@@ -1059,15 +1060,15 @@
                     favorites = result.favorites;
                     return true;
                 } catch (error) {
-                    console.error("Oblíbené pohádky se nepodařilo uložit na počítači.", error);
-                    favoritesStatus.textContent = "Sdílené oblíbené se nepodařilo uložit. Zkontrolujte připojení k počítači.";
-                    return false;
+                    console.error("Sdílené oblíbené pohádky nejsou dostupné; ukládám do tohoto prohlížeče.", error);
+                    favoritesStorageMode = "local";
                 }
             }
 
             try {
                 window.localStorage.setItem(favoritesKey, JSON.stringify(nextFavorites));
                 favorites = nextFavorites;
+                favoritesStorageMode = "local";
                 return true;
             } catch (error) {
                 console.error("Oblíbenou pohádku se nepodařilo uložit.", error);
@@ -1079,6 +1080,7 @@
         async function initializeFavorites() {
             const localFavorites = loadLocalFavorites();
             if (!sharedStorageEnabled) {
+                favoritesStorageMode = "local";
                 favorites = localFavorites;
                 renderFavorites();
                 return;
@@ -1095,19 +1097,21 @@
                     throw new Error("The shared favorites response has an invalid format.");
                 }
 
+                favoritesStorageMode = "shared";
                 favorites = sharedFavorites;
                 const mergedFavorites = mergeFavorites(sharedFavorites, localFavorites);
                 if (mergedFavorites.length > sharedFavorites.length) {
                     if (await persistFavorites(mergedFavorites)) {
-                        favoritesStatus.textContent = "Oblíbené z tohoto prohlížeče byly přidány ke sdíleným.";
+                        favoritesStatus.textContent = favoritesStorageMode === "local" ? "Oblíbené zůstaly uložené jen v tomto prohlížeči." : "Oblíbené z tohoto prohlížeče byly přidány ke sdíleným.";
                     }
                 }
                 renderFavorites();
             } catch (error) {
                 console.error("Sdílené oblíbené pohádky se nepodařilo načíst.", error);
+                favoritesStorageMode = "local";
                 favorites = localFavorites;
                 renderFavorites();
-                favoritesStatus.textContent = "Sdílené úložiště není dostupné. Zobrazuji oblíbené z tohoto prohlížeče.";
+                favoritesStatus.textContent = "Sdílené úložiště není dostupné. Oblíbené se ukládají jen v tomto prohlížeči.";
             }
         }
 
@@ -1258,7 +1262,7 @@
             if (await persistFavorites([favorite, ...favorites])) {
                 renderFavorites();
                 updateSaveButton();
-                favoritesStatus.textContent = "Pohádka byla uložená do oblíbených.";
+                favoritesStatus.textContent = favoritesStorageMode === "local" ? "Pohádka byla uložená v tomto prohlížeči." : "Pohádka byla uložená do oblíbených.";
             }
         }
 

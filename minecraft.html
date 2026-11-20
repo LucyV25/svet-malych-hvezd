@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#f3f7ed">
     <meta name="description" content="Minecraftové dobrodružství s počítáním, čtením a psaním pro prvňáčky.">
-    <title>Minecraft dobrodružství — Svět malé hvězdičky</title>
+    <title>Minecraft dobrodružství — Mise učení</title>
     <style>
         :root {
             color-scheme: light;
@@ -310,6 +310,11 @@
             color: #861f1f;
             box-shadow: inset 0 0 0 1px #bf3636;
         }
+        .parent-settings { width: min(100% - 40px, 920px); margin: 0 auto 18px; color: var(--muted); font-size: 12px; text-align: center; }
+        .parent-settings summary { display: inline-block; cursor: pointer; }
+        .parent-settings-content { padding: 10px 0 0; }
+        .parent-settings-content p { margin-bottom: 8px; }
+        .parent-settings .secondary-button { border-color: #d9b1a7; color: #8a3c2e; }
         footer { padding: 0 20px 24px; color: #7b8076; font-size: 12px; text-align: center; }
         @media (max-width: 700px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
@@ -332,8 +337,8 @@
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
-            <span class="brand-mark" aria-hidden="true">☾</span>
-            <span>Svět malé hvězdičky</span>
+            <span class="brand-mark" aria-hidden="true">🧭</span>
+            <span>Mise učení</span>
         </a>
         <nav class="topbar-actions" aria-label="Hlavní navigace">
             <a class="top-link" href="index.html">Pohádky</a>
@@ -432,9 +437,9 @@
                     <p class="mission-lead">Steve vidí v dálce blížit se Creepera. Co má udělat?</p>
                     <div class="story-text">„Je večer a Steve ještě nemá zavřené dveře domku.“</div>
                     <div class="story-options">
-                        <button class="story-option" type="button" data-story="bad">A) Příjde za Creeperem blíž.</button>
-                        <button class="story-option" type="button" data-story="good">B) Přispěchá domů, zavře dveře a zapálí lampu.</button>
-                        <button class="story-option" type="button" data-story="bad">C) Nechá domek otevřený.</button>
+                        <button class="story-option" type="button" data-story="bad">1) Příjde za Creeperem blíž.</button>
+                        <button class="story-option" type="button" data-story="good">2) Přispěchá domů, zavře dveře a zapálí lampu.</button>
+                        <button class="story-option" type="button" data-story="bad">3) Nechá domek otevřený.</button>
                     </div>
                     <p class="mission-status" id="story-status" role="status"></p>
                 </article>
@@ -456,9 +461,9 @@
                     <h2>6. První písmeno</h2>
                     <p class="mission-lead">Jakým písmenem začíná slovo KOZA?</p>
                     <div class="tile-row">
-                        <button class="story-option extra-letter-choice" type="button" data-answer="bad">A) M</button>
-                        <button class="story-option extra-letter-choice" type="button" data-answer="good">B) K</button>
-                        <button class="story-option extra-letter-choice" type="button" data-answer="bad">C) S</button>
+                        <button class="story-option extra-letter-choice" type="button" data-answer="bad">1) M</button>
+                        <button class="story-option extra-letter-choice" type="button" data-answer="good">2) K</button>
+                        <button class="story-option extra-letter-choice" type="button" data-answer="bad">3) S</button>
                     </div>
                     <p class="mission-status" id="letter-status" role="status"></p>
                 </article>
@@ -466,9 +471,9 @@
                     <h2>7. Zvířata na farmě</h2>
                     <p class="mission-lead">Které zvíře se ve Minecraftu nenachází na farmě?</p>
                     <div class="story-options">
-                        <button class="story-option extra-animal-choice" type="button" data-answer="bad">A) Prase</button>
-                        <button class="story-option extra-animal-choice" type="button" data-answer="bad">B) Ovce</button>
-                        <button class="story-option extra-animal-choice" type="button" data-answer="good">C) Delfín</button>
+                        <button class="story-option extra-animal-choice" type="button" data-answer="bad">1) Prase</button>
+                        <button class="story-option extra-animal-choice" type="button" data-answer="bad">2) Ovce</button>
+                        <button class="story-option extra-animal-choice" type="button" data-answer="good">3) Delfín</button>
                     </div>
                     <p class="mission-status" id="animal-status" role="status"></p>
                 </article>
@@ -476,9 +481,9 @@
                     <h2>8. Stavba věže</h2>
                     <p class="mission-lead">Vyber, co potřebuješ nejdřív, abys postavil věž?</p>
                     <div class="story-options">
-                        <button class="story-option build-choice" type="button" data-answer="good">A) Kameny nebo bloky</button>
-                        <button class="story-option build-choice" type="button" data-answer="bad">B) Rybářský prut</button>
-                        <button class="story-option build-choice" type="button" data-answer="bad">C) Lodní veslo</button>
+                        <button class="story-option build-choice" type="button" data-answer="good">1) Kameny nebo bloky</button>
+                        <button class="story-option build-choice" type="button" data-answer="bad">2) Rybářský prut</button>
+                        <button class="story-option build-choice" type="button" data-answer="bad">3) Lodní veslo</button>
                     </div>
                     <p class="mission-status" id="build-status" role="status"></p>
                 </article>
@@ -486,9 +491,9 @@
                     <h2>9. Deník dobrodruha</h2>
                     <p class="mission-lead">Doplň větu: Dnes jsem při dobrodružství našel...</p>
                     <div class="story-options">
-                        <button class="story-option diary-choice" type="button" data-answer="good">A) diamant</button>
-                        <button class="story-option diary-choice" type="button" data-answer="bad">B) sněhuláka</button>
-                        <button class="story-option diary-choice" type="button" data-answer="bad">C) oběd z úterý</button>
+                        <button class="story-option diary-choice" type="button" data-answer="good">1) diamant</button>
+                        <button class="story-option diary-choice" type="button" data-answer="bad">2) sněhuláka</button>
+                        <button class="story-option diary-choice" type="button" data-answer="bad">3) oběd z úterý</button>
                     </div>
                     <p class="mission-status" id="diary-status" role="status"></p>
                 </article>
@@ -503,6 +508,13 @@
             </section>
         </div>
     </main>
+    <details class="parent-settings">
+        <summary>Rodičovské nastavení</summary>
+        <div class="parent-settings-content">
+            <p>Vynulování smaže postup a odemčené levely v Minecraftu. Mince mazlíčka zůstanou.</p>
+            <button class="secondary-button" id="reset-adventure" type="button">Začít Minecraft znovu od Levelu 1</button>
+        </div>
+    </details>
     <footer>Každý malý krok se počítá. V Minecraftu i ve škole se učíme bezpečně a hravě.</footer>
     <script src="scripts/pet-rewards.js"></script>
     <script>
@@ -681,11 +693,13 @@
             const heading = active.querySelector("h2")?.textContent || "";
             const lead = active.querySelector(".mission-lead")?.textContent || "";
             const story = active.querySelector(".story-text")?.textContent || "";
+            const optionPositions = ["První možnost", "Druhá možnost", "Třetí možnost", "Čtvrtá možnost", "Pátá možnost"];
             const options = [...active.querySelectorAll(".story-option")]
-                .map((option) => option.textContent.trim().replace(/^([ABC])\)\s*/, (_, letter) => {
-                    const spokenLetters = { A: "á", B: "bé", C: "cé" };
-                    return `Za ${spokenLetters[letter]}: `;
-                }));
+                .map((option, index) => {
+                    const choiceText = option.textContent.trim().replace(/^\d+\)\s*/, "");
+                    const position = optionPositions[index] ?? `Možnost číslo ${index + 1}`;
+                    return `${position}: ${choiceText}`;
+                });
             const extra = options.length ? ` Možnosti: ${options.join(". ")}` : "";
             speak(numbersToWords(`${heading}. ${lead}${story ? ` ${story}` : ""}${extra}`));
         }
@@ -737,10 +751,9 @@
 
                     mission.choices.forEach((choice, choiceIndex) => {
                         const button = document.createElement("button");
-                        const letter = String.fromCharCode(65 + choiceIndex);
                         button.className = "story-option";
                         button.type = "button";
-                        button.textContent = `${letter}) ${choice}`;
+                        button.textContent = `${choiceIndex + 1}) ${choice}`;
                         button.dataset.answer = choiceIndex === mission.correct ? "good" : "bad";
                         button.setAttribute("aria-pressed", "false");
                         if (isMissionComplete(level, index)) {
@@ -903,6 +916,20 @@
             if (!wasLevelComplete && isLevelComplete(level)) celebrateLevel(level);
         }
 
+        document.getElementById("reset-adventure").addEventListener("click", () => {
+            const confirmed = window.confirm("Opravdu chceš vynulovat postup Minecraftu a začít znovu od Levelu 1?");
+            if (!confirmed) return;
+
+            stopReading();
+            try {
+                window.localStorage.setItem(progressStorageKey, JSON.stringify({ completed: [], currentLevel: 1 }));
+                window.location.reload();
+            } catch (error) {
+                console.error("Minecraftový postup se nepodařilo vynulovat.", error);
+                progressMessage.textContent = "Postup se nepodařilo vynulovat. Zkontroluj nastavení úložiště prohlížeče.";
+                progressMessage.hidden = false;
+            }
+        });
         document.querySelectorAll(".level-button").forEach((button) => {
             button.addEventListener("click", () => selectLevel(Number(button.dataset.level)));
         });

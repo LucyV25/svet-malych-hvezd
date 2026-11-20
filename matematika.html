@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f2fb">
+    <meta name="theme-color" content="#edf5f7">
     <meta name="description" content="Hravé procvičování počítání, sčítání, odčítání a porovnávání čísel.">
-    <title>Matematika — Svět malé hvězdičky</title>
+    <title>Matematika — Mise učení</title>
     <style>
         :root {
             color-scheme: light;
-            --ink: #352844;
-            --muted: #756a80;
-            --paper: #fffdfd;
-            --accent: #8052b8;
-            --accent-dark: #62398f;
-            --lavender: #eee5f7;
-            --line: #e9e0ed;
+            --ink: #263746;
+            --muted: #617482;
+            --paper: #ffffff;
+            --accent: #287f9b;
+            --accent-dark: #1c5d75;
+            --lavender: #deedf2;
+            --line: #d7e3e8;
             --serif: Georgia, "Times New Roman", serif;
         }
 
         * { box-sizing: border-box; }
         body {
             margin: 0;
-            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            background: linear-gradient(135deg, #edf5f7 0%, #f4f9f7 54%, #fff7e6 100%);
             color: var(--ink);
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 15px;
@@ -31,7 +31,7 @@
         button, input, select { font: inherit; }
         button, a, input, select { -webkit-tap-highlight-color: transparent; }
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-            outline: 3px solid #b99adb;
+            outline: 3px solid #70adba;
             outline-offset: 3px;
         }
         .topbar {
@@ -89,10 +89,10 @@
             max-width: 620px;
             margin: 0 auto;
             padding: 25px;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 18px;
             background: var(--paper);
-            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+            box-shadow: 0 12px 32px rgba(38, 55, 70, .07);
         }
         .math-card h2 {
             margin: 0 0 5px;
@@ -116,7 +116,7 @@
             padding: 0 6px;
             border: 1px solid #d9c9e6;
             border-radius: 9px;
-            background: #fcf9fe;
+            background: #edf5f7;
             color: var(--accent-dark);
             font-weight: 700;
             text-align: center;
@@ -161,7 +161,7 @@
             padding: 0 8px;
             border: 1px solid #d9c9e6;
             border-radius: 9px;
-            background: #fcf9fe;
+            background: #edf5f7;
             color: var(--ink);
             font-size: 16px;
             font-weight: 700;
@@ -178,17 +178,17 @@
             place-items: center;
             border: 1px solid #d9c9e6;
             border-radius: 8px;
-            background: #fcf9fe;
+            background: #edf5f7;
             color: var(--accent-dark);
             cursor: pointer;
             font-size: 18px;
             font-weight: 700;
         }
-        .comparison-option:hover { background: #f3eafa; }
+        .comparison-option:hover { background: #e1f0f3; }
         .comparison-option[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; }
-        .comparison-option:focus-visible { outline: 3px solid #d7b6ef; outline-offset: 2px; }
+        .comparison-option:focus-visible { outline: 3px solid #70adba; outline-offset: 2px; }
         .exercise-item.is-correct { border-color: #b7dcc5; background: #f5fbf7; }
-        .exercise-item.is-incorrect { border-color: #edbfd7; background: #fff7fb; }
+        .exercise-item.is-incorrect { border-color: #e7c1b8; background: #fff5ef; }
         .bond-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
         .bond-item {
             min-width: 0;
@@ -199,7 +199,7 @@
             text-align: center;
         }
         .bond-item.is-correct { border-color: #b7dcc5; background: #f5fbf7; }
-        .bond-item.is-incorrect { border-color: #edbfd7; background: #fff7fb; }
+        .bond-item.is-incorrect { border-color: #e7c1b8; background: #fff5ef; }
         .bond-instruction { margin: 0 0 8px; color: var(--muted); font-size: 12px; }
         .bond-diagram {
             display: grid;
@@ -250,9 +250,9 @@
             width: 58px;
             min-height: 48px;
             padding: 0 4px;
-            border: 2px dashed #bda9ce;
+            border: 2px dashed #8ebdc8;
             border-radius: 9px;
-            background: #fcf9fe;
+            background: #edf5f7;
             color: var(--accent-dark);
             font-size: 22px;
             font-weight: 700;
@@ -272,10 +272,10 @@
         }
         .submit-button { background: var(--accent); color: #fff; }
         .submit-button:hover { background: var(--accent-dark); }
-        .secondary-button { border-color: #e1d5e9; background: #fff; color: var(--accent-dark); }
-        .secondary-button:hover { background: #f7effa; }
+        .secondary-button { border-color: #d7e3e8; background: #fff; color: var(--accent-dark); }
+        .secondary-button:hover { background: #f4f9f7; }
         .toast { min-height: 22px; margin: 12px 0 0; color: var(--accent-dark); font-size: 12px; text-align: center; }
-        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        footer { padding: 0 20px 24px; color: #617482; font-size: 12px; text-align: center; }
         @media (max-width: 700px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
             .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 12px; }
@@ -292,8 +292,8 @@
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
-            <span class="brand-mark" aria-hidden="true">☾</span>
-            <span>Svět malé hvězdičky</span>
+            <span class="brand-mark" aria-hidden="true">🧭</span>
+            <span>Mise učení</span>
         </a>
         <nav class="topbar-actions" aria-label="Hlavní navigace">
             <a class="top-link" href="index.html">Pohádky</a>

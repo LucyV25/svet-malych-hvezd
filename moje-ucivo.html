@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f2fb">
+    <meta name="theme-color" content="#edf5f7">
     <meta name="description" content="Vytvořte vlastní procvičování pro děti z učiva, které právě probírají.">
-    <title>Moje učivo — Svět malé hvězdičky</title>
+    <title>Moje učivo — Mise učení</title>
     <style>
         :root {
             color-scheme: light;
-            --ink: #352844;
-            --muted: #756a80;
-            --paper: #fffdfd;
-            --accent: #8052b8;
-            --accent-dark: #62398f;
-            --lavender: #eee5f7;
-            --line: #e9e0ed;
+            --ink: #263746;
+            --muted: #617482;
+            --paper: #ffffff;
+            --accent: #287f9b;
+            --accent-dark: #1c5d75;
+            --lavender: #deedf2;
+            --line: #d7e3e8;
             --serif: Georgia, "Times New Roman", serif;
         }
         * { box-sizing: border-box; }
         body {
             margin: 0;
-            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            background: linear-gradient(135deg, #edf5f7 0%, #f4f9f7 54%, #fff7e6 100%);
             color: var(--ink);
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 15px;
@@ -30,7 +30,7 @@
         button, input, select { font: inherit; }
         button, a, input, select { -webkit-tap-highlight-color: transparent; }
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-            outline: 3px solid #b99adb;
+            outline: 3px solid #70adba;
             outline-offset: 3px;
         }
         .topbar {
@@ -87,10 +87,10 @@
         .panel {
             margin-top: 18px;
             padding: 24px;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 18px;
             background: var(--paper);
-            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+            box-shadow: 0 12px 32px rgba(38, 55, 70, .07);
         }
         .panel h2 {
             margin: 0 0 5px;
@@ -101,9 +101,9 @@
         .intro { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
         .storage-note {
             padding: 11px 14px;
-            border: 1px solid #e8def0;
+            border: 1px solid #deedf2;
             border-radius: 11px;
-            background: #f8f3fb;
+            background: #edf5f7;
             color: #59466a;
             font-size: 12px;
         }
@@ -170,7 +170,7 @@
         .button {
             min-height: 42px;
             padding: 7px 14px;
-            border: 1px solid #e1d5e9;
+            border: 1px solid #d7e3e8;
             border-radius: 10px;
             background: #fff;
             color: var(--accent-dark);
@@ -187,7 +187,7 @@
             padding: 16px;
             border: 1px solid var(--line);
             border-radius: 13px;
-            background: linear-gradient(145deg, #fff, #fcf9fe);
+            background: linear-gradient(145deg, #fff, #edf5f7);
         }
         .topic-card h3 { margin: 0 0 3px; color: var(--accent-dark); font-family: var(--serif); font-size: 19px; }
         .topic-meta { margin: 0; color: var(--muted); font-size: 12px; }
@@ -201,7 +201,7 @@
             gap: 4px;
             margin: 14px auto;
             padding: 18px;
-            border: 1px solid #e5d6ef;
+            border: 1px solid #deedf2;
             border-radius: 16px;
             background: linear-gradient(145deg, #eaf4fb, #fff3d8);
         }
@@ -215,7 +215,7 @@
             border: 1px solid #d9c9e6;
             border-radius: 10px;
             background: #fff;
-            color: #553674;
+            color: #1c5d75;
             cursor: pointer;
             font-family: var(--serif);
             font-size: 18px;
@@ -226,9 +226,9 @@
         .activity-choice:disabled, .pair-choice:disabled { cursor: default; opacity: 1; }
         .pair-column { display: grid; align-content: start; gap: 8px; }
         .pair-column h3 { margin: 0; color: var(--muted); font-size: 12px; }
-        .pair-choice[aria-pressed="true"] { border-color: var(--accent); background: #f3ebfa; }
+        .pair-choice[aria-pressed="true"] { border-color: var(--accent); background: #e1f0f3; }
         .activity-instructions { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
-        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        footer { padding: 0 20px 24px; color: #617482; font-size: 12px; text-align: center; }
         @media (max-width: 760px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
             .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 10px 14px; }
@@ -254,8 +254,8 @@
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
-            <span class="brand-mark" aria-hidden="true">☾</span>
-            <span>Svět malé hvězdičky</span>
+            <span class="brand-mark" aria-hidden="true">🧭</span>
+            <span>Mise učení</span>
         </a>
         <nav class="topbar-actions" aria-label="Hlavní navigace">
             <a class="top-link" href="rozcestnik.html">Rozcestník</a>

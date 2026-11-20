@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f8f2fb">
+    <meta name="theme-color" content="#edf5f7">
     <meta name="description" content="Přečti si pár slov, získej mince a postarej se o svého čtecího mazlíčka.">
-    <title>Můj čtecí mazlíček — Svět malé hvězdičky</title>
+    <title>Můj čtecí mazlíček — Mise učení</title>
     <style>
-        :root { color-scheme:light; --ink:#352844; --muted:#756a80; --paper:#fffdfd; --accent:#8052b8; --deep:#62398f; --lav:#eee5f7; --line:#e9e0ed; --serif:Georgia,"Times New Roman",serif; }
+        :root { color-scheme:light; --ink:#263746; --muted:#617482; --paper:#ffffff; --accent:#287f9b; --deep:#1c5d75; --lav:#deedf2; --line:#d7e3e8; --serif:Georgia,"Times New Roman",serif; }
         * { box-sizing:border-box; }
-        body { margin:0; color:var(--ink); background:linear-gradient(135deg,#f8f2fb,#fff5fa 55%,#f0f7fc); font:15px/1.6 "Segoe UI",Arial,sans-serif; }
+        body { margin:0; color:var(--ink); background:linear-gradient(135deg,#edf5f7,#f4f9f7 55%,#fff7e6); font:15px/1.6 "Segoe UI",Arial,sans-serif; }
         button,input,select { font:inherit; } button,a,input { -webkit-tap-highlight-color:transparent; }
-        button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #b99adb; outline-offset:3px; }
+        button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #70adba; outline-offset:3px; }
         .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; max-width:1050px; margin:auto; padding:19px 24px; }
         .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
         .brand { color:var(--ink); font:700 19px var(--serif); text-decoration:none; }
@@ -21,7 +21,7 @@
         .eyebrow { margin:0 0 7px; color:var(--accent); font-size:11px; font-weight:750; letter-spacing:.15em; text-transform:uppercase; }
         h1,h2,h3,p { margin-top:0; } h1 { margin-bottom:6px; font:500 clamp(32px,6vw,45px)/1.15 var(--serif); }
         .muted { color:var(--muted); }
-        .panel { margin-top:16px; padding:22px; border:1px solid rgba(97,63,117,.1); border-radius:18px; background:var(--paper); box-shadow:0 12px 32px rgba(97,63,117,.07); }
+        .panel { margin-top:16px; padding:22px; border:1px solid rgba(38,55,70,.1); border-radius:18px; background:var(--paper); box-shadow:0 12px 32px rgba(38,55,70,.07); }
         .pet-panel { display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:center; }
         .pet-scene { position:relative; display:grid; min-height:245px; place-items:center; overflow:hidden; border-radius:16px; background:radial-gradient(ellipse at 50% 70%,#f9dfb1 0 28%,transparent 29%),linear-gradient(#e9f5fb,#fff4e5); }
         .pet { position:relative; font-size:clamp(95px,18vw,145px); line-height:1; filter:drop-shadow(0 9px 5px #78634b26); }
@@ -31,7 +31,7 @@
         .pet-info h2 { margin-bottom:3px; font:500 27px var(--serif); }
         .name-row { display:flex; gap:7px; margin:12px 0; }
         .name-row input { min-width:0; flex:1; padding:9px 11px; border:1px solid var(--line); border-radius:9px; }
-        .button { min-height:40px; padding:7px 12px; border:1px solid #e1d5e9; border-radius:10px; background:#fff; color:var(--deep); cursor:pointer; font-weight:650; }
+        .button { min-height:40px; padding:7px 12px; border:1px solid #d7e3e8; border-radius:10px; background:#fff; color:var(--deep); cursor:pointer; font-weight:650; }
         .button.primary { border-color:var(--accent); background:var(--accent); color:#fff; }
         .coin-pill { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:99px; background:#fff3d6; color:#725218; font-weight:750; }
         .streak-pill { display:inline-flex; align-items:center; gap:6px; margin-left:6px; padding:6px 12px; border-radius:99px; background:#fff0e8; color:#8a452c; font-weight:750; }
@@ -58,7 +58,7 @@
     </style>
 </head>
 <body>
-    <header class="topbar"><a class="brand" href="rozcestnik.html">☾ Svět malé hvězdičky</a><a class="top-link" href="rozcestnik.html">← Rozcestník</a></header>
+    <header class="topbar"><a class="brand" href="rozcestnik.html">🧭 Mise učení</a><a class="top-link" href="rozcestnik.html">← Rozcestník</a></header>
     <main>
         <header class="intro"><p class="eyebrow">Čtení, které má tlapky</p><h1>Můj čtecí mazlíček</h1><p class="muted">Přečti pár slov a získej mince. Za mince můžeš svého kamaráda nakrmit nebo mu pořídit něco hezkého.</p></header>
         <section class="panel pet-panel" aria-labelledby="pet-name-heading">

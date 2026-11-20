@@ -30,7 +30,7 @@
     const toast = document.createElement("div");
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");
-    toast.style.cssText = "position:fixed;z-index:9999;right:16px;bottom:16px;max-width:min(320px,calc(100vw - 32px));padding:10px 15px;border-radius:12px;background:#62398f;color:white;font:600 14px/1.4 'Segoe UI',Arial,sans-serif;box-shadow:0 5px 20px #35284430;opacity:0;pointer-events:none;transition:opacity .2s";
+    toast.style.cssText = "position:fixed;z-index:9999;right:16px;bottom:16px;max-width:min(320px,calc(100vw - 32px));padding:10px 15px;border-radius:12px;background:#1c5d75;color:white;font:600 14px/1.4 'Segoe UI',Arial,sans-serif;box-shadow:0 5px 20px #26374630;opacity:0;pointer-events:none;transition:opacity .2s";
     document.addEventListener("DOMContentLoaded", function () { document.body.append(toast); });
     let hideToast;
     window.addEventListener("petcoinreward", function (event) {

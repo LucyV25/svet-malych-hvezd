@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f2fb">
+    <meta name="theme-color" content="#edf5f7">
     <meta name="description" content="Procvičování známých písmen, slabik a krátkých slov pro prvňáčky.">
-    <title>Čeština — Svět malé hvězdičky</title>
+    <title>Čeština — Mise učení</title>
     <style>
         @font-face {
             font-family: "Borel";
@@ -16,20 +16,20 @@
         }
         :root {
             color-scheme: light;
-            --ink: #352844;
-            --muted: #756a80;
-            --paper: #fffdfd;
-            --accent: #8052b8;
-            --accent-dark: #62398f;
-            --lavender: #eee5f7;
-            --line: #e9e0ed;
+            --ink: #263746;
+            --muted: #617482;
+            --paper: #ffffff;
+            --accent: #287f9b;
+            --accent-dark: #1c5d75;
+            --lavender: #deedf2;
+            --line: #d7e3e8;
             --serif: Georgia, "Times New Roman", serif;
         }
 
         * { box-sizing: border-box; }
         body {
             margin: 0;
-            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            background: linear-gradient(135deg, #edf5f7 0%, #f4f9f7 54%, #fff7e6 100%);
             color: var(--ink);
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 15px;
@@ -38,7 +38,7 @@
         button, input, select { font: inherit; }
         button, a, input, select { -webkit-tap-highlight-color: transparent; }
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-            outline: 3px solid #b99adb;
+            outline: 3px solid #70adba;
             outline-offset: 3px;
         }
         .topbar {
@@ -96,19 +96,19 @@
             max-width: 700px;
             margin: 0 auto;
             padding: 25px;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 18px;
             background: var(--paper);
-            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+            box-shadow: 0 12px 32px rgba(38, 55, 70, .07);
         }
         .writing-card {
             max-width: 700px;
             margin: 22px auto 0;
             padding: 25px;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 18px;
             background: var(--paper);
-            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+            box-shadow: 0 12px 32px rgba(38, 55, 70, .07);
         }
         .reading-card h2 {
             margin: 0 0 5px;
@@ -128,9 +128,9 @@
             justify-content: center;
             gap: 5px;
             padding: 0 8px;
-            border: 1px solid #e1d5e9;
+            border: 1px solid #d7e3e8;
             border-radius: 9px;
-            background: #f8f3fb;
+            background: #edf5f7;
             color: var(--accent-dark);
             cursor: pointer;
             font-size: 15px;
@@ -151,7 +151,7 @@
             padding: 0 10px;
             border: 1px solid #d9c9e6;
             border-radius: 9px;
-            background: #fcf9fe;
+            background: #edf5f7;
         }
         .writing-controls {
             display: grid;
@@ -166,7 +166,7 @@
             padding: 0 10px;
             border: 1px solid #d9c9e6;
             border-radius: 9px;
-            background: #fcf9fe;
+            background: #edf5f7;
             color: var(--ink);
         }
         .writing-mode-controls {
@@ -181,7 +181,7 @@
             height: clamp(220px, 42vw, 300px);
             margin: 14px 0 12px;
             overflow: hidden;
-            border: 1px solid #e1d5e9;
+            border: 1px solid #d7e3e8;
             border-radius: 14px;
             background-color: #fff;
             background-image: linear-gradient(to bottom, transparent calc(50% - 1px), #eadff0 calc(50% - 1px), #eadff0 calc(50% + 1px), transparent calc(50% + 1px));
@@ -193,14 +193,14 @@
             place-items: center;
             color: rgba(98, 57, 143, .2);
             font-family: "Borel", cursive;
-            font-size: clamp(210px, 60vw, 320px);
+            font-size: 180px;
             font-weight: 400;
             line-height: 1;
             pointer-events: none;
             user-select: none;
         }
         .writing-guide[hidden] { display: none; }
-        .writing-guide[data-digraph="true"] { font-size: clamp(150px, 43vw, 230px); }
+        .writing-guide[data-digraph="true"] { font-size: 150px; }
         .writing-canvas {
             position: relative;
             z-index: 1;
@@ -247,7 +247,7 @@
         .missing-word-letter.is-missing {
             border-style: dashed;
             border-radius: 8px 8px 0 0;
-            background: #fcf9fe;
+            background: #edf5f7;
         }
         .missing-word-letter.is-filled {
             border-color: #63a67a;
@@ -266,8 +266,8 @@
         }
         .submit-button { background: var(--accent); color: #fff; }
         .submit-button:hover { background: var(--accent-dark); }
-        .secondary-button { border-color: #e1d5e9; background: #fff; color: var(--accent-dark); }
-        .secondary-button:hover { background: #f7effa; }
+        .secondary-button { border-color: #d7e3e8; background: #fff; color: var(--accent-dark); }
+        .secondary-button:hover { background: #f4f9f7; }
         .field-hint { margin: -4px 0 12px; color: var(--muted); font-size: 11px; }
         .toast { min-height: 22px; margin: 12px 0 0; color: var(--accent-dark); font-size: 12px; text-align: center; }
         .reading-result { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
@@ -280,20 +280,20 @@
             min-height: 43px;
             place-items: center;
             padding: 0 9px;
-            border: 1px solid #e5d6ef;
+            border: 1px solid #deedf2;
             border-radius: 10px;
-            background: linear-gradient(145deg, #f8f1fc, #fff5fa);
-            color: #553674;
+            background: linear-gradient(145deg, #edf5f7, #f4f9f7);
+            color: #1c5d75;
             cursor: pointer;
             font-family: var(--serif);
             font-size: 19px;
             font-weight: 700;
             letter-spacing: .04em;
         }
-        .reading-token:hover { background: #eee1f6; }
+        .reading-token:hover { background: #deedf2; }
         .reading-token[aria-pressed="true"] {
             border-color: var(--accent);
-            background: #e9dcf4;
+            background: #deedf2;
         }
         .reading-audio-row {
             display: flex;
@@ -338,7 +338,7 @@
             height: 150px;
             place-items: center;
             margin: 0 auto 12px;
-            border: 1px solid #e5d6ef;
+            border: 1px solid #deedf2;
             border-radius: 18px;
             background: linear-gradient(145deg, #eaf4fb, #fff3d8);
             font-size: 76px;
@@ -357,7 +357,7 @@
             border: 1px solid #d9c9e6;
             border-radius: 10px;
             background: #fff;
-            color: #553674;
+            color: #1c5d75;
             cursor: pointer;
             font-size: 17px;
             font-weight: 700;
@@ -404,7 +404,7 @@
             padding: 12px;
             border: 1px dashed #d9c9e6;
             border-radius: 12px;
-            background: #fcf9fe;
+            background: #edf5f7;
             color: var(--accent-dark);
             font-family: var(--serif);
             font-size: clamp(22px, 5vw, 30px);
@@ -446,13 +446,13 @@
             border: 1px solid #d9c9e6;
             border-radius: 10px;
             background: #fff;
-            color: #553674;
+            color: #1c5d75;
             cursor: pointer;
             font-family: var(--serif);
             font-size: 20px;
             font-weight: 700;
         }
-        .case-match-choice[aria-pressed="true"] { border-color: var(--accent); background: #f3ebfa; }
+        .case-match-choice[aria-pressed="true"] { border-color: var(--accent); background: #e1f0f3; }
         .case-match-choice.correct { border-color: #63a67a; background: #edf8ef; color: #317349; }
         .case-match-choice.wrong { border-color: #c87878; background: #fff1f1; color: #9a4141; }
         .case-match-choice:disabled { cursor: default; opacity: 1; }
@@ -478,7 +478,7 @@
             padding: 7px;
             border: 2px dashed #d9c9e6;
             border-radius: 12px;
-            background: #fcf9fe;
+            background: #edf5f7;
         }
         .letter-tile {
             display: inline-grid;
@@ -488,7 +488,7 @@
             border: 1px solid #d9c9e6;
             border-radius: 10px;
             background: #fff;
-            color: #553674;
+            color: #1c5d75;
             cursor: grab;
             font-size: 20px;
             font-weight: 700;
@@ -508,14 +508,14 @@
             height: 125px;
             place-items: center;
             margin: 0 auto 8px;
-            border: 1px solid #e5d6ef;
+            border: 1px solid #deedf2;
             border-radius: 16px;
             background: linear-gradient(145deg, #eaf4fb, #fff3d8);
             font-size: 64px;
         }
         .yes-no-word {
             margin: 4px 0 12px;
-            color: #553674;
+            color: #1c5d75;
             font-family: var(--serif);
             font-size: 27px;
             font-weight: 700;
@@ -532,7 +532,7 @@
             border: 1px solid #d9c9e6;
             border-radius: 10px;
             background: #fff;
-            color: #553674;
+            color: #1c5d75;
             cursor: pointer;
             font-size: 16px;
             font-weight: 700;
@@ -541,10 +541,10 @@
             max-width: 700px;
             margin: 0 auto 22px;
             padding: 18px 20px;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 18px;
             background: var(--paper);
-            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+            box-shadow: 0 12px 32px rgba(38, 55, 70, .07);
         }
         .profile-row {
             display: flex;
@@ -561,7 +561,7 @@
             padding: 0 10px;
             border: 1px solid #d9c9e6;
             border-radius: 9px;
-            background: #fcf9fe;
+            background: #edf5f7;
             color: var(--ink);
             font: inherit;
         }
@@ -573,7 +573,7 @@
             gap: 12px;
         }
         .star-count {
-            color: #553674;
+            color: #1c5d75;
             font-family: var(--serif);
             font-size: 25px;
             font-weight: 700;
@@ -589,13 +589,13 @@
             margin: 10px 0 14px;
             overflow: hidden;
             border-radius: 999px;
-            background: #eee7f3;
+            background: #deedf2;
         }
         .badge-progress span {
             display: block;
             height: 100%;
             border-radius: inherit;
-            background: linear-gradient(90deg, #8052b8, #d88eb5);
+            background: linear-gradient(90deg, #287f9b, #efbd63);
         }
         .stats-grid {
             display: grid;
@@ -612,7 +612,7 @@
         }
         .stat-value {
             display: block;
-            color: #553674;
+            color: #1c5d75;
             font-size: 18px;
             font-weight: 700;
         }
@@ -624,7 +624,7 @@
         @media (max-width: 700px) {
             .stats-grid { grid-template-columns: 1fr; }
         }
-        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        footer { padding: 0 20px 24px; color: #617482; font-size: 12px; text-align: center; }
         @media (max-width: 700px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
             .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 12px; }
@@ -641,8 +641,8 @@
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
-            <span class="brand-mark" aria-hidden="true">☾</span>
-            <span>Svět malé hvězdičky</span>
+            <span class="brand-mark" aria-hidden="true">🧭</span>
+            <span>Mise učení</span>
         </a>
         <nav class="topbar-actions" aria-label="Hlavní navigace">
             <a class="top-link" href="index.html">Pohádky</a>
@@ -940,8 +940,8 @@
         const missingLetterStatus = document.querySelector("#missing-letter-status");
         const newMissingLetterButton = document.querySelector("#new-missing-letter");
         const readMissingLetterInstructionsButton = document.querySelector("#read-missing-letter-instructions");
-        const writingGridWidth = 64;
-        const writingGridHeight = 32;
+        const writingGridWidth = 128;
+        const writingGridHeight = 96;
         let learnedLetters = [];
         let selectedLetters = [];
         let writingStrokes = [];
@@ -1155,12 +1155,47 @@
             });
         }
 
+        function fitWritingGuide() {
+            const selectedLetter = writingLetterSelect.value;
+            if (!selectedLetter) {
+                writingGuide.style.removeProperty("font-size");
+                return;
+            }
+
+            const board = writingCanvas.parentElement.getBoundingClientRect();
+            if (!board.width || !board.height) return;
+
+            const context = document.createElement("canvas").getContext("2d");
+            if (!context) return;
+            const guideStyle = window.getComputedStyle(writingGuide);
+            const sampleSize = 512;
+            const fontDescription = `${guideStyle.fontWeight} ${sampleSize}px ${guideStyle.fontFamily}`;
+            if (document.fonts && !document.fonts.check(fontDescription, selectedLetter)) {
+                document.fonts.load(fontDescription, selectedLetter).then(() => {
+                    if (writingLetterSelect.value === selectedLetter) fitWritingGuide();
+                });
+                return;
+            }
+            context.font = fontDescription;
+            const metrics = context.measureText(selectedLetter);
+            const glyphHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+            const glyphWidth = metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight;
+            if (!glyphHeight || !glyphWidth) return;
+
+            const scale = Math.min(
+                (board.height * 0.84) / glyphHeight,
+                (board.width * 0.84) / glyphWidth
+            );
+            writingGuide.style.fontSize = `${sampleSize * scale}px`;
+        }
+
         function updateWritingGuide() {
             const selectedLetter = writingLetterSelect.value;
             const showGuide = selectedLetter !== ""
                 && (writingModeSelect.value === "trace" || guideManuallyVisible);
             writingGuide.textContent = selectedLetter;
             writingGuide.dataset.digraph = String(selectedLetter.length > 1);
+            fitWritingGuide();
             writingCanvas.setAttribute("aria-label", selectedLetter
                 ? `Plocha pro psaní písmene ${selectedLetter}. Kresli prstem nebo stylusem.`
                 : "Plocha pro kreslení. Nejdřív vyber známé písmeno.");
@@ -1204,8 +1239,8 @@
             writingContext.lineCap = "round";
             writingContext.lineJoin = "round";
             writingContext.lineWidth = Math.max(5, Math.min(bounds.width, bounds.height) * 0.025);
-            writingContext.strokeStyle = "#62398f";
-            writingContext.fillStyle = "#62398f";
+            writingContext.strokeStyle = "#1c5d75";
+            writingContext.fillStyle = "#1c5d75";
             writingStrokes.forEach((stroke) => {
                 if (!stroke.points.length) return;
                 const firstPoint = stroke.points[0];
@@ -1226,6 +1261,7 @@
         function resizeWritingCanvas() {
             const bounds = writingCanvas.getBoundingClientRect();
             if (!bounds.width || !bounds.height) return;
+            fitWritingGuide();
             const pixelRatio = window.devicePixelRatio || 1;
             writingCanvas.width = Math.round(bounds.width * pixelRatio);
             writingCanvas.height = Math.round(bounds.height * pixelRatio);
@@ -1438,14 +1474,14 @@
                 ...compareWritingMasks(drawing.mask, createReferenceMask(letter))
             })).sort((first, second) => second.score - first.score);
             const closest = candidates[0];
-            if (!closest || closest.score < 0.35) {
+            if (!closest || closest.score < 0.55 || (candidates[1] && closest.score - candidates[1].score < 0.08)) {
                 writingStatus.textContent = "Písmenko zatím nedokážu poznat. Zkus ho napsat pomalu ještě jednou nebo si ukázat předlohu.";
                 return;
             }
 
             if (writingModeSelect.value === "trace") {
                 const target = candidates.find((candidate) => candidate.letter === targetLetter);
-                if (target && target.precision >= 0.5 && target.coverage >= 0.12 && target.partsCovered) {
+                if (target && target.score >= 0.55 && target.precision >= 0.55 && target.coverage >= 0.28 && target.partsCovered) {
                     writingStatus.textContent = `Dobrá práce, tahy se přibližují předloze písmene ${targetLetter}.`;
                     recordExerciseSuccess("", [targetLetter]);
                 } else {
@@ -1659,7 +1695,7 @@
                     shape("path", {
                         d: "M0 25 L28 0 L56 25 V62 H0 Z",
                         fill: "#ffd875",
-                        stroke: "#62398f",
+                        stroke: "#1c5d75",
                         "stroke-linejoin": "round",
                         "stroke-width": "4"
                     }),
@@ -1678,7 +1714,7 @@
                         height: "12",
                         rx: "2",
                         fill: "#fff",
-                        stroke: "#62398f",
+                        stroke: "#1c5d75",
                         "stroke-width": "2"
                     }),
                     shape("rect", {
@@ -1687,8 +1723,8 @@
                         width: "13",
                         height: "23",
                         rx: "3",
-                        fill: "#f3a8ca",
-                        stroke: "#62398f",
+                        fill: "#f3c467",
+                        stroke: "#1c5d75",
                         "stroke-width": "2"
                     })
                 );
@@ -1709,7 +1745,7 @@
             svg.append(shape("path", {
                 d: "M8 90 H142",
                 fill: "none",
-                stroke: "#8052b8",
+                stroke: "#287f9b",
                 "stroke-linecap": "round",
                 "stroke-width": "3"
             }));

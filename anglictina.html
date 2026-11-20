@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f2fb">
+    <meta name="theme-color" content="#edf5f7">
     <meta name="description" content="První anglická slovíčka, obrázkové hry a poslech pro malé začátečníky.">
-    <title>Angličtina — Svět malé hvězdičky</title>
+    <title>Angličtina — Mise učení</title>
     <style>
         :root {
             color-scheme: light;
-            --ink: #352844;
-            --muted: #756a80;
-            --paper: #fffdfd;
-            --accent: #8052b8;
-            --accent-dark: #62398f;
-            --lavender: #eee5f7;
-            --line: #e9e0ed;
+            --ink: #263746;
+            --muted: #617482;
+            --paper: #ffffff;
+            --accent: #287f9b;
+            --accent-dark: #1c5d75;
+            --lavender: #deedf2;
+            --line: #d7e3e8;
             --serif: Georgia, "Times New Roman", serif;
         }
         * { box-sizing: border-box; }
         body {
             margin: 0;
-            background: linear-gradient(135deg, #f8f2fb 0%, #fff5fa 54%, #f0f7fc 100%);
+            background: linear-gradient(135deg, #edf5f7 0%, #f4f9f7 54%, #fff7e6 100%);
             color: var(--ink);
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 15px;
@@ -30,7 +30,7 @@
         button, a { -webkit-tap-highlight-color: transparent; }
         button { font: inherit; }
         button:focus-visible, a:focus-visible {
-            outline: 3px solid #b99adb;
+            outline: 3px solid #70adba;
             outline-offset: 3px;
         }
         .topbar {
@@ -86,10 +86,10 @@
         .page-heading p:last-child { margin-bottom: 0; color: var(--muted); font-size: 14px; }
         .lesson-card, .game-card {
             padding: 24px;
-            border: 1px solid rgba(97, 63, 117, .1);
+            border: 1px solid rgba(38, 55, 70, .1);
             border-radius: 18px;
             background: var(--paper);
-            box-shadow: 0 12px 32px rgba(97, 63, 117, .07);
+            box-shadow: 0 12px 32px rgba(38, 55, 70, .07);
         }
         .game-card { margin-top: 20px; text-align: center; }
         .lesson-card h2, .game-card h2 {
@@ -109,7 +109,7 @@
         .category-button, .action-button {
             min-height: 42px;
             padding: 0 14px;
-            border: 1px solid #e1d5e9;
+            border: 1px solid #d7e3e8;
             border-radius: 10px;
             background: #fff;
             color: var(--accent-dark);
@@ -135,7 +135,7 @@
             padding: 14px 10px;
             border: 1px solid var(--line);
             border-radius: 14px;
-            background: linear-gradient(145deg, #fff, #fcf9fe);
+            background: linear-gradient(145deg, #fff, #edf5f7);
             text-align: center;
         }
         .word-symbol { min-height: 62px; font-size: 48px; line-height: 1.2; }
@@ -182,13 +182,13 @@
             justify-items: center;
             gap: 5px;
             padding: 12px;
-            border: 1px solid #e1d5e9;
+            border: 1px solid #d7e3e8;
             border-radius: 14px;
             background: #fff;
             color: var(--accent-dark);
             cursor: pointer;
         }
-        .game-choice:hover { background: #f7effa; }
+        .game-choice:hover { background: #f4f9f7; }
         .game-choice.correct { border-color: #63a67a; background: #edf8ef; color: #317349; }
         .game-choice.wrong { border-color: #c87878; background: #fff1f1; color: #9a4141; }
         .choice-symbol { font-size: 48px; line-height: 1.2; }
@@ -196,7 +196,7 @@
         .game-status, .speech-status { min-height: 22px; margin: 9px 0 0; color: var(--accent-dark); font-size: 13px; }
         .speech-status { text-align: center; }
         .game-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-        footer { padding: 0 20px 24px; color: #81758b; font-size: 12px; text-align: center; }
+        footer { padding: 0 20px 24px; color: #617482; font-size: 12px; text-align: center; }
         @media (max-width: 760px) {
             .topbar { flex-wrap: wrap; gap: 12px; padding: 16px 21px; }
             .topbar-actions { width: 100%; justify-content: center; flex-wrap: wrap; gap: 10px 14px; }
@@ -218,8 +218,8 @@
 <body>
     <header class="topbar">
         <a class="brand" href="rozcestnik.html" aria-label="Přejít na rozcestník">
-            <span class="brand-mark" aria-hidden="true">☾</span>
-            <span>Svět malé hvězdičky</span>
+            <span class="brand-mark" aria-hidden="true">🧭</span>
+            <span>Mise učení</span>
         </a>
         <nav class="topbar-actions" aria-label="Hlavní navigace">
             <a class="top-link" href="index.html">Pohádky</a>
@@ -384,6 +384,20 @@
                 ]
             },
             {
+                id: "rooms",
+                title: "Pokoje v domě",
+                items: [
+                    { english: "bedroom", czech: "ložnice", symbol: "🛏️" },
+                    { english: "bathroom", czech: "koupelna", symbol: "🛁" },
+                    { english: "kitchen", czech: "kuchyně", symbol: "🥘" },
+                    { english: "living room", czech: "obývací pokoj", symbol: "🛋️" },
+                    { english: "dining room", czech: "jídelna", symbol: "🍽️" },
+                    { english: "child's room", czech: "dětský pokoj", symbol: "🧸" },
+                    { english: "hallway", czech: "chodba", symbol: "🚪" },
+                    { english: "study", czech: "pracovna", symbol: "🖥️" }
+                ]
+            },
+            {
                 id: "pencil-case",
                 title: "V penále",
                 items: [
@@ -500,14 +514,14 @@
                 createShape("path", {
                     d: "M14 43 Q15 37 23 37 H97 Q105 37 107 45 L102 78 Q101 86 92 86 H28 Q19 86 18 78 Z",
                     fill: "#ffd875",
-                    stroke: "#62398f",
+                    stroke: "#1c5d75",
                     "stroke-linejoin": "round",
                     "stroke-width": "4"
                 }),
                 createShape("path", {
                     d: "M18 45 H103",
                     fill: "none",
-                    stroke: "#8052b8",
+                    stroke: "#287f9b",
                     "stroke-dasharray": "2 4",
                     "stroke-linecap": "round",
                     "stroke-width": "3"
@@ -518,8 +532,8 @@
                     width: "48",
                     height: "18",
                     rx: "6",
-                    fill: "#f3a8ca",
-                    stroke: "#8052b8",
+                    fill: "#f3c467",
+                    stroke: "#287f9b",
                     "stroke-width": "3"
                 }),
                 createShape("circle", {
@@ -527,7 +541,7 @@
                     cy: "46",
                     r: "4",
                     fill: "#fff",
-                    stroke: "#62398f",
+                    stroke: "#1c5d75",
                     "stroke-width": "2"
                 })
             );
