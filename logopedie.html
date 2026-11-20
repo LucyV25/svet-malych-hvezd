@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4effa">
+    <meta name="description" content="Krátké obrázkové hry na hlásky, slabiky, rýmy, poslech a tvoření vět.">
+    <title>Logopedie — Mise učení</title>
+    <style>
+        :root { color-scheme:light; --ink:#293747; --muted:#617482; --paper:#fff; --accent:#7959a6; --deep:#553b7b; --soft:#eee7f6; --line:#ded6e8; }
+        * { box-sizing:border-box; }
+        body { margin:0; color:var(--ink); background:linear-gradient(140deg,#f4effa 0%,#f3f8fa 55%,#fff8e9 100%); font:15px/1.6 "Segoe UI",Arial,sans-serif; }
+        button,a { font:inherit; -webkit-tap-highlight-color:transparent; }
+        button:focus-visible,a:focus-visible { outline:3px solid #a888ca; outline-offset:3px; }
+        .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; max-width:1160px; margin:auto; padding:20px 30px; }
+        .brand { display:flex; align-items:center; gap:10px; color:var(--ink); font:700 19px Georgia,"Times New Roman",serif; text-decoration:none; }
+        .brand-mark { display:grid; width:36px; height:36px; place-items:center; border-radius:50%; background:var(--soft); font:19px sans-serif; }
+        .topbar-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+        .top-link { color:var(--deep); font-size:13px; font-weight:650; text-decoration:none; }
+        .top-link[aria-current="page"] { color:var(--muted); }
+        main { width:min(100% - 32px,900px); margin:auto; padding:28px 0 64px; }
+        h1,h2,p { margin-top:0; }
+        .page-heading,.activity-heading { max-width:700px; margin:0 auto 22px; text-align:center; }
+        .eyebrow { margin:0 0 8px; color:var(--accent); font-size:11px; font-weight:750; letter-spacing:.15em; text-transform:uppercase; }
+        h1 { margin:0 0 8px; font:500 clamp(32px,6vw,46px)/1.15 Georgia,"Times New Roman",serif; }
+        .page-heading p:last-child,.activity-heading p:last-child { margin-bottom:0; color:var(--muted); }
+        .activity-picker { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 auto 20px; }
+        .activity-button,.action-button,.choice-button { min-height:44px; padding:9px 14px; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--deep); cursor:pointer; font-weight:700; }
+        .activity-button[aria-pressed="true"] { border-color:var(--accent); background:var(--soft); }
+        .activity-panel { padding:24px; border:1px solid rgba(38,55,70,.1); border-radius:20px; background:var(--paper); box-shadow:0 12px 32px rgba(38,55,70,.07); }
+        .activity-panel[hidden] { display:none; }
+        .panel-heading { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:12px; }
+        .panel-heading h2 { margin:0; font:600 clamp(20px,4vw,27px)/1.25 Georgia,"Times New Roman",serif; }
+        .panel-intro { margin:12px 0 16px; color:var(--muted); }
+        .read-button { flex:none; }
+        .prompt-box { display:grid; min-height:150px; place-items:center; margin:16px 0; padding:16px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#f0eafa,#fff4df); text-align:center; }
+        .prompt-symbol { font-size:72px; line-height:1.2; }
+        .prompt-word { margin:4px 0 0; color:var(--deep); font-size:24px; font-weight:750; }
+        .sound-letter { display:grid; width:88px; height:88px; place-items:center; border:3px solid #c7b2df; border-radius:50%; background:#fff; color:var(--deep); font-size:48px; font-weight:800; }
+        .choice-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+        .choice-button { display:grid; min-height:100px; align-content:center; justify-items:center; gap:3px; padding:8px; font-size:15px; }
+        .choice-button:hover:not(:disabled),.action-button:hover:not(:disabled) { background:var(--soft); }
+        .choice-picture { font-size:38px; line-height:1.2; }
+        .choice-button.is-correct { border-color:#63a67a; background:#edf8ef; color:#275b35; }
+        .choice-button.is-wrong { border-color:#d7a0a0; background:#fff0f0; color:#8a3c2e; }
+        .answer-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+        .answer-button { min-height:58px; border:1px solid var(--line); border-radius:13px; background:#fff; color:var(--deep); cursor:pointer; font-size:21px; font-weight:750; }
+        .answer-button.is-correct { border-color:#63a67a; background:#edf8ef; }
+        .answer-button.is-wrong { border-color:#d7a0a0; background:#fff0f0; }
+        .quiz-status { min-height:26px; margin:12px 0 0; color:var(--deep); font-weight:650; text-align:center; }
+        .quiz-progress { margin:8px 0 0; color:var(--muted); font-size:12px; text-align:center; }
+        .panel-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:15px; }
+        .action-button.primary { border-color:var(--accent); background:var(--accent); color:#fff; }
+        .action-button.primary:hover { background:var(--deep); }
+        .sound-selector { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:12px 0; }
+        .sound-button { min-width:48px; min-height:44px; border:1px solid var(--line); border-radius:11px; background:#fff; color:var(--deep); cursor:pointer; font-size:17px; font-weight:750; }
+        .sound-button[aria-pressed="true"] { border-color:var(--accent); background:var(--soft); }
+        .repeat-card { display:grid; min-height:230px; align-content:center; justify-items:center; gap:7px; margin:14px 0; padding:18px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#f0eafa,#fff4df); text-align:center; }
+        .repeat-card .prompt-symbol { font-size:82px; }
+        .repeat-word { margin:0; color:var(--deep); font-size:26px; font-weight:750; }
+        .sentence-pictures { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:14px; margin:18px 0; }
+        .sentence-picture { display:grid; min-width:90px; min-height:92px; place-items:center; padding:9px; border:1px solid var(--line); border-radius:14px; background:#fff; font-size:48px; }
+        .example-sentence { margin:12px 0 0; padding:14px; border-radius:12px; background:var(--soft); color:var(--deep); font-size:18px; font-weight:650; text-align:center; }
+        .parent-note { margin:22px 0 0; padding:13px 16px; border-left:3px solid #c3addb; border-radius:0 10px 10px 0; background:#fff; color:var(--muted); font-size:13px; }
+        footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
+        @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:9px; } .activity-panel { padding:18px; } .choice-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="rozcestnik.html"><span class="brand-mark" aria-hidden="true">🧭</span><span>Mise učení</span></a>
+        <nav class="topbar-actions" aria-label="Hlavní navigace">
+            <a class="top-link" href="index.html">Pohádky</a>
+            <a class="top-link" href="matematika.html">Matematika</a>
+            <a class="top-link" href="cestina.html">Čeština</a>
+            <a class="top-link" href="anglictina.html">Angličtina</a>
+            <a class="top-link" href="prvouka.html">Prvouka</a>
+            <a class="top-link" href="logopedie.html" aria-current="page">Logopedie</a>
+            <a class="top-link" href="advent.html">Advent</a>
+            <a class="top-link" href="cteni.html">Čtení</a>
+        </nav>
+    </header>
+    <main>
+        <header class="page-heading">
+            <p class="eyebrow">Poslouchej, povídej si, zkoušej</p>
+            <h1>Logopedie</h1>
+            <p>Vyber si krátkou hru s hláskami, slabikami, rýmy nebo obrázky.</p>
+        </header>
+        <div class="activity-picker" role="group" aria-label="Vyber si logopedickou hru">
+            <button class="activity-button" type="button" data-activity="first" aria-pressed="true">🔤 První hláska</button>
+            <button class="activity-button" type="button" data-activity="syllables" aria-pressed="false">👏 Slabiky</button>
+            <button class="activity-button" type="button" data-activity="rhymes" aria-pressed="false">🎵 Rýmy</button>
+            <button class="activity-button" type="button" data-activity="same-different" aria-pressed="false">👂 Stejné, nebo jiné?</button>
+            <button class="activity-button" type="button" data-activity="repeat" aria-pressed="false">🗣️ Zopakuj slovo</button>
+            <button class="activity-button" type="button" data-activity="sentences" aria-pressed="false">💬 Věta z obrázků</button>
+        </div>
+
+        <section class="activity-panel" data-panel="first" aria-labelledby="first-title">
+            <div class="panel-heading"><div><p class="eyebrow">Poslouchej začátek slova</p><h2 id="first-title">Najdi první hlásku</h2></div><button class="action-button read-button" id="read-first" type="button">🔊 Přečíst zadání</button></div>
+            <p class="panel-intro">Podívej se na písmeno a vyber obrázek, jehož název začíná stejnou hláskou.</p>
+            <div class="prompt-box"><span class="sound-letter" id="first-letter"></span></div>
+            <div class="choice-grid" id="first-choices" role="group" aria-label="Vyber obrázek"></div>
+            <p class="quiz-status" id="first-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="first-progress"></p>
+            <div class="panel-actions"><button class="action-button primary" id="first-next" type="button" hidden>Další otázka</button></div>
+        </section>
+
+        <section class="activity-panel" data-panel="syllables" aria-labelledby="syllables-title" hidden>
+            <div class="panel-heading"><div><p class="eyebrow">Vytleskej slovo</p><h2 id="syllables-title">Kolik má slabik?</h2></div><button class="action-button read-button" id="read-syllables" type="button">🔊 Přečíst zadání</button></div>
+            <p class="panel-intro">Řekni slovo nahlas, vytleskej ho a vyber počet slabik.</p>
+            <div class="prompt-box"><div><div class="prompt-symbol" id="syllable-picture" aria-hidden="true"></div><p class="prompt-word" id="syllable-word"></p></div></div>
+            <div class="answer-grid" id="syllable-choices" role="group" aria-label="Počet slabik"></div>
+            <p class="quiz-status" id="syllable-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="syllable-progress"></p>
+            <div class="panel-actions"><button class="action-button primary" id="syllable-next" type="button" hidden>Další slovo</button></div>
+        </section>
+
+        <section class="activity-panel" data-panel="rhymes" aria-labelledby="rhymes-title" hidden>
+            <div class="panel-heading"><div><p class="eyebrow">Poslouchej zakončení</p><h2 id="rhymes-title">Najdi rým</h2></div><button class="action-button read-button" id="read-rhyme" type="button">🔊 Přečíst zadání</button></div>
+            <p class="panel-intro">Vyber slovo, které se rýmuje s obrázkem.</p>
+            <div class="prompt-box"><div><div class="prompt-symbol" id="rhyme-picture" aria-hidden="true"></div><p class="prompt-word" id="rhyme-word"></p></div></div>
+            <div class="choice-grid" id="rhyme-choices" role="group" aria-label="Možnosti rýmu"></div>
+            <p class="quiz-status" id="rhyme-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="rhyme-progress"></p>
+            <div class="panel-actions"><button class="action-button primary" id="rhyme-next" type="button" hidden>Další rým</button></div>
+        </section>
+
+        <section class="activity-panel" data-panel="same-different" aria-labelledby="pairs-title" hidden>
+            <div class="panel-heading"><div><p class="eyebrow">Pozorně poslouchej</p><h2 id="pairs-title">Stejné, nebo jiné?</h2></div><button class="action-button read-button" id="read-pair" type="button">🔊 Přehrát slova</button></div>
+            <p class="panel-intro">Poslechni si dvě slova a řekni, jestli znějí stejně, nebo jinak.</p>
+            <div class="prompt-box"><div><div class="prompt-symbol">👂</div><p class="prompt-word" id="pair-text">Poslechni si dvojici slov</p></div></div>
+            <div class="answer-grid" id="pair-choices" role="group" aria-label="Stejná nebo různá slova"></div>
+            <p class="quiz-status" id="pair-status" role="status" aria-live="polite"></p><p class="quiz-progress" id="pair-progress"></p>
+            <div class="panel-actions"><button class="action-button primary" id="pair-next" type="button" hidden>Další dvojice</button></div>
+        </section>
+
+        <section class="activity-panel" data-panel="repeat" aria-labelledby="repeat-title" hidden>
+            <div class="panel-heading"><div><p class="eyebrow">Poslechni a zopakuj</p><h2 id="repeat-title">Procvič slovo</h2></div><button class="action-button read-button" id="read-repeat-prompt" type="button">🔊 Přečíst zadání</button></div>
+            <p class="panel-intro">Vyber hlásku, kterou právě procvičujete, poslechni si slovo a zkus ho říct nahlas.</p>
+            <div class="sound-selector" id="sound-selector" role="group" aria-label="Vyber procvičovanou hlásku"></div>
+            <div class="repeat-card"><div class="prompt-symbol" id="repeat-picture" aria-hidden="true"></div><p class="repeat-word" id="repeat-word"></p><button class="action-button" id="play-repeat-word" type="button">🔊 Poslechnout slovo</button></div>
+            <p class="quiz-status" id="repeat-status" role="status" aria-live="polite">Slovo si můžeš pustit, kolikrát potřebuješ.</p><p class="quiz-progress" id="repeat-progress"></p>
+            <div class="panel-actions"><button class="action-button primary" id="repeat-next" type="button">Zopakovali jsme — další slovo</button></div>
+        </section>
+
+        <section class="activity-panel" data-panel="sentences" aria-labelledby="sentence-title" hidden>
+            <div class="panel-heading"><div><p class="eyebrow">Povídej podle obrázků</p><h2 id="sentence-title">Vymysli větu</h2></div><button class="action-button read-button" id="read-sentence" type="button">🔊 Přečíst zadání</button></div>
+            <p class="panel-intro">Vymysli větu, ve které použiješ všechna slova z obrázků.</p>
+            <div class="sentence-pictures" id="sentence-pictures" aria-label="Obrázky pro větu"></div>
+            <p class="quiz-status" id="sentence-status" role="status" aria-live="polite">Zkus říct celou větu nahlas.</p>
+            <p class="example-sentence" id="sentence-example" hidden></p>
+            <p class="quiz-progress" id="sentence-progress"></p>
+            <div class="panel-actions"><button class="action-button" id="show-sentence-example" type="button">Ukázat příklad věty</button><button class="action-button primary" id="sentence-next" type="button">Řekli jsme větu — další obrázky</button></div>
+        </section>
+
+        <p class="parent-note"><strong>Pro rodiče:</strong> U výslovnosti si dítě slovo poslechne a zopakuje. Aplikace řeč nenahrává ani neposuzuje. Vyberte zvuk, který právě procvičujete.</p>
+    </main>
+    <footer>Každé slovo můžeš zkusit vlastním tempem.</footer>
+    <script src="scripts/pet-rewards.js"></script>
+    <script>
+        const firstSoundRounds = [
+            { id:"m", sound:"M", correct:{word:"míč",symbol:"⚽"}, other:[{word:"sova",symbol:"🦉"},{word:"rak",symbol:"🦀"},{word:"kočka",symbol:"🐱"}] },
+            { id:"s", sound:"S", correct:{word:"sova",symbol:"🦉"}, other:[{word:"míč",symbol:"⚽"},{word:"pes",symbol:"🐶"},{word:"rak",symbol:"🦀"}] },
+            { id:"l", sound:"L", correct:{word:"lev",symbol:"🦁"}, other:[{word:"sova",symbol:"🦉"},{word:"pes",symbol:"🐶"},{word:"míč",symbol:"⚽"}] },
+            { id:"p", sound:"P", correct:{word:"pes",symbol:"🐶"}, other:[{word:"lev",symbol:"🦁"},{word:"sova",symbol:"🦉"},{word:"rak",symbol:"🦀"}] }
+        ];
+        const syllableWords = [
+            { id:"dum", word:"dům", symbol:"🏠", count:1 },
+            { id:"kocka", word:"kočka", symbol:"🐱", count:2 },
+            { id:"jahoda", word:"jahoda", symbol:"🍓", count:3 },
+            { id:"cokolada", word:"čokoláda", symbol:"🍫", count:4 },
+            { id:"banan", word:"banán", symbol:"🍌", count:2 }
+        ];
+        const rhymeRounds = [
+            { id:"pes-les", word:"pes", symbol:"🐶", correct:"les", options:["les","nos","máma","ryba"] },
+            { id:"mic-klic", word:"míč", symbol:"⚽", correct:"klíč", options:["klíč","mísa","kůň","strom"] },
+            { id:"kocka-cocka", word:"kočka", symbol:"🐱", correct:"čočka", options:["čočka","myš","slon","tráva"] },
+            { id:"den-sen", word:"den", symbol:"🌞", correct:"sen", options:["sen","dům","pes","máma"] }
+        ];
+        const wordPairs = [
+            { first:"pes", second:"pes", same:true }, { first:"les", second:"pes", same:false },
+            { first:"míč", second:"míč", same:true }, { first:"myš", second:"míč", same:false },
+            { first:"sova", second:"sova", same:true }, { first:"rak", second:"lev", same:false }
+        ];
+        const articulationWords = {
+            M:[{word:"míč",symbol:"⚽"},{word:"myš",symbol:"🐭"},{word:"med",symbol:"🍯"},{word:"mapa",symbol:"🗺️"},{word:"motýl",symbol:"🦋"}],
+            S:[{word:"sova",symbol:"🦉"},{word:"sýr",symbol:"🧀"},{word:"slunce",symbol:"☀️"},{word:"sáně",symbol:"🛷"},{word:"seno",symbol:"🌾"}],
+            Š:[{word:"šála",symbol:"🧣"},{word:"šnek",symbol:"🐌"},{word:"šiška",symbol:"🌰"},{word:"šaty",symbol:"👗"},{word:"šipka",symbol:"➡️"}],
+            R:[{word:"rak",symbol:"🦀"},{word:"ryba",symbol:"🐟"},{word:"ruka",symbol:"✋"},{word:"rohlík",symbol:"🥖"},{word:"rosa",symbol:"💧"}],
+            Ř:[{word:"řeka",symbol:"🏞️"},{word:"řepa",symbol:"🫜"},{word:"řidič",symbol:"🚗"},{word:"hřeben",symbol:"🪮"},{word:"křeček",symbol:"🐹"}],
+            L:[{word:"les",symbol:"🌲"},{word:"lev",symbol:"🦁"},{word:"lampa",symbol:"💡"},{word:"loď",symbol:"⛵"},{word:"louka",symbol:"🌼"}]
+        };
+        const sentenceRounds = [
+            { id:"cat-ball", pictures:[{word:"kočka",symbol:"🐱"},{word:"míč",symbol:"⚽"},{word:"stůl",symbol:"🪑"}], sample:"Kočka našla míč pod stolem." },
+            { id:"boy-apple", pictures:[{word:"kluk",symbol:"🧒"},{word:"jablko",symbol:"🍎"},{word:"strom",symbol:"🌳"}], sample:"Kluk utrhl jablko ze stromu." },
+            { id:"bird-house", pictures:[{word:"ptáček",symbol:"🐦"},{word:"domeček",symbol:"🏠"},{word:"větvička",symbol:"🌿"}], sample:"Ptáček si staví hnízdo na větvi." },
+            { id:"dog-rain", pictures:[{word:"pes",symbol:"🐶"},{word:"déšť",symbol:"🌧️"},{word:"bota",symbol:"👢"}], sample:"Pes v dešti našel botu." },
+            { id:"girl-book", pictures:[{word:"holčička",symbol:"👧"},{word:"knížka",symbol:"📘"},{word:"postel",symbol:"🛏️"}], sample:"Holčička si čte knížku v posteli." }
+        ];
+
+        const panels = [...document.querySelectorAll("[data-panel]")];
+        const activityButtons = [...document.querySelectorAll("[data-activity]")];
+        let activeUtterance = null;
+        let activeReadButton = null;
+        let firstIndex = 0, firstAnswered = false;
+        let syllableIndex = 0, syllableAnswered = false;
+        let rhymeIndex = 0, rhymeAnswered = false;
+        let pairIndex = 0, pairAnswered = false;
+        let selectedSound = "M", articulationIndex = 0;
+        let sentenceIndex = 0;
+
+        function shuffle(items) {
+            const copy = [...items];
+            for (let i = copy.length - 1; i > 0; i -= 1) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function stopReading() {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+            if (activeReadButton) activeReadButton.textContent = activeReadButton.dataset.label || "🔊 Přečíst zadání";
+            activeUtterance = null;
+            activeReadButton = null;
+        }
+
+        function speak(text, button) {
+            if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+            stopReading();
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voice = window.speechSynthesis.getVoices().find((item) => item.lang?.toLowerCase().startsWith("cs"));
+            if (voice) utterance.voice = voice;
+            utterance.lang = "cs-CZ";
+            utterance.rate = 0.88;
+            activeUtterance = utterance;
+            activeReadButton = button;
+            if (button) button.textContent = "⏹ Zastavit";
+            utterance.onend = () => { if (activeUtterance === utterance) stopReading(); };
+            utterance.onerror = () => { if (activeUtterance === utterance) stopReading(); };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function bindReadButton(button, getText) {
+            button.dataset.label = button.textContent;
+            button.addEventListener("click", () => {
+                if (activeReadButton === button && activeUtterance) stopReading();
+                else speak(getText(), button);
+            });
+        }
+
+        function renderChoiceButtons(container, choices, handler, correctValue) {
+            container.replaceChildren(...shuffle(choices).map((choice) => {
+                const button = document.createElement("button");
+                button.className = "choice-button";
+                button.type = "button";
+                button.setAttribute("aria-label", choice.word);
+                const picture = document.createElement("span");
+                picture.className = "choice-picture";
+                picture.setAttribute("aria-hidden", "true");
+                picture.textContent = choice.symbol;
+                const word = document.createElement("span");
+                word.textContent = choice.word;
+                button.append(picture, word);
+                button.addEventListener("click", () => handler(choice, button, correctValue));
+                return button;
+            }));
+        }
+
+        function showFirstQuestion() {
+            firstAnswered = false;
+            document.querySelector("#first-next").hidden = true;
+            if (firstIndex >= firstSoundRounds.length) {
+                firstIndex = 0;
+                document.querySelector("#first-status").textContent = "Výborně! Poslechla sis všechny hlásky.";
+            }
+            const round = firstSoundRounds[firstIndex];
+            document.querySelector("#first-letter").textContent = round.sound;
+            document.querySelector("#first-progress").textContent = `Otázka ${firstIndex + 1} z ${firstSoundRounds.length}`;
+            document.querySelector("#first-status").textContent = "Najdi obrázek, jehož název začíná touto hláskou.";
+            renderChoiceButtons(document.querySelector("#first-choices"), [round.correct,...round.other], (choice, button) => {
+                if (firstAnswered) return;
+                if (choice.word !== round.correct.word) {
+                    button.classList.add("is-wrong");
+                    document.querySelector("#first-status").textContent = "Zkus si názvy obrázků poslechnout znovu.";
+                    window.setTimeout(() => button.classList.remove("is-wrong"), 650);
+                    return;
+                }
+                firstAnswered = true;
+                button.classList.add("is-correct");
+                document.querySelector("#first-choices").querySelectorAll("button").forEach((item) => { item.disabled = true; });
+                document.querySelector("#first-status").textContent = `Správně! ${round.correct.word} začíná hláskou ${round.sound}.`;
+                document.querySelector("#first-next").hidden = false;
+                window.rewardPetCoin?.(`logopedie-first-${round.id}`);
+            });
+        }
+
+        function showSyllableQuestion() {
+            syllableAnswered = false;
+            document.querySelector("#syllable-next").hidden = true;
+            if (syllableIndex >= syllableWords.length) syllableIndex = 0;
+            const item = syllableWords[syllableIndex];
+            document.querySelector("#syllable-picture").textContent = item.symbol;
+            document.querySelector("#syllable-word").textContent = item.word;
+            document.querySelector("#syllable-progress").textContent = `Slovo ${syllableIndex + 1} z ${syllableWords.length}`;
+            document.querySelector("#syllable-status").textContent = "Vytleskej slovo a vyber počet slabik.";
+            const choices = document.querySelector("#syllable-choices");
+            choices.replaceChildren(...[1,2,3,4].map((count) => {
+                const button = document.createElement("button");
+                button.className = "answer-button";
+                button.type = "button";
+                button.textContent = String(count);
+                button.setAttribute("aria-label", `${count} ${count === 1 ? "slabika" : count < 5 ? "slabiky" : "slabik"}`);
+                button.addEventListener("click", () => {
+                    if (syllableAnswered) return;
+                    if (count !== item.count) {
+                        button.classList.add("is-wrong");
+                        document.querySelector("#syllable-status").textContent = "Zkus slovo ještě jednou vytleskat.";
+                        window.setTimeout(() => button.classList.remove("is-wrong"), 650);
+                        return;
+                    }
+                    syllableAnswered = true;
+                    button.classList.add("is-correct");
+                    choices.querySelectorAll("button").forEach((option) => { option.disabled = true; });
+                    document.querySelector("#syllable-status").textContent = `Správně! Slovo ${item.word} má ${count} slabik.`;
+                    document.querySelector("#syllable-next").hidden = false;
+                    window.rewardPetCoin?.(`logopedie-syllable-${item.id}`);
+                });
+                return button;
+            }));
+        }
+
+        function showRhymeQuestion() {
+            rhymeAnswered = false;
+            document.querySelector("#rhyme-next").hidden = true;
+            if (rhymeIndex >= rhymeRounds.length) rhymeIndex = 0;
+            const round = rhymeRounds[rhymeIndex];
+            document.querySelector("#rhyme-picture").textContent = round.symbol;
+            document.querySelector("#rhyme-word").textContent = round.word;
+            document.querySelector("#rhyme-progress").textContent = `Rým ${rhymeIndex + 1} z ${rhymeRounds.length}`;
+            document.querySelector("#rhyme-status").textContent = "Které slovo má podobný konec?";
+            renderChoiceButtons(document.querySelector("#rhyme-choices"), round.options.map((word) => ({ word, symbol:"💬" })), (choice, button) => {
+                if (rhymeAnswered) return;
+                if (choice.word !== round.correct) {
+                    button.classList.add("is-wrong");
+                    document.querySelector("#rhyme-status").textContent = "Poslechni si slova ještě jednou a zkus to znovu.";
+                    window.setTimeout(() => button.classList.remove("is-wrong"), 650);
+                    return;
+                }
+                rhymeAnswered = true;
+                button.classList.add("is-correct");
+                document.querySelector("#rhyme-choices").querySelectorAll("button").forEach((item) => { item.disabled = true; });
+                document.querySelector("#rhyme-status").textContent = `Ano, ${round.word} a ${round.correct} se rýmují.`;
+                document.querySelector("#rhyme-next").hidden = false;
+                window.rewardPetCoin?.(`logopedie-rhyme-${round.id}`);
+            });
+        }
+
+        function showPairQuestion() {
+            pairAnswered = false;
+            document.querySelector("#pair-next").hidden = true;
+            if (pairIndex >= wordPairs.length) pairIndex = 0;
+            const pair = wordPairs[pairIndex];
+            document.querySelector("#pair-text").textContent = "Poslechni si dvojici slov";
+            document.querySelector("#pair-progress").textContent = `Dvojice ${pairIndex + 1} z ${wordPairs.length}`;
+            document.querySelector("#pair-status").textContent = "Znějí slova stejně, nebo jinak?";
+            const options = document.querySelector("#pair-choices");
+            options.replaceChildren(...shuffle([{ label:"Stejné", value:true },{ label:"Jiné", value:false }]).map((answer) => {
+                const button = document.createElement("button");
+                button.className = "answer-button";
+                button.type = "button";
+                button.textContent = answer.label;
+                button.addEventListener("click", () => {
+                    if (pairAnswered) return;
+                    if (answer.value !== pair.same) {
+                        button.classList.add("is-wrong");
+                        document.querySelector("#pair-status").textContent = "Pusť si slova znovu a poslouchej pozorně.";
+                        window.setTimeout(() => button.classList.remove("is-wrong"), 650);
+                        return;
+                    }
+                    pairAnswered = true;
+                    button.classList.add("is-correct");
+                    options.querySelectorAll("button").forEach((item) => { item.disabled = true; });
+                    document.querySelector("#pair-status").textContent = answer.value ? "Správně, slova znějí stejně." : "Správně, slova znějí jinak.";
+                    document.querySelector("#pair-next").hidden = false;
+                    window.rewardPetCoin?.(`logopedie-pair-${pairIndex}`);
+                });
+                return button;
+            }));
+        }
+
+        function renderSoundSelector() {
+            const selector = document.querySelector("#sound-selector");
+            selector.replaceChildren(...Object.keys(articulationWords).map((sound) => {
+                const button = document.createElement("button");
+                button.className = "sound-button";
+                button.type = "button";
+                button.textContent = sound;
+                button.setAttribute("aria-pressed", String(sound === selectedSound));
+                button.addEventListener("click", () => {
+                    selectedSound = sound;
+                    articulationIndex = 0;
+                    renderSoundSelector();
+                    showRepeatWord();
+                });
+                return button;
+            }));
+        }
+
+        function showRepeatWord() {
+            const words = articulationWords[selectedSound];
+            if (articulationIndex >= words.length) articulationIndex = 0;
+            const item = words[articulationIndex];
+            document.querySelector("#repeat-picture").textContent = item.symbol;
+            document.querySelector("#repeat-word").textContent = item.word;
+            document.querySelector("#repeat-progress").textContent = `Hláska ${selectedSound} · slovo ${articulationIndex + 1} z ${words.length}`;
+            document.querySelector("#repeat-status").textContent = "Poslechni si slovo a zkus ho zopakovat.";
+        }
+
+        function showSentence() {
+            if (sentenceIndex >= sentenceRounds.length) sentenceIndex = 0;
+            const round = sentenceRounds[sentenceIndex];
+            document.querySelector("#sentence-pictures").replaceChildren(...round.pictures.map((item) => {
+                const card = document.createElement("div");
+                card.className = "sentence-picture";
+                card.setAttribute("role", "img");
+                card.setAttribute("aria-label", item.word);
+                card.textContent = item.symbol;
+                return card;
+            }));
+            document.querySelector("#sentence-progress").textContent = `Obrázky ${sentenceIndex + 1} z ${sentenceRounds.length}`;
+            document.querySelector("#sentence-status").textContent = "Zkus říct celou větu nahlas.";
+            document.querySelector("#sentence-example").hidden = true;
+            document.querySelector("#sentence-example").textContent = round.sample;
+            document.querySelector("#show-sentence-example").textContent = "Ukázat příklad věty";
+        }
+
+        bindReadButton(document.querySelector("#read-first"), () => {
+            const round = firstSoundRounds[firstIndex % firstSoundRounds.length];
+            return `Vyber obrázek, jehož název začíná hláskou ${round.sound}. ${[round.correct,...round.other].map((item) => item.word).join(". ")}.`;
+        });
+        bindReadButton(document.querySelector("#read-syllables"), () => {
+            const item = syllableWords[syllableIndex % syllableWords.length];
+            return `Vytleskej slovo ${item.word} a vyber počet slabik. Jedna, dvě, tři, nebo čtyři?`;
+        });
+        bindReadButton(document.querySelector("#read-rhyme"), () => {
+            const round = rhymeRounds[rhymeIndex % rhymeRounds.length];
+            return `Které slovo se rýmuje se slovem ${round.word}? ${round.options.join(". ")}.`;
+        });
+        bindReadButton(document.querySelector("#read-pair"), () => {
+            const pair = wordPairs[pairIndex % wordPairs.length];
+            return `${pair.first}. ${pair.second}. Znějí slova stejně, nebo jinak?`;
+        });
+        bindReadButton(document.querySelector("#read-repeat-prompt"), () => `Vybrala sis hlásku ${selectedSound}. Poslechni si slovo ${articulationWords[selectedSound][articulationIndex % articulationWords[selectedSound].length].word} a zkus ho zopakovat.`);
+        bindReadButton(document.querySelector("#read-sentence"), () => `Vymysli větu, ve které použiješ slova ${sentenceRounds[sentenceIndex % sentenceRounds.length].pictures.map((item) => item.word).join(", ")}.`);
+        document.querySelector("#play-repeat-word").addEventListener("click", (event) => speak(articulationWords[selectedSound][articulationIndex % articulationWords[selectedSound].length].word, event.currentTarget));
+        document.querySelector("#first-next").addEventListener("click", () => { firstIndex += 1; showFirstQuestion(); });
+        document.querySelector("#syllable-next").addEventListener("click", () => { syllableIndex += 1; showSyllableQuestion(); });
+        document.querySelector("#rhyme-next").addEventListener("click", () => { rhymeIndex += 1; showRhymeQuestion(); });
+        document.querySelector("#pair-next").addEventListener("click", () => { pairIndex += 1; showPairQuestion(); });
+        document.querySelector("#repeat-next").addEventListener("click", () => {
+            const item = articulationWords[selectedSound][articulationIndex];
+            window.rewardPetCoin?.(`logopedie-repeat-${selectedSound}-${articulationIndex}`);
+            articulationIndex += 1;
+            showRepeatWord();
+        });
+        document.querySelector("#show-sentence-example").addEventListener("click", (event) => {
+            const example = document.querySelector("#sentence-example");
+            example.hidden = !example.hidden;
+            event.currentTarget.textContent = example.hidden ? "Ukázat příklad věty" : "Skrýt příklad";
+        });
+        document.querySelector("#sentence-next").addEventListener("click", () => {
+            window.rewardPetCoin?.(`logopedie-sentence-${sentenceRounds[sentenceIndex].id}`);
+            sentenceIndex += 1;
+            showSentence();
+        });
+        activityButtons.forEach((button) => button.addEventListener("click", () => {
+            stopReading();
+            activityButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+            panels.forEach((panel) => { panel.hidden = panel.dataset.panel !== button.dataset.activity; });
+        }));
+        showFirstQuestion();
+        showSyllableQuestion();
+        showRhymeQuestion();
+        showPairQuestion();
+        renderSoundSelector();
+        showRepeatWord();
+        showSentence();
+        window.addEventListener("beforeunload", stopReading);
+    </script>
+</body>
+</html>
