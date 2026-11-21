@@ -1,6 +1,6 @@
 (() => {
     const storageKey = "miseUceni.background";
-    const backgrounds = ["default", "lavender", "mint", "blue"];
+    const backgrounds = ["default", "night-sky", "forest", "ocean", "space"];
     const header = document.querySelector(".topbar");
     if (!header) return;
 
@@ -14,9 +14,10 @@
     select.setAttribute("aria-label", "Vyberte barvu pozadí");
     [
         ["default", "Jemné"],
-        ["lavender", "Levandulové"],
-        ["mint", "Mátové"],
-        ["blue", "Modré"]
+        ["night-sky", "Hvězdná obloha"],
+        ["forest", "Kouzelný les"],
+        ["ocean", "Podmořský svět"],
+        ["space", "Vesmírná výprava"]
     ].forEach(([value, text]) => {
         const option = document.createElement("option");
         option.value = value;
@@ -28,9 +29,11 @@
 
     try {
         const saved = localStorage.getItem(storageKey);
-        if (backgrounds.includes(saved)) {
-            select.value = saved;
-            if (saved !== "default") document.body.dataset.background = saved;
+        const migrated = { lavender: "night-sky", mint: "forest", blue: "ocean" }[saved] || saved;
+        if (backgrounds.includes(migrated)) {
+            select.value = migrated;
+            if (migrated !== "default") document.body.dataset.background = migrated;
+            if (migrated !== saved) localStorage.setItem(storageKey, migrated);
         }
     } catch {
         // Keep the selector usable for the current visit if storage is unavailable.

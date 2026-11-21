@@ -1,6 +1,26 @@
-body[data-background="lavender"] { background: linear-gradient(135deg, #f1ecf8 0%, #f8f4fb 54%, #fff4ed 100%) !important; }
-body[data-background="mint"] { background: linear-gradient(135deg, #e8f4ed 0%, #f2f8f2 54%, #f8f6e9 100%) !important; }
-body[data-background="blue"] { background: linear-gradient(135deg, #e8eff9 0%, #f1f5fb 54%, #edf7f8 100%) !important; }
+body[data-background="night-sky"] {
+    background-color: #f3f0fa !important;
+    background-image: radial-gradient(circle at 12% 18%, rgba(255, 255, 255, .95) 0 2px, transparent 2.5px), radial-gradient(circle at 78% 28%, rgba(255, 255, 255, .8) 0 1.5px, transparent 2px), radial-gradient(circle at 55% 72%, rgba(255, 255, 255, .8) 0 1px, transparent 1.5px), linear-gradient(135deg, #e9e9f8 0%, #f5f1fb 55%, #fff3e6 100%) !important;
+    background-size: 170px 150px, 210px 190px, 130px 170px, auto !important;
+}
+
+body[data-background="forest"] {
+    background-color: #eef5e9 !important;
+    background-image: radial-gradient(ellipse at 12% 15%, rgba(148, 184, 127, .18) 0 7%, transparent 7.5%), radial-gradient(ellipse at 82% 35%, rgba(148, 184, 127, .16) 0 9%, transparent 9.5%), radial-gradient(ellipse at 38% 82%, rgba(202, 190, 123, .15) 0 8%, transparent 8.5%), linear-gradient(135deg, #eaf4e9 0%, #f4f7ec 55%, #fff5e6 100%) !important;
+    background-size: 260px 230px, 320px 300px, 290px 240px, auto !important;
+}
+
+body[data-background="ocean"] {
+    background-color: #eaf5f8 !important;
+    background-image: radial-gradient(ellipse at 16% 20%, rgba(255, 255, 255, .5) 0 8%, transparent 8.5%), radial-gradient(ellipse at 75% 48%, rgba(132, 190, 205, .13) 0 12%, transparent 12.5%), repeating-linear-gradient(170deg, transparent 0 78px, rgba(91, 164, 184, .08) 80px 83px, transparent 85px 150px), linear-gradient(135deg, #e4f2f7 0%, #f0f8f7 55%, #fff6e7 100%) !important;
+    background-size: 300px 260px, 360px 320px, auto, auto !important;
+}
+
+body[data-background="space"] {
+    background-color: #f1eff8 !important;
+    background-image: radial-gradient(circle at 15% 24%, rgba(255, 210, 128, .55) 0 3px, transparent 3.5px), radial-gradient(circle at 72% 68%, rgba(167, 156, 208, .18) 0 22px, transparent 23px), radial-gradient(circle at 86% 17%, rgba(255, 210, 128, .4) 0 2px, transparent 2.5px), linear-gradient(135deg, #e9eafa 0%, #f4eff9 55%, #fff3e8 100%) !important;
+    background-size: 190px 190px, 300px 280px, 230px 210px, auto !important;
+}
 
 .site-background-control {
     display: inline-flex;
@@ -30,4 +50,5 @@ body[data-background="blue"] { background: linear-gradient(135deg, #e8eff9 0%, #
 
 @media print {
     .site-background-control { display: none !important; }
+    body[data-background] { background: #fff !important; background-image: none !important; }
 }
