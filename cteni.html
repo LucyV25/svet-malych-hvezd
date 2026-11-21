@@ -128,7 +128,7 @@
 
         <section class="panel" aria-labelledby="practice-title">
             <h2 id="practice-title">Zkus přečíst nahlas</h2>
-            <p class="subtle">Vyber si slabiky nebo krátká slova. Až budeš připravený/á, stiskni tlačítko a přečti zadání nahlas.</p>
+            <p class="subtle">Vyber si slabiky nebo krátká slova. Slabiku řekni dvakrát za sebou, aby ji rozpoznávač lépe zachytil. Až budeš připravený/á, stiskni tlačítko a čti nahlas.</p>
             <div class="setup-grid">
                 <div><label class="field-label" for="practice-kind">Co si chceš procvičit?</label><select id="practice-kind"><option value="syllables">Slabiky</option><option value="words">Krátká slova</option></select></div>
             </div>
@@ -436,7 +436,7 @@
             practiceResolved = false;
             recognition.lang = "cs-CZ";
             recognition.continuous = false;
-            recognition.interimResults = false;
+            recognition.interimResults = true;
             recognition.maxAlternatives = 3;
             try {
                 if ("phrases" in recognition && "SpeechRecognitionPhrase" in window) {
@@ -449,15 +449,26 @@
             practiceStatus.textContent = "Teď přečti zadání nahlas.";
             recognition.onresult = (event) => {
                 const alternatives = [];
+                let interimTranscript = "";
                 for (let resultIndex = 0; resultIndex < event.results.length; resultIndex += 1) {
                     const result = event.results[resultIndex];
                     for (let alternativeIndex = 0; alternativeIndex < result.length; alternativeIndex += 1) {
                         const transcript = result[alternativeIndex].transcript.trim();
-                        if (transcript) alternatives.push(transcript);
+                        if (!transcript) continue;
+                        if (result.isFinal) alternatives.push(transcript);
+                        else if (alternativeIndex === 0) interimTranscript += `${transcript} `;
                     }
                 }
+                if (alternatives.length === 0) {
+                    if (interimTranscript.trim()) practiceStatus.textContent = `Slyším: „${interimTranscript.trim()}“…`;
+                    return;
+                }
                 const expected = normalizeSpeechResult(previousPracticePrompt);
-                const matched = alternatives.find((transcript) => normalizeSpeechResult(transcript) === expected);
+                const repeatedSyllable = practiceKind.value === "syllables" ? expected + expected : "";
+                const matched = alternatives.find((transcript) => {
+                    const normalized = normalizeSpeechResult(transcript);
+                    return normalized === expected || (repeatedSyllable && normalized === repeatedSyllable);
+                });
                 const heard = alternatives[0];
                 practiceResolved = true;
                 if (matched) {

@@ -113,6 +113,20 @@ html[data-color-mode="dark"] body a.button {
     background-color: #293645 !important;
 }
 
+html[data-color-mode="dark"] body .letter,
+html[data-color-mode="dark"] body .known-word,
+html[data-color-mode="dark"] body .practice-target {
+    border-color: #5b7186 !important;
+    background-color: #293645 !important;
+    color: #f4f7fb !important;
+}
+
+html[data-color-mode="dark"] body .letter:has(input:checked),
+html[data-color-mode="dark"] body .known-word:has(input:checked) {
+    border-color: #8db8c8 !important;
+    background-color: #364b5c !important;
+}
+
 html[data-color-mode="dark"] body input,
 html[data-color-mode="dark"] body select,
 html[data-color-mode="dark"] body textarea {
