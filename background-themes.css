@@ -173,6 +173,18 @@ html[data-color-mode="dark"] body textarea {
 
 html[data-color-mode="dark"] body input::placeholder { color: #9eacba; }
 
+html[data-color-mode="dark"] body .practice-status.is-correct {
+    border-color: #5d9972 !important;
+    background: #263c30 !important;
+    color: #e2f4e7 !important;
+}
+
+html[data-color-mode="dark"] body .practice-status.is-retry {
+    border-color: #a88843 !important;
+    background: #413722 !important;
+    color: #fff0bf !important;
+}
+
 html[data-color-mode="dark"] body .generated-sentence,
 html[data-color-mode="dark"] body .letter-chip,
 html[data-color-mode="dark"] body .reading-token,
