@@ -1,0 +1,33 @@
+body[data-background="lavender"] { background: linear-gradient(135deg, #f1ecf8 0%, #f8f4fb 54%, #fff4ed 100%) !important; }
+body[data-background="mint"] { background: linear-gradient(135deg, #e8f4ed 0%, #f2f8f2 54%, #f8f6e9 100%) !important; }
+body[data-background="blue"] { background: linear-gradient(135deg, #e8eff9 0%, #f1f5fb 54%, #edf7f8 100%) !important; }
+
+.site-background-control {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+    margin-left: auto;
+    color: #617482;
+    font-size: 12px;
+}
+
+.site-background-control select {
+    width: auto !important;
+    min-width: 112px;
+    min-height: 36px;
+    padding: 0 30px 0 9px;
+    border: 1px solid #d7e3e8;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #263746;
+    font: inherit;
+}
+
+@media (max-width: 700px) {
+    .site-background-control { margin: 4px auto 0; }
+}
+
+@media print {
+    .site-background-control { display: none !important; }
+}

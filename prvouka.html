@@ -124,6 +124,7 @@
         footer { padding:0 20px 24px; color:var(--muted); font-size:12px; text-align:center; }
         @media(max-width:760px) { .topbar { flex-direction:column; padding:16px 18px; } .topbar-actions { justify-content:center; gap:10px; } .answer-options { grid-template-columns:1fr; } #plant-options { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; } #plant-options .answer-option { min-height:118px; padding:8px 4px; } #plant-options .answer-option-icon { font-size:54px; } .quiz-card,.sorting-card,.category-card { padding:18px; } .season-buckets,.sequence-options { grid-template-columns:repeat(2,minmax(0,1fr)); } .memory-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
     </style>
+    <link rel="stylesheet" href="background-themes.css">
 </head>
 <body>
     <header class="topbar">
@@ -1387,5 +1388,6 @@
         startBodyBuild();
         window.addEventListener("beforeunload", stopQuestionSpeech);
     </script>
+    <script src="background-themes.js"></script>
 </body>
 </html>

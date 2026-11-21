@@ -58,6 +58,7 @@
         @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; } }
             @media(max-width:760px) { .topbar { flex-direction:column; } }
 </style>
+    <link rel="stylesheet" href="background-themes.css">
 </head>
 <body>
     <header class="topbar"><a class="brand" href="rozcestnik.html">🧭 Mise učení</a>
@@ -185,5 +186,6 @@
         window.addEventListener("storage",(event)=>{if(event.key!==storageKey || !event.newValue)return;try{Object.assign(state,JSON.parse(event.newValue));render();}catch{}});
         render();
     </script>
+    <script src="background-themes.js"></script>
 </body>
 </html>
