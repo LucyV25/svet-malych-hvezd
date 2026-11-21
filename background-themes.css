@@ -92,7 +92,43 @@ html[data-color-mode="dark"] body[data-background="space"] {
     background-size: 190px 190px, 300px 280px, auto !important;
 }
 
-html[data-color-mode="dark"] body * { color: var(--ink); }
+html[data-color-mode="dark"] body * { color: var(--ink) !important; }
+
+html[data-color-mode="dark"] body :where(
+    [class*="-card"], [class*="-panel"], [class*="-chip"], [class*="-token"],
+    [class*="-option"], [class*="-choice"], [class*="-button"], [class*="-item"],
+    [class*="-part"], [class*="-word"], [class*="-count"], [class*="-pill"],
+    [class*="-board"], [class*="-answer"], [class*="-letter"], [class*="-cell"],
+    [class*="-door"], [class*="-picture"], [class*="-bucket"], [class*="-copy"],
+    [class*="-note"], [class*="-input"], [class*="-sentence"], [class*="-control"],
+    [class*="-tile"], [class*="-pick"], [class*="-rate"],
+    .answer, .empty, .reading-text, .button, .small-button, .word, .wallet, .shop-toy
+):where(:not(.map-tile):not(.primary):not(.primary-button):not(.submit-button)) {
+    border-color: #526273 !important;
+    background-color: #293645 !important;
+    background-image: none !important;
+    color: #f4f7fb !important;
+}
+
+html[data-color-mode="dark"] body [class*="correct"],
+html[data-color-mode="dark"] body [class*="is-correct"] {
+    border-color: #5d9972 !important;
+    background-color: #263c30 !important;
+    color: #e2f4e7 !important;
+}
+
+html[data-color-mode="dark"] body [class*="wrong"],
+html[data-color-mode="dark"] body [class*="incorrect"] {
+    border-color: #a96b72 !important;
+    background-color: #432d33 !important;
+    color: #f8e6e8 !important;
+}
+
+html[data-color-mode="dark"] body [aria-pressed="true"] {
+    border-color: #83b5c8 !important;
+    background-color: #34495b !important;
+    color: #f4f7fb !important;
+}
 
 html[data-color-mode="dark"] body :where(
     .generator-card, .form-panel, .story-card, .favorites-card, .aside-panel,
@@ -105,10 +141,10 @@ html[data-color-mode="dark"] body :where(
 ) {
     border-color: var(--line) !important;
     background-color: var(--paper) !important;
+    background-image: none !important;
 }
 
-html[data-color-mode="dark"] body button:not(.primary),
-html[data-color-mode="dark"] body a.button {
+html[data-color-mode="dark"] body :where(button:not(.primary), a.button) {
     border-color: var(--line) !important;
     background-color: #293645 !important;
 }
@@ -136,6 +172,25 @@ html[data-color-mode="dark"] body textarea {
 }
 
 html[data-color-mode="dark"] body input::placeholder { color: #9eacba; }
+
+html[data-color-mode="dark"] body .generated-sentence,
+html[data-color-mode="dark"] body .letter-chip,
+html[data-color-mode="dark"] body .reading-token,
+html[data-color-mode="dark"] body .letter-tile,
+html[data-color-mode="dark"] body .word-answer {
+    border-color: #526273 !important;
+    background-color: #293645 !important;
+    background-image: none !important;
+    color: #f4f7fb !important;
+}
+
+html[data-color-mode="dark"] body .writing-board {
+    border-color: #526273 !important;
+    background-color: #1d2935 !important;
+    background-image: linear-gradient(to bottom, transparent calc(50% - 1px), #526273 calc(50% - 1px), #526273 calc(50% + 1px), transparent calc(50% + 1px)) !important;
+}
+
+html[data-color-mode="dark"] body .generated-sentence { border-style: dashed; }
 
 @media (max-width: 700px) {
     .site-background-control { margin: 4px auto 0; }

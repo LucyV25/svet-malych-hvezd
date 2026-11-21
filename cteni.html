@@ -484,11 +484,23 @@
                 const messages = {
                     "not-allowed": "Povol mikrofon v prohlížeči a zkus to znovu.",
                     "service-not-allowed": "Rozpoznávání řeči teď není dostupné. Zkus jiný prohlížeč nebo to později.",
-                    "no-speech": "Neslyšela jsem řeč. Zkus to znovu a mluv směrem k mikrofonu.",
+                    "no-speech": "Neslyšela jsem řeč. Zkontroluj mikrofon, přibliž se k němu a zkus to znovu.",
                     "audio-capture": "Nenašla jsem mikrofon. Zkontroluj, že je připojený a povolený.",
-                    "network": "Rozpoznání řeči potřebuje připojení k internetu."
+                    "network": "Rozpoznání řeči potřebuje připojení k internetu.",
+                    "language-not-supported": "Tento prohlížeč teď neumí rozpoznávat češtinu.",
+                    "bad-grammar": "Rozpoznávání řeči se nepodařilo připravit. Obnov stránku a zkus to znovu."
                 };
                 if (event.error !== "aborted") practiceStatus.textContent = messages[event.error] || "Poslech se nepodařilo spustit. Zkus to znovu.";
+            };
+            recognition.onaudiostart = () => {
+                practiceStatus.textContent = "Mikrofon funguje — teď přečti zadání nahlas.";
+            };
+            recognition.onspeechstart = () => {
+                practiceStatus.textContent = "Zachytila jsem hlas, poslouchám…";
+            };
+            recognition.onnomatch = () => {
+                practiceResolved = true;
+                practiceStatus.textContent = "Hlas jsem zachytila, ale slovo se nepodařilo určit. Zkus ho říct znovu.";
             };
             recognition.onend = () => {
                 if (practiceRecognition !== recognition) return;
@@ -498,10 +510,14 @@
             };
             try {
                 recognition.start();
-            } catch {
+            } catch (error) {
                 practiceRecognition = null;
                 practiceListenButton.textContent = "🎙 Přečíst do mikrofonu";
-                practiceStatus.textContent = "Mikrofon se nepodařilo spustit. Zkus to znovu.";
+                practiceStatus.textContent = error?.name === "InvalidStateError"
+                    ? "Poslech už běží. Počkej chvilku a zkus to znovu."
+                    : error?.name === "NotAllowedError"
+                        ? "Prohlížeč nedovolil použít mikrofon. Povol ho v nastavení stránky."
+                        : "Mikrofon se nepodařilo spustit. Zkontroluj oprávnění a zkus to znovu.";
             }
         }
 
