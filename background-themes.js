@@ -1,5 +1,6 @@
 (() => {
     const storageKey = "miseUceni.background";
+    const modeStorageKey = "miseUceni.colorMode";
     const backgrounds = ["default", "night-sky", "forest", "ocean", "space"];
     const header = document.querySelector(".topbar");
     if (!header) return;
@@ -26,6 +27,42 @@
     });
     label.append(select);
     header.append(label);
+
+    const modeLabel = document.createElement("label");
+    modeLabel.className = "site-mode-control";
+    modeLabel.htmlFor = "site-mode-select";
+    modeLabel.append(document.createTextNode("Režim"));
+    const modeSelect = document.createElement("select");
+    modeSelect.id = "site-mode-select";
+    modeSelect.setAttribute("aria-label", "Vyberte světlý nebo tmavý režim");
+    [["light", "Světlý"], ["dark", "Tmavý"]].forEach(([value, text]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = text;
+        modeSelect.append(option);
+    });
+    modeLabel.append(modeSelect);
+    header.append(modeLabel);
+
+    try {
+        const savedMode = localStorage.getItem(modeStorageKey);
+        if (savedMode === "dark" || savedMode === "light") {
+            modeSelect.value = savedMode;
+            if (savedMode === "dark") document.documentElement.dataset.colorMode = "dark";
+        }
+    } catch {
+        // The mode selector remains available for the current visit.
+    }
+
+    modeSelect.addEventListener("change", () => {
+        if (modeSelect.value === "dark") document.documentElement.dataset.colorMode = "dark";
+        else delete document.documentElement.dataset.colorMode;
+        try {
+            localStorage.setItem(modeStorageKey, modeSelect.value);
+        } catch {
+            // Keep the selected mode until this page is closed.
+        }
+    });
 
     try {
         const saved = localStorage.getItem(storageKey);

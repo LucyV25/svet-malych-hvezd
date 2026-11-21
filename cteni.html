@@ -69,6 +69,10 @@
         .finish-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; }
         .primary { border:0; color:white; background:var(--accent); } .primary:hover { background:var(--deep); }
         .status { min-height:22px; margin:8px 0 0; color:var(--muted); font-size:13px; }
+        .practice-target { margin:12px 0; padding:18px; border:1px solid var(--line); border-radius:14px; background:#fffaf1; font:700 clamp(34px,7vw,52px)/1.2 Georgia,"Times New Roman",serif; letter-spacing:.04em; text-align:center; }
+        .practice-actions { display:flex; flex-wrap:wrap; gap:8px; }
+        .practice-actions button { min-height:44px; }
+        .practice-notice { margin:9px 0 0; color:var(--muted); font-size:12px; }
         footer { padding:0 20px 25px; color:#617482; font-size:12px; text-align:center; }
         @media(max-width:650px) { .topbar { padding:15px 18px; } .setup-grid,.story-list { grid-template-columns:1fr; } .letters { grid-template-columns:repeat(7,minmax(30px,1fr)); } .panel { padding:18px; } .reader-head { display:block; } .reader-tools { margin:10px 0; } .answers { grid-template-columns:1fr; } }
         @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
@@ -120,6 +124,18 @@
                 <p class="status" id="word-setup-status" role="status" aria-live="polite"></p>
             </details>
             <p class="status" id="setup-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel" aria-labelledby="practice-title">
+            <h2 id="practice-title">Zkus přečíst nahlas</h2>
+            <p class="subtle">Vyber si slabiky nebo krátká slova. Až budeš připravený/á, stiskni tlačítko a přečti zadání nahlas.</p>
+            <div class="setup-grid">
+                <div><label class="field-label" for="practice-kind">Co si chceš procvičit?</label><select id="practice-kind"><option value="syllables">Slabiky</option><option value="words">Krátká slova</option></select></div>
+            </div>
+            <p class="practice-target" id="practice-target" aria-label="Zadání k přečtení">MA</p>
+            <div class="practice-actions"><button class="button primary" id="practice-listen" type="button">🎙 Přečíst do mikrofonu</button><button class="small-button" id="practice-next" type="button">Další zadání →</button></div>
+            <p class="status" id="practice-status" role="status" aria-live="polite"></p>
+            <p class="practice-notice">Rozpoznání řeči nemusí dětskou výslovnost zachytit přesně. Prohlížeč může zvuk zpracovávat online; pokračujte jen se zapnutým mikrofonem a pokud s tím souhlasíte.</p>
         </section>
 
         <section class="panel" aria-labelledby="progress-title">
@@ -364,6 +380,135 @@
             $("#level").value="0"; $("#reader").hidden=true; $("#setup-status").textContent="Výprava začíná znovu. Hodně štěstí!";
             save(); renderLetters(); renderKnownWords(); renderProgress(); renderStories(); renderCreations();
         });
+
+        const practiceSets = {
+            syllables: ["MA", "ME", "MI", "MO", "MU", "LA", "LE", "LI", "LO", "LU", "PA", "PE", "PI", "PO", "PU", "TA", "TE", "TI", "TO", "TU", "MÁ", "MÍ", "LÁ", "LÍ", "ŠA", "ŠE", "ČA", "ČE"],
+            words: ["máma", "míč", "Míša", "Ema", "mísu", "táta", "teta", "les", "pes", "kočka", "voda", "ruka", "mává", "maso", "lampa"]
+        };
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let practiceRecognition = null;
+        let previousPracticePrompt = "";
+        let practiceResolved = false;
+        const practiceKind = $("#practice-kind");
+        const practiceTarget = $("#practice-target");
+        const practiceListenButton = $("#practice-listen");
+        const practiceStatus = $("#practice-status");
+
+        function choosePracticePrompt() {
+            const prompts = practiceSets[practiceKind.value];
+            const options = prompts.filter((prompt) => prompt !== previousPracticePrompt);
+            previousPracticePrompt = options[Math.floor(Math.random() * options.length)] || prompts[0];
+            practiceTarget.textContent = previousPracticePrompt;
+            practiceTarget.setAttribute("aria-label", `Přečti: ${previousPracticePrompt}`);
+            practiceStatus.textContent = "";
+        }
+
+        function normalizeSpeechResult(text) {
+            return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("cs-CZ").replace(/[^\p{L}\p{N}]/gu, "");
+        }
+
+        function stopPracticeRecognition() {
+            if (practiceRecognition) {
+                practiceRecognition.onresult = null;
+                practiceRecognition.onerror = null;
+                practiceRecognition.onend = null;
+                try { practiceRecognition.abort(); } catch { /* Recognition may already have ended. */ }
+                practiceRecognition = null;
+            }
+            practiceListenButton.textContent = "🎙 Přečíst do mikrofonu";
+            practiceListenButton.disabled = false;
+        }
+
+        function startPracticeRecognition() {
+            if (!SpeechRecognition) return;
+            if (practiceRecognition) {
+                practiceRecognition.stop();
+                practiceStatus.textContent = "Dokončuji poslech…";
+                return;
+            }
+            if (!window.isSecureContext) {
+                practiceStatus.textContent = "Mikrofon je dostupný jen na zabezpečené stránce HTTPS nebo na localhostu.";
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            practiceRecognition = recognition;
+            practiceResolved = false;
+            recognition.lang = "cs-CZ";
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 3;
+            try {
+                if ("phrases" in recognition && "SpeechRecognitionPhrase" in window) {
+                    recognition.phrases = [new SpeechRecognitionPhrase(previousPracticePrompt, 5.0)];
+                }
+            } catch { /* Context hints are optional in browsers that support them. */ }
+
+            practiceListenButton.textContent = "Poslouchám… Zastavit";
+            practiceListenButton.disabled = false;
+            practiceStatus.textContent = "Teď přečti zadání nahlas.";
+            recognition.onresult = (event) => {
+                const alternatives = [];
+                for (let resultIndex = 0; resultIndex < event.results.length; resultIndex += 1) {
+                    const result = event.results[resultIndex];
+                    for (let alternativeIndex = 0; alternativeIndex < result.length; alternativeIndex += 1) {
+                        const transcript = result[alternativeIndex].transcript.trim();
+                        if (transcript) alternatives.push(transcript);
+                    }
+                }
+                const expected = normalizeSpeechResult(previousPracticePrompt);
+                const matched = alternatives.find((transcript) => normalizeSpeechResult(transcript) === expected);
+                const heard = alternatives[0];
+                practiceResolved = true;
+                if (matched) {
+                    practiceStatus.textContent = `Vypadá to správně! Rozpoznala jsem „${matched}“.`;
+                } else if (heard) {
+                    practiceStatus.textContent = `Rozpoznala jsem „${heard}“. Zkus zadání přečíst ještě jednou.`;
+                } else {
+                    practiceStatus.textContent = "Tentokrát se mi řeč nepodařilo rozpoznat. Zkus to znovu.";
+                }
+            };
+            recognition.onerror = (event) => {
+                practiceResolved = true;
+                const messages = {
+                    "not-allowed": "Povol mikrofon v prohlížeči a zkus to znovu.",
+                    "service-not-allowed": "Rozpoznávání řeči teď není dostupné. Zkus jiný prohlížeč nebo to později.",
+                    "no-speech": "Neslyšela jsem řeč. Zkus to znovu a mluv směrem k mikrofonu.",
+                    "audio-capture": "Nenašla jsem mikrofon. Zkontroluj, že je připojený a povolený.",
+                    "network": "Rozpoznání řeči potřebuje připojení k internetu."
+                };
+                if (event.error !== "aborted") practiceStatus.textContent = messages[event.error] || "Poslech se nepodařilo spustit. Zkus to znovu.";
+            };
+            recognition.onend = () => {
+                if (practiceRecognition !== recognition) return;
+                practiceRecognition = null;
+                practiceListenButton.textContent = "🎙 Přečíst do mikrofonu";
+                if (!practiceResolved) practiceStatus.textContent = "Poslech skončil bez rozpoznaného slova. Zkus to ještě jednou.";
+            };
+            try {
+                recognition.start();
+            } catch {
+                practiceRecognition = null;
+                practiceListenButton.textContent = "🎙 Přečíst do mikrofonu";
+                practiceStatus.textContent = "Mikrofon se nepodařilo spustit. Zkus to znovu.";
+            }
+        }
+
+        practiceListenButton.addEventListener("click", startPracticeRecognition);
+        $("#practice-next").addEventListener("click", () => {
+            if (practiceRecognition) stopPracticeRecognition();
+            choosePracticePrompt();
+        });
+        practiceKind.addEventListener("change", () => {
+            if (practiceRecognition) stopPracticeRecognition();
+            previousPracticePrompt = "";
+            choosePracticePrompt();
+        });
+        if (!SpeechRecognition) {
+            practiceListenButton.disabled = true;
+            practiceStatus.textContent = "Rozpoznávání řeči tento prohlížeč nepodporuje. Zkus aktuální Chrome nebo Edge.";
+        }
+        choosePracticePrompt();
         renderLetters(); renderKnownWords(); renderProgress(); renderStories(); renderCreations();
     </script>
     <script src="background-themes.js"></script>

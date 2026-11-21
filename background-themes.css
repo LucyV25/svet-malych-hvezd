@@ -44,8 +44,88 @@ body[data-background="space"] {
     font: inherit;
 }
 
+.site-mode-control { display: inline-flex; align-items: center; gap: 7px; color: #617482; font-size: 12px; }
+.site-mode-control select { min-width: 94px; }
+
+html[data-color-mode="dark"] {
+    color-scheme: dark;
+    --ink: #e7edf4;
+    --muted: #bdc8d4;
+    --paper: #202b38;
+    --canvas: #141d27;
+    --line: #435160;
+    --lavender: #343246;
+    --sunlight: #403a2c;
+    --sky: #283946;
+    --gold: #433c2d;
+    --soft: #303b49;
+    --deep: #d6e3ee;
+    --accent-dark: #9bd3e1;
+}
+
+html[data-color-mode="dark"] body {
+    color: var(--ink) !important;
+    background-color: #141b26 !important;
+    background-image: radial-gradient(ellipse at 12% 8%, rgba(96, 112, 159, .16), transparent 36%), radial-gradient(ellipse at 88% 76%, rgba(66, 126, 143, .12), transparent 34%) !important;
+}
+
+html[data-color-mode="dark"] body[data-background="night-sky"] {
+    background-color: #171a2c !important;
+    background-image: radial-gradient(circle at 12% 18%, rgba(255, 255, 255, .65) 0 2px, transparent 2.5px), radial-gradient(circle at 78% 28%, rgba(255, 255, 255, .5) 0 1.5px, transparent 2px), linear-gradient(135deg, #171a2c, #202033 58%, #29243a) !important;
+    background-size: 170px 150px, 210px 190px, auto !important;
+}
+
+html[data-color-mode="dark"] body[data-background="forest"] {
+    background-color: #18251f !important;
+    background-image: radial-gradient(ellipse at 12% 15%, rgba(111, 157, 103, .2) 0 8%, transparent 8.5%), radial-gradient(ellipse at 82% 35%, rgba(111, 157, 103, .16) 0 10%, transparent 10.5%), linear-gradient(135deg, #18251f, #202a25 58%, #302c25) !important;
+    background-size: 260px 230px, 320px 300px, auto !important;
+}
+
+html[data-color-mode="dark"] body[data-background="ocean"] {
+    background-color: #15242e !important;
+    background-image: repeating-linear-gradient(170deg, transparent 0 78px, rgba(103, 173, 192, .1) 80px 83px, transparent 85px 150px), linear-gradient(135deg, #15242e, #1b2a31 58%, #252b30) !important;
+}
+
+html[data-color-mode="dark"] body[data-background="space"] {
+    background-color: #1a192b !important;
+    background-image: radial-gradient(circle at 15% 24%, rgba(255, 210, 128, .6) 0 3px, transparent 3.5px), radial-gradient(circle at 72% 68%, rgba(167, 156, 208, .15) 0 22px, transparent 23px), linear-gradient(135deg, #1a192b, #232034 58%, #2b2535) !important;
+    background-size: 190px 190px, 300px 280px, auto !important;
+}
+
+html[data-color-mode="dark"] body * { color: var(--ink); }
+
+html[data-color-mode="dark"] body :where(
+    .generator-card, .form-panel, .story-card, .favorites-card, .aside-panel,
+    .panel, .activity-panel, .calendar-card, .surprise-card, .lesson-card,
+    .game-card, .reading-card, .writing-card, .progress-card, .subject-card,
+    .math-card, .quiz-card, .sorting-card, .category-card, .mission-card,
+    .section-card, .topic-card, .activity-card, .word-card, .panel-card,
+    .pet-panel, .favorite-item, .topbar, .page-heading, .heading, .reader-card,
+    .story-option, .creation-card, .practice-target
+) {
+    border-color: var(--line) !important;
+    background-color: var(--paper) !important;
+}
+
+html[data-color-mode="dark"] body button:not(.primary),
+html[data-color-mode="dark"] body a.button {
+    border-color: var(--line) !important;
+    background-color: #293645 !important;
+}
+
+html[data-color-mode="dark"] body input,
+html[data-color-mode="dark"] body select,
+html[data-color-mode="dark"] body textarea {
+    border-color: var(--line) !important;
+    background-color: #19232e !important;
+    color: var(--ink) !important;
+}
+
+html[data-color-mode="dark"] body input::placeholder { color: #9eacba; }
+
 @media (max-width: 700px) {
     .site-background-control { margin: 4px auto 0; }
+    .site-mode-control { margin: 4px auto 0; }
 }
 
 @media print {
