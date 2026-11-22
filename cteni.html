@@ -70,6 +70,8 @@
         .primary { border:0; color:white; background:var(--accent); } .primary:hover { background:var(--deep); }
         .status { min-height:22px; margin:8px 0 0; color:var(--muted); font-size:13px; }
         .practice-target { margin:12px 0; padding:18px; border:1px solid var(--line); border-radius:14px; background:#fffaf1; font:700 clamp(34px,7vw,52px)/1.2 Georgia,"Times New Roman",serif; letter-spacing:.04em; text-align:center; }
+        .practice-example { margin:-4px 0 12px; color:var(--muted); font-size:16px; text-align:center; }
+        .practice-example strong { color:var(--ink); font-size:20px; }
         .practice-actions { display:flex; flex-wrap:wrap; gap:8px; }
         .practice-actions button { min-height:44px; }
         .practice-notice { margin:9px 0 0; color:var(--muted); font-size:12px; }
@@ -131,11 +133,12 @@
 
         <section class="panel" aria-labelledby="practice-title">
             <h2 id="practice-title">Zkus přečíst nahlas</h2>
-            <p class="subtle">Vyber si slabiky nebo krátká slova. Slabiku řekni třikrát za sebou, aby ji rozpoznávač lépe zachytil. Až budeš připravený/á, stiskni tlačítko a čti nahlas.</p>
+            <p class="subtle">U slabik přečti celé ukázkové slovo, které na ně začíná. Prohlížeč tak může vyhodnotit známé slovo místo samotné krátké slabiky.</p>
             <div class="setup-grid">
                 <div><label class="field-label" for="practice-kind">Co si chceš procvičit?</label><select id="practice-kind"><option value="syllables">Slabiky</option><option value="words">Krátká slova</option></select></div>
             </div>
             <p class="practice-target" id="practice-target" aria-label="Zadání k přečtení">MA</p>
+            <p class="practice-example" id="practice-example"></p>
             <div class="practice-actions"><button class="button primary" id="practice-listen" type="button">🎙 Přečíst do mikrofonu</button><button class="small-button" id="practice-next" type="button">Další zadání →</button></div>
             <p class="status practice-status" id="practice-status" role="status" aria-live="polite"></p>
             <p class="practice-notice">Rozpoznání řeči nemusí dětskou výslovnost zachytit přesně. Prohlížeč může zvuk zpracovávat online; pokračujte jen se zapnutým mikrofonem a pokud s tím souhlasíte.</p>
@@ -388,12 +391,21 @@
             syllables: ["MA", "ME", "MI", "MO", "MU", "LA", "LE", "LI", "LO", "LU", "PA", "PE", "PI", "PO", "PU", "TA", "TE", "TI", "TO", "TU", "MÁ", "MÍ", "LÁ", "LÍ", "ŠA", "ŠE", "ČA", "ČE"],
             words: ["máma", "míč", "Míša", "Ema", "mísu", "táta", "teta", "les", "pes", "kočka", "voda", "ruka", "mává", "maso", "lampa"]
         };
+        const syllableExamples = {
+            MA: "máma", ME: "med", MI: "míč", MO: "moře", MU: "muž",
+            LA: "láhev", LE: "les", LI: "liška", LO: "loket", LU: "lupa",
+            PA: "papír", PE: "pes", PI: "pije", PO: "pole", PU: "půda",
+            TA: "táta", TE: "ten", TI: "tiká", TO: "toto", TU: "tulipán",
+            MÁ: "máma", MÍ: "míč", LÁ: "láhev", LÍ: "lípa",
+            ŠA: "šátek", ŠE: "šeptá", ČA: "čáp", ČE: "čeká"
+        };
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let practiceRecognition = null;
         let previousPracticePrompt = "";
         let practiceResolved = false;
         const practiceKind = $("#practice-kind");
         const practiceTarget = $("#practice-target");
+        const practiceExample = $("#practice-example");
         const practiceListenButton = $("#practice-listen");
         const practiceStatus = $("#practice-status");
 
@@ -403,6 +415,15 @@
             previousPracticePrompt = options[Math.floor(Math.random() * options.length)] || prompts[0];
             practiceTarget.textContent = previousPracticePrompt;
             practiceTarget.setAttribute("aria-label", `Přečti: ${previousPracticePrompt}`);
+            const example = syllableExamples[previousPracticePrompt];
+            practiceExample.hidden = practiceKind.value !== "syllables";
+            practiceExample.replaceChildren();
+            if (example && practiceKind.value === "syllables") {
+                practiceExample.append("Přečti celé slovo: ");
+                const word = document.createElement("strong");
+                word.textContent = example;
+                practiceExample.append(word);
+            }
             practiceStatus.classList.remove("is-correct", "is-retry");
             practiceStatus.textContent = "";
         }
@@ -438,7 +459,17 @@
                     forms.add(form.repeat(repeat));
                 }
             }
-            return forms.has(heard);
+            if (forms.has(heard)) return true;
+
+            const example = normalizeSpeechResult(syllableExamples[previousPracticePrompt] || "");
+            if (!example) return false;
+            const exampleForms = [example];
+            if (example.startsWith(expected)) {
+                for (const spelling of englishSpellings[expected] || []) {
+                    exampleForms.push(spelling + example.slice(expected.length));
+                }
+            }
+            return exampleForms.includes(heard);
         }
 
         function getSpeechAlternatives(event, finalOnly = false) {
@@ -467,8 +498,11 @@
             } else if (heard) {
                 practiceStatus.classList.remove("is-correct");
                 practiceStatus.classList.add("is-retry");
-                practiceStatus.textContent = `🔁 ZKUS TO ZNOVU. Slyšela jsem „${heard}“.`;
-                announcePracticeResult(false);
+                const retryText = practiceKind.value === "syllables"
+                    ? `Slyšela jsem „${heard}“. Zkus ukázkové slovo ${syllableExamples[previousPracticePrompt]}.`
+                    : `Slyšela jsem „${heard}“. Zkus to ještě jednou.`;
+                practiceStatus.textContent = `🔁 ZKUS TO ZNOVU. ${retryText}`;
+                announcePracticeResult(false, retryText);
             } else {
                 practiceStatus.classList.remove("is-correct");
                 practiceStatus.classList.add("is-retry");
@@ -476,9 +510,9 @@
             }
         }
 
-        function announcePracticeResult(correct) {
+        function announcePracticeResult(correct, retryText = "Zkus to ještě jednou.") {
             if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
-            const utterance = new SpeechSynthesisUtterance(correct ? "Správně!" : "Zkus to ještě jednou.");
+            const utterance = new SpeechSynthesisUtterance(correct ? "Správně!" : retryText);
             utterance.lang = "cs-CZ";
             const czechVoice = speechSynthesis.getVoices().find((voice) => voice.lang?.toLowerCase().startsWith("cs"));
             if (czechVoice) utterance.voice = czechVoice;
@@ -531,7 +565,9 @@
             practiceListenButton.textContent = "Poslouchám… Zastavit";
             practiceListenButton.disabled = false;
             practiceStatus.classList.remove("is-correct", "is-retry");
-            practiceStatus.textContent = "Teď přečti zadání nahlas.";
+            practiceStatus.textContent = practiceKind.value === "syllables"
+                ? `Teď přečti celé slovo ${syllableExamples[previousPracticePrompt]}.`
+                : "Teď přečti zadání nahlas.";
             recognition.onresult = (event) => {
                 let interimTranscript = "";
                 const alternatives = getSpeechAlternatives(event, true);
@@ -571,8 +607,12 @@
                     practiceResolved = true;
                     practiceStatus.classList.remove("is-correct");
                     practiceStatus.classList.add("is-retry");
-                    practiceStatus.textContent = "Hlas jsem zachytila, ale prohlížeč neposlal žádný rozpoznaný text. Řekni slabiku třikrát nebo zkus režim Krátká slova.";
-                    announcePracticeResult(false);
+                    const example = syllableExamples[previousPracticePrompt];
+                    const retryText = practiceKind.value === "syllables" && example
+                        ? `Prohlížeč nerozpoznal samotnou slabiku. Přečti celé slovo ${example}, které na ni začíná.`
+                        : "Zkus to znovu nebo přepni na krátká slova.";
+                    practiceStatus.textContent = `Hlas jsem zachytila, ale prohlížeč neposlal přepis. ${retryText}`;
+                    announcePracticeResult(false, retryText);
                 }
             };
             recognition.onend = () => {
