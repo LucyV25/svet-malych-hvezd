@@ -136,7 +136,7 @@ html[data-color-mode="dark"] body :where(
     .game-card, .reading-card, .writing-card, .progress-card, .subject-card,
     .math-card, .quiz-card, .sorting-card, .category-card, .mission-card,
     .section-card, .topic-card, .activity-card, .word-card, .panel-card,
-    .pet-panel, .favorite-item, .topbar, .page-heading, .heading, .reader-card,
+    .pet-panel, .favorite-item, .topbar, .page-heading, .heading, .reader-card, .level-filter,
     .story-option, .creation-card, .practice-target
 ) {
     border-color: var(--line) !important;
@@ -172,6 +172,11 @@ html[data-color-mode="dark"] body textarea {
 }
 
 html[data-color-mode="dark"] body input::placeholder { color: #9eacba; }
+
+html[data-color-mode="dark"] body .card-level {
+    background: #293645 !important;
+    color: #d9e7f0 !important;
+}
 
 html[data-color-mode="dark"] body .practice-status.is-correct {
     border-color: #5d9972 !important;

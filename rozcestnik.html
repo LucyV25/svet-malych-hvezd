@@ -45,6 +45,12 @@
         h1, h2, p { margin-top: 0; }
         .page-heading h1 { margin: 0 0 8px; font-family: var(--serif); font-size: clamp(30px, 5vw, 42px); font-weight: 500; line-height: 1.2; }
         .page-heading p:last-child { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+        .level-filter { display:grid; grid-template-columns:1fr 1fr auto; align-items:end; gap:12px; margin:0 0 18px; padding:16px 18px; border:1px solid rgba(38,55,70,.1); border-radius:14px; background:var(--paper); }
+        .level-filter label { display:block; margin-bottom:5px; color:var(--muted); font-size:12px; font-weight:700; }
+        .level-filter select { width:100%; min-height:42px; padding:7px 11px; border:1px solid #d7e3e8; border-radius:9px; background:#fff; color:var(--ink); font:inherit; }
+        .level-note { grid-column:1/-1; margin:0; color:var(--muted); font-size:12px; }
+        .section-card[hidden] { display:none; }
+        .card-level { display:inline-block; margin-top:11px; padding:4px 8px; border-radius:99px; background:#edf5f7; color:#38576a; font-size:11px; font-weight:650; }
         .section-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
         .section-card {
             display: block;
@@ -74,6 +80,8 @@
             .section-grid { grid-template-columns: 1fr; }
             .section-card:last-child { grid-column: auto; }
             .section-card { min-height: 0; padding: 23px; }
+            .level-filter { grid-template-columns:1fr; align-items:stretch; }
+            .level-note { grid-column:auto; }
         }
         @media (max-width: 390px) {
             .brand { gap: 7px; font-size: 16px; }
@@ -109,65 +117,116 @@
             <h1>Kam dnes vyrazíme?</h1>
             <p>Pohádka, hravé procvičování, prvouka, angličtina, nebo vlastní učivo připravené rodičem?</p>
         </header>
-        <div class="section-grid">
-            <a class="section-card" href="index.html">
+        <section class="level-filter" aria-label="Doporučení podle věku a třídy">
+            <div><label for="age-filter">Věk dítěte</label><select id="age-filter"><option value="all">Všechny věkové skupiny</option><option value="4-5">4–5 let</option><option value="6-7">6–7 let</option><option value="8-9">8–9 let</option></select></div>
+            <div><label for="grade-filter">Třída</label><select id="grade-filter"><option value="all">Všechny třídy</option><option value="preschool">Mateřská škola</option><option value="1">1. třída</option><option value="2">2. třída</option><option value="3">3. třída</option></select></div>
+            <p class="level-note" id="level-filter-status" role="status" aria-live="polite">Doporučení jsou orientační. Rodič může kdykoli zobrazit všechny části.</p>
+        </section>
+        <div class="section-grid" id="section-grid">
+            <a class="section-card" href="index.html" data-ages="4-5 6-7" data-grades="preschool 1 2">
                 <span class="section-icon" aria-hidden="true">🌙</span>
                 <h2>Pohádky</h2>
                 <p>Jemné příběhy o pocitech, škole, laskavosti a odvaze.</p>
+                <span class="card-level">4–7 let · MŠ až 2. třída</span>
             </a>
-            <a class="section-card" href="cteni.html">
+            <a class="section-card" href="cteni.html" data-ages="4-5 6-7 8-9" data-grades="preschool 1 2">
                 <span class="section-icon" aria-hidden="true">📚</span>
                 <h2>Čtení</h2>
                 <p>Čtecí dobrodružství s krátkými příběhy, otázkami a hvězdičkami.</p>
+                <span class="card-level">4–8 let · MŠ až 2. třída</span>
             </a>
-            <a class="section-card" href="mazlicek.html">
+            <a class="section-card" href="mazlicek.html" data-ages="6-7 8-9" data-grades="1 2">
                 <span class="section-icon" aria-hidden="true">🐱</span>
                 <h2>Čtecí mazlíček</h2>
                 <p>Přečti slova, získej mince a pořiď svému mazlíčkovi pamlsky i doplňky.</p>
+                <span class="card-level">6–8 let · 1.–2. třída</span>
             </a>
-            <a class="section-card" href="matematika.html">
+            <a class="section-card" href="matematika.html" data-ages="4-5 6-7 8-9" data-grades="preschool 1 2">
                 <span class="section-icon" aria-hidden="true">🔢</span>
                 <h2>Matematika</h2>
                 <p>Počítání, sčítání, odčítání a porovnávání čísel.</p>
+                <span class="card-level">4–8 let · MŠ až 2. třída</span>
             </a>
-            <a class="section-card" href="cestina.html">
+            <a class="section-card" href="cestina.html" data-ages="4-5 6-7" data-grades="preschool 1">
                 <span class="section-icon" aria-hidden="true">🔤</span>
                 <h2>Čeština</h2>
                 <p>Známá velká i malá písmena, slabiky a krátká slova.</p>
+                <span class="card-level">4–7 let · MŠ až 1. třída</span>
             </a>
-            <a class="section-card" href="anglictina.html">
+            <a class="section-card" href="anglictina.html" data-ages="4-5 6-7 8-9" data-grades="preschool 1 2">
                 <span class="section-icon" aria-hidden="true">💬</span>
                 <h2>Angličtina</h2>
                 <p>První slovíčka, poslech a obrázkové hry pro začátečníky.</p>
+                <span class="card-level">4–8 let · začátečníci</span>
             </a>
-            <a class="section-card" href="prvouka.html">
+            <a class="section-card" href="prvouka.html" data-ages="4-5 6-7 8-9" data-grades="preschool 1 2">
                 <span class="section-icon" aria-hidden="true">🌍</span>
                 <h2>Prvouka</h2>
                 <p>Lidské tělo, příroda, zvířata, roční období a bezpečné chování.</p>
+                <span class="card-level">4–8 let · MŠ až 2. třída</span>
             </a>
-            <a class="section-card" href="logopedie.html">
+            <a class="section-card" href="logopedie.html" data-ages="4-5 6-7" data-grades="preschool 1">
                 <span class="section-icon" aria-hidden="true">🗣️</span>
                 <h2>Logopedie</h2>
                 <p>Hry na hlásky, slabiky, rýmy, poslech a tvoření vět.</p>
+                <span class="card-level">4–7 let · MŠ až 1. třída</span>
             </a>
-            <a class="section-card" href="minecraft.html">
+            <a class="section-card" href="minecraft.html" data-ages="6-7 8-9" data-grades="1 2 3">
                 <span class="section-icon" aria-hidden="true">⛏️</span>
                 <h2>Minecraft</h2>
                 <p>Čtení, počítání a bezpečné dobrodružství po čtvercové mapě.</p>
+                <span class="card-level">6–9 let · 1.–3. třída</span>
             </a>
-            <a class="section-card" href="advent.html">
+            <a class="section-card" href="advent.html" data-ages="4-5 6-7 8-9" data-grades="preschool 1 2 3">
                 <span class="section-icon" aria-hidden="true">🎄</span>
                 <h2>Adventní kalendář</h2>
                 <p>Každý den pohádka, hádanka, laskavý úkol nebo malé překvapení.</p>
+                <span class="card-level">4–9 let · společné aktivity</span>
             </a>
-            <a class="section-card" href="moje-ucivo.html">
+            <a class="section-card" href="moje-ucivo.html" data-ages="4-5 6-7 8-9" data-grades="preschool 1 2 3">
                 <span class="section-icon" aria-hidden="true">✏️</span>
                 <h2>Moje učivo</h2>
                 <p>Rodiče si mohou připravit vlastní kartičky a hry z toho, co děti právě probírají.</p>
+                <span class="card-level">Věk i ročník nastaví rodič</span>
             </a>
         </div>
     </main>
     <footer>Každý malý krok se počítá. Cvičte jen tak dlouho, jak je vám příjemné.</footer>
+    <script>
+        (() => {
+            const ageFilter = document.querySelector("#age-filter");
+            const gradeFilter = document.querySelector("#grade-filter");
+            const status = document.querySelector("#level-filter-status");
+            const cards = [...document.querySelectorAll(".section-card")];
+            const storageKey = "miseUceni.learningLevel";
+
+            function applyFilters() {
+                let visibleCount = 0;
+                cards.forEach((card) => {
+                    const matchesAge = ageFilter.value === "all" || card.dataset.ages.split(" ").includes(ageFilter.value);
+                    const matchesGrade = gradeFilter.value === "all" || card.dataset.grades.split(" ").includes(gradeFilter.value);
+                    card.hidden = !(matchesAge && matchesGrade);
+                    if (!card.hidden) visibleCount += 1;
+                });
+                status.textContent = visibleCount
+                    ? `Zobrazuji ${visibleCount} ${visibleCount === 1 ? "část" : visibleCount < 5 ? "části" : "částí"} webu doporučených pro vybraný věk a třídu.`
+                    : "Pro tuto kombinaci tu zatím nemáme zvláštní doporučení. Zkuste zobrazit všechny části.";
+                try {
+                    localStorage.setItem(storageKey, JSON.stringify({ age: ageFilter.value, grade: gradeFilter.value }));
+                } catch { /* Filtrování funguje i bez místního úložiště. */ }
+            }
+
+            try {
+                const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+                if (saved && ["all", "4-5", "6-7", "8-9"].includes(saved.age)) ageFilter.value = saved.age;
+                if (saved && ["all", "preschool", "1", "2", "3"].includes(saved.grade)) gradeFilter.value = saved.grade;
+            } catch { /* Použijí se výchozí filtry. */ }
+
+            ageFilter.addEventListener("change", applyFilters);
+            gradeFilter.addEventListener("change", applyFilters);
+            applyFilters();
+        })();
+    </script>
     <script src="background-themes.js"></script>
 </body>
 </html>
