@@ -131,7 +131,7 @@
 
         <section class="panel" aria-labelledby="practice-title">
             <h2 id="practice-title">Zkus přečíst nahlas</h2>
-            <p class="subtle">Vyber si slabiky nebo krátká slova. Slabiku řekni dvakrát za sebou, aby ji rozpoznávač lépe zachytil. Až budeš připravený/á, stiskni tlačítko a čti nahlas.</p>
+            <p class="subtle">Vyber si slabiky nebo krátká slova. Slabiku řekni třikrát za sebou, aby ji rozpoznávač lépe zachytil. Až budeš připravený/á, stiskni tlačítko a čti nahlas.</p>
             <div class="setup-grid">
                 <div><label class="field-label" for="practice-kind">Co si chceš procvičit?</label><select id="practice-kind"><option value="syllables">Slabiky</option><option value="words">Krátká slova</option></select></div>
             </div>
@@ -414,15 +414,66 @@
         function speechMatchesPrompt(transcript) {
             const expected = normalizeSpeechResult(previousPracticePrompt);
             const heard = normalizeSpeechResult(transcript);
-            const aliases = {
-                li: ["lee"], mi: ["mee"], si: ["see"], di: ["dee"], ti: ["tee"],
-                sa: ["sha"], se: ["she"], ca: ["cha"], ce: ["che"]
-            };
-            const accepted = [expected, ...(practiceKind.value === "syllables" ? (aliases[expected] || []) : [])];
-            const forms = practiceKind.value === "syllables"
-                ? accepted.flatMap((form) => [form, form + form])
-                : accepted;
-            return forms.includes(heard);
+            if (heard === expected) return true;
+            if (practiceKind.value !== "syllables") return false;
+
+            const prompt = previousPracticePrompt.toLocaleLowerCase("cs-CZ").normalize("NFC");
+            const vowel = prompt.slice(-1).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const consonants = prompt.slice(0, -1)
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/š/g, "sh").replace(/č/g, "ch").replace(/ž/g, "zh");
+            const vowelForms = {
+                a: ["a", "ah", "aa"], e: ["e", "eh", "ay"],
+                i: ["i", "ee", "ih"], o: ["o", "oh"], u: ["u", "oo", "yoo", "you"]
+            }[vowel] || [vowel];
+            const forms = new Set([expected, ...vowelForms.map((sound) => consonants + sound)]);
+
+            // Browsers sometimes transcribe short Czech syllables with English spellings (for example "LÍ" as "Lee").
+            const englishSpellings = { li: ["lee"], mi: ["mee"], si: ["see"], di: ["dee"], ti: ["tee"] };
+            (englishSpellings[expected] || []).forEach((spelling) => forms.add(spelling));
+
+            // A short syllable is easier for speech services to catch when it is repeated; accept up to four repeats.
+            for (const form of [...forms]) {
+                for (let repeat = 2; repeat <= 4; repeat += 1) {
+                    forms.add(form.repeat(repeat));
+                }
+            }
+            return forms.has(heard);
+        }
+
+        function getSpeechAlternatives(event, finalOnly = false) {
+            const alternatives = [];
+            if (!event.results) return alternatives;
+            for (let resultIndex = 0; resultIndex < event.results.length; resultIndex += 1) {
+                const result = event.results[resultIndex];
+                if (finalOnly && !result.isFinal) continue;
+                for (let alternativeIndex = 0; alternativeIndex < result.length; alternativeIndex += 1) {
+                    const transcript = result[alternativeIndex].transcript.trim();
+                    if (transcript) alternatives.push(transcript);
+                }
+            }
+            return alternatives;
+        }
+
+        function showPracticeResult(alternatives) {
+            const matched = alternatives.find(speechMatchesPrompt);
+            const heard = alternatives[0];
+            practiceResolved = true;
+            if (matched) {
+                practiceStatus.classList.remove("is-retry");
+                practiceStatus.classList.add("is-correct");
+                practiceStatus.textContent = `✅ SPRÁVNĚ! Rozpoznala jsem „${matched}“`;
+                announcePracticeResult(true);
+            } else if (heard) {
+                practiceStatus.classList.remove("is-correct");
+                practiceStatus.classList.add("is-retry");
+                practiceStatus.textContent = `🔁 ZKUS TO ZNOVU. Slyšela jsem „${heard}“.`;
+                announcePracticeResult(false);
+            } else {
+                practiceStatus.classList.remove("is-correct");
+                practiceStatus.classList.add("is-retry");
+                practiceStatus.textContent = "Tentokrát se mi řeč nepodařilo rozpoznat. Zkus to znovu.";
+            }
         }
 
         function announcePracticeResult(correct) {
@@ -465,10 +516,15 @@
             recognition.lang = "cs-CZ";
             recognition.continuous = false;
             recognition.interimResults = true;
-            recognition.maxAlternatives = 3;
+            recognition.maxAlternatives = 5;
             try {
                 if ("phrases" in recognition && "SpeechRecognitionPhrase" in window) {
-                    recognition.phrases = [new SpeechRecognitionPhrase(previousPracticePrompt, 5.0)];
+                    const prompt = previousPracticePrompt;
+                    recognition.phrases = [
+                        new SpeechRecognitionPhrase(prompt, 10.0),
+                        new SpeechRecognitionPhrase(`${prompt} ${prompt}`, 8.0),
+                        new SpeechRecognitionPhrase(`${prompt} ${prompt} ${prompt}`, 8.0)
+                    ];
                 }
             } catch { /* Context hints are optional in browsers that support them. */ }
 
@@ -477,35 +533,17 @@
             practiceStatus.classList.remove("is-correct", "is-retry");
             practiceStatus.textContent = "Teď přečti zadání nahlas.";
             recognition.onresult = (event) => {
-                const alternatives = [];
                 let interimTranscript = "";
+                const alternatives = getSpeechAlternatives(event, true);
                 for (let resultIndex = 0; resultIndex < event.results.length; resultIndex += 1) {
                     const result = event.results[resultIndex];
-                    for (let alternativeIndex = 0; alternativeIndex < result.length; alternativeIndex += 1) {
-                        const transcript = result[alternativeIndex].transcript.trim();
-                        if (!transcript) continue;
-                        if (result.isFinal) alternatives.push(transcript);
-                        else if (alternativeIndex === 0) interimTranscript += `${transcript} `;
-                    }
+                    if (!result.isFinal && result.length) interimTranscript += `${result[0].transcript.trim()} `;
                 }
                 if (alternatives.length === 0) {
                     if (interimTranscript.trim()) practiceStatus.textContent = `Slyším: „${interimTranscript.trim()}“…`;
                     return;
                 }
-                const matched = alternatives.find(speechMatchesPrompt);
-                const heard = alternatives[0];
-                practiceResolved = true;
-                if (matched) {
-                    practiceStatus.classList.add("is-correct");
-                    practiceStatus.textContent = `✅ SPRÁVNĚ! Rozpoznala jsem „${matched}“`;
-                    announcePracticeResult(true);
-                } else if (heard) {
-                    practiceStatus.classList.add("is-retry");
-                    practiceStatus.textContent = `🔁 ZKUS TO ZNOVU. Slyšela jsem „${heard}“.`;
-                    announcePracticeResult(false);
-                } else {
-                    practiceStatus.textContent = "Tentokrát se mi řeč nepodařilo rozpoznat. Zkus to znovu.";
-                }
+                showPracticeResult(alternatives);
             };
             recognition.onerror = (event) => {
                 practiceResolved = true;
@@ -526,9 +564,16 @@
             recognition.onspeechstart = () => {
                 practiceStatus.textContent = "Zachytila jsem hlas, poslouchám…";
             };
-            recognition.onnomatch = () => {
-                practiceResolved = true;
-                practiceStatus.textContent = "Hlas jsem zachytila, ale slovo se nepodařilo určit. Zkus ho říct znovu.";
+            recognition.onnomatch = (event) => {
+                const alternatives = getSpeechAlternatives(event);
+                if (alternatives.length) showPracticeResult(alternatives);
+                else {
+                    practiceResolved = true;
+                    practiceStatus.classList.remove("is-correct");
+                    practiceStatus.classList.add("is-retry");
+                    practiceStatus.textContent = "Hlas jsem zachytila, ale prohlížeč neposlal žádný rozpoznaný text. Řekni slabiku třikrát nebo zkus režim Krátká slova.";
+                    announcePracticeResult(false);
+                }
             };
             recognition.onend = () => {
                 if (practiceRecognition !== recognition) return;
