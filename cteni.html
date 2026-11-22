@@ -35,6 +35,8 @@
         .small-button:hover,.button:hover { background:#edf5f7; }
         .letters { display:grid; grid-template-columns:repeat(11,minmax(30px,1fr)); gap:6px; }
         .letter { display:flex; align-items:center; justify-content:center; min-height:38px; border:1px solid var(--line); border-radius:9px; cursor:pointer; font-weight:650; }
+        .letter-confirm-row { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:12px; }
+        .letter-confirm-row .status { margin:0; }
         .letter:has(input:checked) { border-color:#4f91a1; background:var(--lav); color:var(--deep); }
         .letter input { position:absolute; opacity:0; pointer-events:none; }
         .word-tools { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
@@ -117,9 +119,10 @@
             </div>
             <details id="letter-settings">
                 <summary>Nastavit písmena, která už známe</summary>
-                <p class="subtle">Příběhy se ukážou jen tehdy, když jsou jejich písmena vybraná. Zaškrtnutí upravuje dospělý.</p>
+                <p class="subtle">Upravte písmena, která dítě zná, a potvrďte výběr. Podle potvrzených písmen se filtrují příběhy i cvičení na slabiky a slova.</p>
                 <div class="letter-tools"><button class="small-button" id="select-common" type="button">Vybrat písmena příběhu</button><button class="small-button" id="select-all" type="button">Vybrat všechna</button><button class="small-button" id="clear-letters" type="button">Zrušit výběr</button></div>
                 <div class="letters" id="letters"></div>
+                <div class="letter-confirm-row"><button class="button primary" id="confirm-letters" type="button">Potvrdit výběr písmen</button><p class="status" id="letters-status" role="status" aria-live="polite"></p></div>
             </details>
             <details id="word-settings">
                 <summary>Nastavit slova, která už dítě přečte</summary>
@@ -255,13 +258,30 @@
         let activeStorySpeech = null;
         try { const stored = JSON.parse(localStorage.getItem(key)); if (stored && Array.isArray(stored.completed) && Array.isArray(stored.letters)) state = { ...state, ...stored, creations:Array.isArray(stored.creations)?stored.creations:[] }; } catch { /* Poškozený nebo vypnutý místní úložný prostor nebrání čtení. */ }
         const letterSet = new Set(state.letters);
+        const pendingLetterSet = new Set(state.letters);
         if (!Array.isArray(state.knownWords)) state.knownWords = [...beginnerWords];
         const knownWordSet = new Set(state.knownWords);
         const normalizeLetters = (text) => [...text.normalize("NFC").toLocaleUpperCase("cs-CZ")].filter((char) => /\p{L}/u.test(char));
         function save() { state.level = Number($("#level").value); state.letters = [...letterSet]; state.knownWords = [...knownWordSet]; try { localStorage.setItem(key, JSON.stringify(state)); } catch { $("#setup-status").textContent = "Postup se nepodařilo uložit. Číst můžeš dál."; } }
+        function updateLetterSelectionStatus(message = "") {
+            const sameSelection = pendingLetterSet.size === letterSet.size && [...pendingLetterSet].every((letter) => letterSet.has(letter));
+            const confirmButton = $("#confirm-letters");
+            confirmButton.disabled = sameSelection;
+            $("#letters-status").textContent = message || (sameSelection
+                ? `Potvrzeno ${letterSet.size} písmen. Slova a slabiky se tvoří jen z tohoto výběru.`
+                : "Výběr změněn. Potvrď písmena, aby se podle nich upravila nabídka.");
+        }
         function renderLetters() {
             const holder = $("#letters"); holder.replaceChildren();
-            for (const char of alphabet) { const label = document.createElement("label"); label.className = "letter"; const input = document.createElement("input"); input.type="checkbox"; input.value=char; input.checked=letterSet.has(char); input.setAttribute("aria-label", `Písmeno ${char}`); input.addEventListener("change", () => { input.checked ? letterSet.add(char) : letterSet.delete(char); save(); renderStories(); }); label.append(input, document.createTextNode(char)); holder.append(label); }
+            for (const char of alphabet) { const label = document.createElement("label"); label.className = "letter"; const input = document.createElement("input"); input.type="checkbox"; input.value=char; input.checked=pendingLetterSet.has(char); input.setAttribute("aria-label", `Písmeno ${char}`); input.addEventListener("change", () => { input.checked ? pendingLetterSet.add(char) : pendingLetterSet.delete(char); updateLetterSelectionStatus(); }); label.append(input, document.createTextNode(char)); holder.append(label); }
+            updateLetterSelectionStatus();
+        }
+        function confirmLetterSelection(message = "Výběr potvrzen. Nabídka teď používá jen tato písmena.") {
+            letterSet.clear(); pendingLetterSet.forEach((letter) => letterSet.add(letter));
+            save();
+            renderStories();
+            updateLetterSelectionStatus(message);
+            renderPracticePrompts();
         }
         function renderKnownWords() {
             const holder = $("#known-words"); holder.replaceChildren();
@@ -279,8 +299,10 @@
         function chooseReadingPreset(level, words, letters, message) {
             $("#level").value = String(level);
             letterSet.clear(); letters.forEach((letter) => letterSet.add(letter));
+            pendingLetterSet.clear(); letters.forEach((letter) => pendingLetterSet.add(letter));
             knownWordSet.clear(); words.forEach((word) => knownWordSet.add(word));
             save(); renderLetters(); renderKnownWords(); renderStories();
+            renderPracticePrompts();
             $("#word-setup-status").textContent = message;
         }
         function renderProgress() {
@@ -344,9 +366,10 @@
             $("#create-box").hidden=true; $("#question-box").hidden=false; $("#question-text").textContent=`Na konec příběhu: ${activeStory.question}`; $("#feedback").textContent="";
         }
         $("#level").value=String(state.level); $("#level").addEventListener("change",()=>{ stopStorySpeech(); activeStory=null; save(); renderStories(); });
-        $("#select-all").addEventListener("click",()=>{ alphabet.forEach(char=>letterSet.add(char)); save(); renderLetters(); renderStories(); });
-        $("#clear-letters").addEventListener("click",()=>{ letterSet.clear(); save(); renderLetters(); renderStories(); });
-        $("#select-common").addEventListener("click",()=>{ letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char)); save(); renderLetters(); renderStories(); });
+        $("#select-all").addEventListener("click",()=>{ alphabet.forEach(char=>pendingLetterSet.add(char)); renderLetters(); });
+        $("#clear-letters").addEventListener("click",()=>{ pendingLetterSet.clear(); renderLetters(); });
+        $("#select-common").addEventListener("click",()=>{ pendingLetterSet.clear(); defaultLetters.forEach(char=>pendingLetterSet.add(char)); renderLetters(); });
+        $("#confirm-letters").addEventListener("click",()=>confirmLetterSelection());
         $("#words-beginner").addEventListener("click",()=>chooseReadingPreset(0,beginnerWords,defaultLetters,"Zobrazuji krátké příběhy pro začínající čtenáře."));
         $("#words-first-grade").addEventListener("click",()=>chooseReadingPreset(1,firstGradeWords,alphabet,"Zobrazuji příběhy pro prvňáka. Známá slova můžeš upravit níže."));
         $("#words-all").addEventListener("click",()=>chooseReadingPreset(2,keyWords,alphabet,"Zobrazuji všechny příběhy a klíčová slova."));
@@ -381,13 +404,14 @@
             stopStorySpeech();
             if(!window.confirm("Opravdu chceš začít znovu? Smažou se hvězdičky, přečtené příběhy i vlastní pokračování.")) return;
             state={level:0,letters:[...defaultLetters],knownWords:[...beginnerWords],completed:[],creations:[],stars:0};
-            letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char)); activeStory=null;
+            letterSet.clear(); defaultLetters.forEach(char=>letterSet.add(char));
+            pendingLetterSet.clear(); defaultLetters.forEach(char=>pendingLetterSet.add(char)); activeStory=null;
             knownWordSet.clear(); beginnerWords.forEach(word=>knownWordSet.add(word));
             $("#level").value="0"; $("#reader").hidden=true; $("#setup-status").textContent="Výprava začíná znovu. Hodně štěstí!";
-            save(); renderLetters(); renderKnownWords(); renderProgress(); renderStories(); renderCreations();
+            save(); renderLetters(); renderKnownWords(); renderProgress(); renderStories(); renderCreations(); renderPracticePrompts();
         });
 
-        const practiceSets = {
+        const practiceCatalog = {
             syllables: ["MA", "ME", "MI", "MO", "MU", "LA", "LE", "LI", "LO", "LU", "PA", "PE", "PI", "PO", "PU", "TA", "TE", "TI", "TO", "TU", "MÁ", "MÍ", "LÁ", "LÍ", "ŠA", "ŠE", "ČA", "ČE"],
             words: ["máma", "míč", "Míša", "Ema", "mísu", "táta", "teta", "les", "pes", "kočka", "voda", "ruka", "mává", "maso", "lampa"]
         };
@@ -409,8 +433,35 @@
         const practiceListenButton = $("#practice-listen");
         const practiceStatus = $("#practice-status");
 
+        function availablePracticePrompts(kind) {
+            const isReadableWithConfirmedLetters = (text) => normalizeLetters(text).every((letter) => letterSet.has(letter));
+            if (kind === "words") return practiceCatalog.words.filter(isReadableWithConfirmedLetters);
+            return practiceCatalog.syllables.filter((syllable) =>
+                isReadableWithConfirmedLetters(syllable)
+                && isReadableWithConfirmedLetters(syllableExamples[syllable] || "")
+            );
+        }
+
+        function renderPracticePrompts() {
+            if (practiceRecognition) stopPracticeRecognition();
+            choosePracticePrompt();
+        }
+
         function choosePracticePrompt() {
-            const prompts = practiceSets[practiceKind.value];
+            const prompts = availablePracticePrompts(practiceKind.value);
+            if (!prompts.length) {
+                previousPracticePrompt = "";
+                practiceTarget.textContent = "—";
+                practiceTarget.setAttribute("aria-label", "Pro potvrzená písmena tu není připravené zadání");
+                practiceExample.hidden = true;
+                practiceStatus.classList.remove("is-correct", "is-retry");
+                practiceStatus.textContent = "Pro potvrzená písmena zatím není připravené žádné slovo. Uprav výběr písmen a potvrď ho.";
+                practiceListenButton.disabled = true;
+                $("#practice-next").disabled = true;
+                return;
+            }
+            practiceListenButton.disabled = !SpeechRecognition;
+            $("#practice-next").disabled = false;
             const options = prompts.filter((prompt) => prompt !== previousPracticePrompt);
             previousPracticePrompt = options[Math.floor(Math.random() * options.length)] || prompts[0];
             practiceTarget.textContent = previousPracticePrompt;
@@ -425,7 +476,7 @@
                 practiceExample.append(word);
             }
             practiceStatus.classList.remove("is-correct", "is-retry");
-            practiceStatus.textContent = "";
+            practiceStatus.textContent = SpeechRecognition ? "" : "Rozpoznávání řeči tento prohlížeč nepodporuje. Zkus aktuální Chrome nebo Edge.";
         }
 
         function normalizeSpeechResult(text) {
